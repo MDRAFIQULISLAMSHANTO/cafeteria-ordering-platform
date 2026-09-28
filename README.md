@@ -53,12 +53,21 @@ Open `/demo` for everything else. Delete `./.data` to start from scratch, or use
 
 ## Supabase + Vercel
 
-1. Set `DATABASE_URL` (Supabase transaction-pooler URI, port 6543) and
-   `SESSION_SECRET` — see `.env.example`.
+1. Set `DATABASE_URL` (Supabase transaction-pooler URI, port 6543),
+   `SESSION_SECRET` and `DEMO_KEY` — see `.env.example`.
 2. `pnpm db:migrate` applies `./drizzle` (already applied to the
    `sts-online-ordering-demo` project).
-3. Deploy to Vercel with the same two environment variables. The first request
+3. Deploy to Vercel with the same three environment variables. The first request
    seeds the demo data.
 
 Row-level security is on for every table with no policies: only the app's own
 server connection can read or write.
+
+## Presenter access
+
+Staff and demo screens (`/demo`, `/kds`, `/counter`, `/status`, `/admin`), their
+live APIs, the sandbox SMS inbox and all staff/demo actions require the
+`DEMO_KEY`. Open any of them once as `/demo?key=<DEMO_KEY>`; the key is swapped
+for a 30-day httpOnly cookie. Without `DEMO_KEY` they are open in development
+and **closed in production**. The inbox shows OTP codes, so never deploy it
+ungated.

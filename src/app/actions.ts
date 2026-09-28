@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db/client";
@@ -20,11 +21,13 @@ import {
   rejectOrder,
   type PlaceInput,
 } from "@/lib/orders";
+import { DEMO_COOKIE, hasDemoAccess } from "@/lib/demo-access";
 import { clearPendingPhone, currentCustomer, endSession, getPendingPhone, setPendingPhone, startSession } from "@/lib/session";
 
 // Server Actions are reachable by direct POST, so every one re-checks who is
-// calling and what they may do. Staff screens are open in the prototype —
-// a demo gates on data, not on the user (see the demo guide).
+// calling and what they may do. Customer actions need the customer's session;
+// staff and demo actions need presenter access (DEMO_KEY cookie). Within the
+// staff screens there are no roles — a demo gates on data, not on the user.
 
 export type ActionResult<T = unknown> = { ok: true; data?: T } | { ok: false; error: string; rule?: string };
 
@@ -35,6 +38,12 @@ async function run<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {
     if (err instanceof RuleError) return { ok: false, error: err.message, rule: err.rule };
     console.error(err);
     return { ok: false, error: "Something went wrong. Please try again." };
+  }
+}
+
+async function requireDemoAccess() {
+  if (!(await hasDemoAccess((await cookies()).get(DEMO_COOKIE)?.value))) {
+    throw new RuleError("Presenter access required.", "Staff and demo screens need the demo key");
   }
 }
 
@@ -122,23 +131,24 @@ export async function cancelOrderAction(orderId: string) {
 // ---------------------------------------------------------- staff screens
 
 export async function bumpAction(orderId: string) {
-  return run(async () => bump(await getDb(), orderId));
+  return run(async () => { await requireDemoAccess(); return bump(await getDb(), orderId); });
 }
 
 export async function recallAction(outletId: string) {
-  return run(async () => recall(await getDb(), outletId));
+  return run(async () => { await requireDemoAccess(); return recall(await getDb(), outletId); });
 }
 
 export async function rejectAction(orderId: string, reason: string, actor: "kitchen" | "counter") {
-  return run(async () => rejectOrder(await getDb(), orderId, reason, actor));
+  return run(async () => { await requireDemoAccess(); return rejectOrder(await getDb(), orderId, reason, actor); });
 }
 
 export async function acceptAction(orderId: string, method: "cash" | "card_terminal") {
-  return run(async () => acceptAtCounter(await getDb(), orderId, method));
+  return run(async () => { await requireDemoAccess(); return acceptAtCounter(await getDb(), orderId, method); });
 }
 
 export async function lookupAction(outletId: string, code: string) {
   return run(async () => {
+    await requireDemoAccess();
     const r = await findForCollection(await getDb(), outletId, code);
     return {
       via: r.via,
@@ -150,11 +160,12 @@ export async function lookupAction(outletId: string, code: string) {
 }
 
 export async function collectAction(orderId: string, via: "qr" | "lookup", nameConfirmed: boolean) {
-  return run(async () => collect(await getDb(), orderId, via, nameConfirmed));
+  return run(async () => { await requireDemoAccess(); return collect(await getDb(), orderId, via, nameConfirmed); });
 }
 
 export async function toggleAvailabilityAction(outletId: string, productId: string) {
   return run(async () => {
+    await requireDemoAccess();
     const db = await getDb();
     const now = await demoNow(db);
     const where = and(eq(t.unavailability.outletId, outletId), eq(t.unavailability.productId, productId), eq(t.unavailability.date, now.date));
@@ -168,11 +179,12 @@ export async function toggleAvailabilityAction(outletId: string, productId: stri
 // ------------------------------------------------------------------ demo
 
 export async function resetDemoAction() {
-  return run(async () => resetDemo(await getDb()));
+  return run(async () => { await requireDemoAccess(); return resetDemo(await getDb()); });
 }
 
 export async function shiftClockAction(minutes: number | "reset") {
   return run(async () => {
+    await requireDemoAccess();
     const db = await getDb();
     const cur = (await db.select().from(t.demoState).where(eq(t.demoState.id, 1)))[0];
     const next = minutes === "reset" ? 0 : (cur?.clockOffsetMinutes ?? 0) + minutes;

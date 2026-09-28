@@ -75,8 +75,8 @@ export function LoginForm({ next }: { next?: string }) {
       )}
 
       <SandboxNote>
-        <b>Sandbox:</b> codes appear in the <Link href="/demo" target="_blank" className="underline">demo inbox</Link> instead of an SMS. Demo numbers
-        01700000001–04 always use code <b>123456</b>.
+        <b>Sandbox:</b> no SMS is sent — the presenter reads codes from the <Link href="/demo" target="_blank" className="underline">demo inbox</Link>.
+        Demo numbers 01700000001–04 always use code <b>123456</b>.
       </SandboxNote>
     </CenterCard>
   );
