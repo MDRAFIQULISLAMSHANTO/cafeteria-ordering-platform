@@ -1,0 +1,902 @@
+{
+  "$comment": "Seed catalog for the STS online-ordering prototype, transcribed 28 Sep 2026 from client-shared menu images C6 and C7. Prices in BDT as printed. Outlet mapping is NOT assigned (user will map menus to outlets). Items with 'flags' need confirmation before being presented as real. VAT treatment of printed prices is unconfirmed (pending STS Finance).",
+  "menus": {
+    "menu-a": {
+      "label": "Menu A - S Café",
+      "source": "C6 WhatsApp Image 2026-07-22 at 11.17.09.jpeg",
+      "outlet": null
+    },
+    "menu-b": {
+      "label": "Menu B - Fresh Bake / Snack Deck",
+      "source": "C7 WhatsApp Image 2026-09-13 at 15.40.42.jpeg",
+      "outlet": null
+    }
+  },
+  "products": [
+    {
+      "menu": "menu-a",
+      "section": "Daily Combo",
+      "name": "Fried Chicken + Potato Wedges + Cold Coffee",
+      "price_bdt": 299,
+      "unit": "each",
+      "combo_items": [
+        "Fried Chicken",
+        "Potato Wedges",
+        "Cold Coffee"
+      ],
+      "id": "menu-a-001"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Daily Combo",
+      "name": "Chicken Burger + Fries + Lemonade",
+      "price_bdt": 299,
+      "unit": "each",
+      "combo_items": [
+        "Chicken Burger",
+        "Fries",
+        "Lemonade"
+      ],
+      "id": "menu-a-002"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Daily Combo",
+      "name": "Singara + Coffee (Nescafe)",
+      "price_bdt": 90,
+      "unit": "each",
+      "combo_items": [
+        "Singara",
+        "Coffee (Nescafe)"
+      ],
+      "id": "menu-a-003"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Daily Combo",
+      "name": "Coffee + Cookies + Banana Cake",
+      "price_bdt": 149,
+      "unit": "each",
+      "combo_items": [
+        "Coffee",
+        "Cookies",
+        "Banana Cake"
+      ],
+      "id": "menu-a-004"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Chicken and Mushroom Bake",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-005"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Spinach and Chicken Quiche",
+      "price_bdt": 180,
+      "unit": "each",
+      "id": "menu-a-006"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Jamaican Beef Patty",
+      "price_bdt": 220,
+      "unit": "each",
+      "id": "menu-a-007"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Mixed Veg Quiche",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-008"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Crispy Chicken Drums",
+      "price_bdt": 120,
+      "unit": "each",
+      "id": "menu-a-009"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Hawks Focaccia Club Sandwich",
+      "price_bdt": 190,
+      "unit": "each",
+      "id": "menu-a-010"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Chicken Mayo Sandwich",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-011"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Chicken Supreme Burger",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-012"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Chicken sub bun",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-013"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Honey Glazed Buffalo Wings",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-014"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Beef Supreme Burger",
+      "price_bdt": 220,
+      "unit": "each",
+      "id": "menu-a-015"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Baked Cheese Cake",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-016"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Chocolate Brownie",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-017"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Cream Basbousa",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-018"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Chocolate Chip Cookies (2 Pcs)",
+      "price_bdt": 60,
+      "unit": "2 pcs",
+      "id": "menu-a-019"
+    },
+    {
+      "menu": "menu-a",
+      "section": "A La Carte",
+      "name": "Jaggery Oat Cookies (2 Pcs)",
+      "price_bdt": 80,
+      "unit": "2 pcs",
+      "id": "menu-a-020"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Live Counter",
+      "name": "French Fries",
+      "price_bdt": 99,
+      "unit": "each",
+      "id": "menu-a-021"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Live Counter",
+      "name": "Potato Wedges",
+      "price_bdt": 99,
+      "unit": "each",
+      "id": "menu-a-022"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Live Counter",
+      "name": "Vegetable Singara",
+      "price_bdt": 30,
+      "unit": "each",
+      "id": "menu-a-023"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Live Counter",
+      "name": "Chicken Spring Roll (2 Pcs)",
+      "price_bdt": 80,
+      "unit": "2 pcs",
+      "id": "menu-a-024"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Live Counter",
+      "name": "Chicken Kebab Wrap",
+      "price_bdt": 120,
+      "unit": "each",
+      "id": "menu-a-025"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Live Counter",
+      "name": "Cheese Ball (4 Pcs)",
+      "price_bdt": 99,
+      "unit": "4 pcs",
+      "id": "menu-a-026"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Live Counter",
+      "name": "Waffle (Nutella Banana)",
+      "price_bdt": 199,
+      "unit": "each",
+      "flags": [
+        "nut_check: Nutella contains hazelnut; C4 says the school is nut-free - confirm where this is sold"
+      ],
+      "id": "menu-a-027"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Lemonade (150 ml)",
+      "price_bdt": 80,
+      "unit": "each",
+      "id": "menu-a-028"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Green Mango Cooler (150 ml)",
+      "price_bdt": 80,
+      "unit": "each",
+      "id": "menu-a-029"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Strawberry Mojito (150 ml)",
+      "price_bdt": 120,
+      "unit": "each",
+      "id": "menu-a-030"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Fresh Orange Juice (150 ml)",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-031"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Fresh Watermelon Juice (150 ml)",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-032"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Mango Smoothie (150 ml)",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-033"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Blueberry Smoothie (150 ml)",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-034"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Americano",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-035"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Cappuccino",
+      "price_bdt": 150,
+      "unit": "each",
+      "id": "menu-a-036"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Café Latte",
+      "price_bdt": 180,
+      "unit": "each",
+      "id": "menu-a-037"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Hazelnut Latte",
+      "price_bdt": 199,
+      "unit": "each",
+      "flags": [
+        "nut_check: hazelnut flavouring - confirm nut-free policy scope"
+      ],
+      "id": "menu-a-038"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Caramel Latte",
+      "price_bdt": 199,
+      "unit": "each",
+      "id": "menu-a-039"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Café Mocha",
+      "price_bdt": 199,
+      "unit": "each",
+      "id": "menu-a-040"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Beverages",
+      "name": "Hot Chocolate",
+      "price_bdt": 199,
+      "unit": "each",
+      "id": "menu-a-041"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Day Specials",
+      "name": "Chicken Cheese Omelette with Toast, Chocolate Pancake",
+      "price_bdt": 199,
+      "unit": "each",
+      "available_weekday": "sun",
+      "id": "menu-a-042"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Day Specials",
+      "name": "Mutton Biryani & Gulab Jamun",
+      "price_bdt": 349,
+      "unit": "each",
+      "available_weekday": "mon",
+      "id": "menu-a-043"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Day Specials",
+      "name": "Chicken Quesadilla & Fudge Brownie",
+      "price_bdt": 249,
+      "unit": "each",
+      "available_weekday": "tue",
+      "id": "menu-a-044"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Day Specials",
+      "name": "Masala Dosa & Kheer",
+      "price_bdt": 199,
+      "unit": "each",
+      "available_weekday": "wed",
+      "id": "menu-a-045"
+    },
+    {
+      "menu": "menu-a",
+      "section": "Day Specials",
+      "name": "Kebab Paratha & Rasmalai",
+      "price_bdt": 249,
+      "unit": "each",
+      "available_weekday": "thu",
+      "id": "menu-a-046"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Fresh Bake",
+      "name": "Chicken & Mushroom Quiche",
+      "price_bdt": 395,
+      "unit": "each",
+      "description": "Tender chicken breast in a creamy white sauce with mushroom, topped with pastry.",
+      "id": "menu-b-047"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Fresh Bake",
+      "name": "Chicken & Spinach Quiche",
+      "price_bdt": 345,
+      "unit": "each",
+      "description": "Chicken breast, spinach, and a creamy custard baked until golden, and creamy egg custard baked until golden.",
+      "id": "menu-b-048"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Fresh Bake",
+      "name": "Jambon Patte",
+      "price_bdt": 395,
+      "unit": "each",
+      "description": "Chicken style mashed beef or chicken sauteed in creamy sauce and layered in a lightly seasoned pastry sauce.",
+      "flags": [
+        "price_ambiguous: menu shows 395/295 with no variant labels - likely beef/chicken or size; confirm before selling"
+      ],
+      "id": "menu-b-049"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Fresh Bake",
+      "name": "Asparagus and Chicken Fillet Puff",
+      "price_bdt": 225,
+      "unit": "each",
+      "description": "Asparagus and chicken fillet with a creamy sauce baked in delicate pastry tart, layered with a rich and creamy sauce.",
+      "id": "menu-b-050"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Fresh Bake",
+      "name": "Farmhouse Cottage Pie",
+      "price_bdt": 445,
+      "unit": "each",
+      "description": "Mixed vegetables with chicken and mashed potato and low fat cheese.",
+      "id": "menu-b-051"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Fresh Bake",
+      "name": "Mac & Cheese Pie",
+      "price_bdt": 445,
+      "unit": "each",
+      "description": "Creamy macaroni with cheese sauce, topped with cheese and baked.",
+      "id": "menu-b-052"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Fresh Bake",
+      "name": "Mixed Veg Quiche",
+      "price_bdt": 245,
+      "unit": "each",
+      "description": "A delicate pastry tart layered with a silky egg custard and a selection of fresh market vegetables.",
+      "id": "menu-b-053"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Fresh Bake",
+      "name": "Hawaiian Quiche",
+      "price_bdt": 245,
+      "unit": "each",
+      "description": "A delightful pastry tart layered with ham, pineapple and cheese.",
+      "id": "menu-b-054"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Salad of the Day",
+      "price_bdt": 200,
+      "unit": "each",
+      "description": "Prepared large of popular salad with assorted vegetables and chef's dressing.",
+      "id": "menu-b-055"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Integrated Large Prawns",
+      "price_bdt": 280,
+      "unit": "each",
+      "description": "Prawn with fresh herbs, served with roasted vegetables.",
+      "flags": [
+        "name_unclear: 'Integrated' as printed - possibly 'Grilled'; confirm"
+      ],
+      "id": "menu-b-056"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Crisp Salmon with Herb Crust",
+      "price_bdt": 445,
+      "unit": "each",
+      "description": "Grilled salmon with herb crust, served with seasonal vegetables.",
+      "id": "menu-b-057"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Mediterranean Vegetable Pasta",
+      "price_bdt": 445,
+      "unit": "each",
+      "description": "Fresh pasta with seasonal vegetables, olive oil and herbs.",
+      "id": "menu-b-058"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Pan-Seared Chicken",
+      "price_bdt": 445,
+      "unit": "each",
+      "description": "Chicken breast with herb butter, served with garden fresh vegetables.",
+      "id": "menu-b-059"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Beef Tenderloin",
+      "price_bdt": 395,
+      "unit": "each",
+      "description": "Grilled tenderloin with red wine sauce, served with mashed potato and vegetables.",
+      "id": "menu-b-060"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Fish of the Day",
+      "price_bdt": 245,
+      "unit": "each",
+      "description": "Fresh catch with lemon butter sauce, served with vegetables.",
+      "id": "menu-b-061"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Mixed Grill Platter",
+      "price_bdt": 345,
+      "unit": "each",
+      "description": "A selection of chicken, beef and sausage, served with vegetables and fries.",
+      "id": "menu-b-062"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Seafood Linguine",
+      "price_bdt": 395,
+      "unit": "each",
+      "description": "Linguine with mixed seafood in a light tomato or cream sauce.",
+      "id": "menu-b-063"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Famous Cottage Pie",
+      "price_bdt": 445,
+      "unit": "each",
+      "description": "Minced meat with vegetable layer, topped with mashed potato.",
+      "id": "menu-b-064"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Beef Cheese Pie",
+      "price_bdt": 245,
+      "unit": "each",
+      "description": "Flaky pastry filled with seasoned beef and melted cheese.",
+      "flags": [
+        "price_alignment: 245 sits on the row shared with 'Soup of the Day'; assumed to belong to Beef Cheese Pie"
+      ],
+      "id": "menu-b-065"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Special of the Day",
+      "name": "Soup of the Day",
+      "price_bdt": null,
+      "unit": "each",
+      "description": "A delightful bowl of our chef's daily soup.",
+      "flags": [
+        "no_price: no price printed; not orderable until priced"
+      ],
+      "id": "menu-b-066"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Snack Deck",
+      "name": "Sandwich of the Day - Chicken & Spinach Quiche",
+      "price_bdt": 395,
+      "unit": "each",
+      "description": "Tender chicken breast in a creamy sauce sandwiched in wrapper in a garden puff pastry.",
+      "flags": [
+        "name_unclear: heading 'Sandwich of the Day' followed by 'Chicken & Spinach Quiche' - confirm whether this is one item"
+      ],
+      "id": "menu-b-067"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Snack Deck",
+      "name": "Club Sandwich",
+      "price_bdt": 345,
+      "unit": "each",
+      "description": "Roasted chicken, bacon, fresh lettuce, tomato and mayonnaise.",
+      "id": "menu-b-068"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Snack Deck",
+      "name": "Slider Duo",
+      "price_bdt": 345,
+      "unit": "each",
+      "description": "Chicken sliders served with homemade baked fries.",
+      "id": "menu-b-069"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Snack Deck",
+      "name": "Caesar Wraps",
+      "price_bdt": 345,
+      "unit": "each",
+      "description": "Grilled chicken, crisp lettuce, parmesan, Caesar dressing.",
+      "id": "menu-b-070"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Snack Deck",
+      "name": "Mini Pizza Bites",
+      "price_bdt": 345,
+      "unit": "each",
+      "description": "Mini pizzas with assorted toppings.",
+      "id": "menu-b-071"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Snack Deck",
+      "name": "Fruit & Cheese Platter",
+      "price_bdt": 375,
+      "unit": "each",
+      "description": "Seasonal fruits, assorted cheeses, crackers.",
+      "id": "menu-b-072"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Snack Deck",
+      "name": "Charcuterie Board",
+      "price_bdt": 375,
+      "unit": "each",
+      "description": "Cured meats, cheeses, olives, crackers.",
+      "id": "menu-b-073"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Desserts",
+      "name": "Chocolate Mud Cake",
+      "price_bdt": 300,
+      "unit": "each",
+      "description": "Whole wheat chocolate cake with dates (also available with butter, greek yogurt base).",
+      "id": "menu-b-074"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Desserts",
+      "name": "New York Baked Cheesecake",
+      "price_bdt": 345,
+      "unit": "each",
+      "description": "Greek yogurt cheesecake, naturally sweetened, almond crust.",
+      "flags": [
+        "nut_check: almond crust - confirm against nut-free school policy"
+      ],
+      "id": "menu-b-075"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Desserts",
+      "name": "Mini Mixed Eclairs",
+      "price_bdt": 245,
+      "unit": "each",
+      "description": "Filled with fruit compote and yogurt (instead of custard cream).",
+      "id": "menu-b-076"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Desserts",
+      "name": "Layered Chocolate Mousse",
+      "price_bdt": 300,
+      "unit": "each",
+      "description": "Dark chocolate mousse with a hint of coffee and vanilla.",
+      "id": "menu-b-077"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Desserts",
+      "name": "Cookies (per kg)",
+      "price_bdt": 1200,
+      "unit": "kg",
+      "id": "menu-b-078"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Desserts",
+      "name": "Chocolate Mouldage",
+      "price_bdt": 1200,
+      "unit": "kg",
+      "flags": [
+        "unit_assumed: listed in the per-kg block; per-kg assumed"
+      ],
+      "id": "menu-b-079"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Desserts",
+      "name": "Oats & Chocolate Chip Cookies",
+      "price_bdt": 1200,
+      "unit": "kg",
+      "flags": [
+        "unit_assumed: per-kg assumed from the block above"
+      ],
+      "id": "menu-b-080"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Coffee",
+      "price_bdt": 170,
+      "unit": "each",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-081"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Espresso",
+      "price_bdt": 170,
+      "unit": "each",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-082"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Americano",
+      "price_bdt": 260,
+      "unit": "each",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-083"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Cappuccino",
+      "price_bdt": 260,
+      "unit": "each",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-084"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Latte",
+      "price_bdt": 260,
+      "unit": "each",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-085"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Matcha",
+      "price_bdt": 175,
+      "unit": "each",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-086"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Mocha",
+      "price_bdt": 370,
+      "unit": "each",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-087"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Flavored Latte",
+      "price_bdt": 460,
+      "unit": "each",
+      "description": "Ask for available flavors.",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-088"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Hot/Cold Chocolate",
+      "price_bdt": 455,
+      "unit": "each",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-089"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Beverages",
+      "name": "Matcha Latte",
+      "price_bdt": 460,
+      "unit": "each",
+      "flags": [
+        "price_alignment: beverage names and prices are printed in separate columns; paired in printed order - verify (e.g. Mocha 370, Flavored Latte 460)"
+      ],
+      "id": "menu-b-090"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Tea",
+      "name": "Halda Valley Premium Tea Selection",
+      "price_bdt": 190,
+      "unit": "each",
+      "id": "menu-b-091"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Shakes and Frappes",
+      "name": "Cookies & Cream",
+      "price_bdt": 345,
+      "unit": "each",
+      "id": "menu-b-092"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Shakes and Frappes",
+      "name": "Chocolate",
+      "price_bdt": 345,
+      "unit": "each",
+      "id": "menu-b-093"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Shakes and Frappes",
+      "name": "Chocolate Mint",
+      "price_bdt": 345,
+      "unit": "each",
+      "id": "menu-b-094"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Shakes and Frappes",
+      "name": "Chocolate Mango Shake",
+      "price_bdt": 345,
+      "unit": "each",
+      "id": "menu-b-095"
+    },
+    {
+      "menu": "menu-b",
+      "section": "Shakes and Frappes",
+      "name": "Flavored Frappé",
+      "price_bdt": 345,
+      "unit": "each",
+      "description": "Ask for frappe of the day.",
+      "id": "menu-b-096"
+    }
+  ]
+}

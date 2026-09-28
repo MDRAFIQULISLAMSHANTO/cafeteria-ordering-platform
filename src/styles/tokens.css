@@ -1,0 +1,325 @@
+/* ===========================================================================
+   Odoo 19 design tokens — light and dark
+   Source: 21 screenshots of democompany0101.odoo.com (Planning, Fleet,
+   Purchase, Accounting, apps home), 17 Sep 2026. Values are read off those
+   screenshots; anything marked APPROX has not been verified against a running
+   Odoo instance and should be diffed before a client sees it.
+
+   Rule for anything consuming this file: never write a colour literal. Every
+   colour, radius, shadow and fixed height comes from a variable here, so the
+   dark theme works for free.
+   ========================================================================= */
+
+:root {
+  /* ---- STS Group customer palette --------------------------------------- */
+  /* Sampled from the two client-supplied Glenrich food-event banners. */
+  --sts-purple:       #462576;
+  --sts-orange:       #F57C18;
+  --sts-orange-deep:  #EC842D;
+  --sts-cream:        #FEF0E5;
+  --sts-white:        #FFFFFF;
+  --sts-ornament:     #E5E5E5;
+  --sts-ink:          #1D1D1D;
+
+  /* ---- brand ------------------------------------------------------------ */
+  --o-primary:        #714B67;   /* New button, primary actions, active nav   */
+  --o-primary-hover:  #5C3D54;
+  --o-primary-ink:    #FFFFFF;
+  --o-accent:         #017E84;   /* links, figures, card headings, active view */
+  --o-accent-hover:   #016B70;
+  --o-accent-soft:    #D7F0F2;   /* teal wash behind an active control        */
+
+  /* ---- surfaces --------------------------------------------------------- */
+  --o-bg:             #F9F9F9;   /* page ground behind the sheets             */
+  --o-surface:        #FFFFFF;   /* sheet, card, dropdown, list body          */
+  --o-surface-2:      #F8F9FA;   /* list header row, table head, subtle strip */
+  --o-surface-3:      #F1F2F4;   /* hover, pressed, group row                 */
+  --o-navbar:         #FFFFFF;   /* Odoo 19 navbar is white in light mode     */
+  --o-navbar-ink:     #1F2023;
+  --o-navbar-ink-dim: #5F6368;
+  --o-overlay:        rgba(0, 0, 0, .45);
+
+  /* ---- text ------------------------------------------------------------- */
+  --o-text:           #1F2023;
+  --o-text-muted:     #6B6F76;
+  --o-text-faint:     #9AA0A6;
+  --o-text-on-accent: #FFFFFF;
+
+  /* ---- lines ------------------------------------------------------------ */
+  --o-border:         #E3E5E8;
+  --o-border-strong:  #CDD0D5;
+  --o-focus:          rgba(1, 126, 132, .35);
+
+  /* ---- semantic pills (background / ink pairs) -------------------------- */
+  --o-success:        #1E7E34;  --o-success-bg: #DEF7E5;
+  --o-warning:        #8A5A00;  --o-warning-bg: #FFF3CD;
+  --o-danger:         #A52834;  --o-danger-bg:  #FADDE0;
+  --o-info:           #01686D;  --o-info-bg:    #D7F0F2;
+  --o-neutral:        #4B5057;  --o-neutral-bg: #E9ECEF;
+
+  /* ---- data semantics: Odoo colours dates by urgency, not by type ------- */
+  --o-date-today:     #B45309;   /* "Today"                                   */
+  --o-date-overdue:   #C0392B;   /* "15 days ago"                             */
+  --o-date-future:    var(--o-text);
+
+  /* ---- kanban / tag palette (APPROX, sampled from Fleet + Planning) ----- */
+  --o-tag-1: #E8DFF5; --o-tag-1-ink: #5B3B80;   /* purple  */
+  --o-tag-2: #D6ECF5; --o-tag-2-ink: #1C5F80;   /* blue    */
+  --o-tag-3: #D9F2E6; --o-tag-3-ink: #1E7051;   /* green   */
+  --o-tag-4: #FDE9D9; --o-tag-4-ink: #9A5A18;   /* orange  */
+  --o-tag-5: #FADDE6; --o-tag-5-ink: #93325A;   /* pink    */
+  --o-tag-6: #D7F0F2; --o-tag-6-ink: #01686D;   /* teal    */
+
+  /* ---- chart series, in Odoo's order ------------------------------------ */
+  --o-chart-1: #6EA8D8; --o-chart-2: #E48F9E; --o-chart-3: #8FCFC4;
+  --o-chart-4: #F2BE87; --o-chart-5: #A292C9; --o-chart-6: #7FC5DD;
+  /* a single-series chart is one blue: line, marker and a soft fill under it */
+  --o-chart-line: #5CA0DC; --o-chart-fill: rgba(146, 196, 235, .55);
+  --o-chart-grid: #ECEEF0; --o-chart-axis: #8A9096;
+
+  /* ---- dashboard KPI tiles: a tinted fill, never a border --------------- */
+  --o-kpi-1: #E8F0FB;   /* counts — pale blue                                */
+  --o-kpi-2: #FDF3E9;   /* money — pale peach                                */
+  --o-kpi-3: #FDEDED;   /* product / best-of — pale rose                     */
+  --o-kpi-4: #EAF6F0;   /* stock / logistics — pale mint                     */
+  --o-kpi-ink: #1F2023;
+  /* the in-row bar behind a ranked label, tinted to the block it sits in */
+  --o-rankbar-warm: #FBEEE2;  --o-rankbar-cool: #E6F4EC;
+  /* a delta reads up or down, and is plain when nothing moved */
+  --o-delta-up: #1E7E34; --o-delta-down: #C0392B; --o-delta-flat: #6B6F76;
+  --o-grid:    #ECEDEF;
+
+  /* ---- apps home ground -------------------------------------------------- */
+  --o-home-bg: linear-gradient(135deg, #EDEAF3 0%, #F6F4F9 60%, #F2EFF6 100%);
+  --o-home-tile: #FFFFFF;
+
+  /* ---- POS: self-order kiosk / mobile (Odoo 20 demo, 28 Sep 2026) ------- */
+  /* The customer-facing screens: lavender-grey ground, white cards, plum as
+     a gradient on the one big action, prices in plum. */
+  --o-so-bg:          var(--sts-cream);
+  --o-so-surface:     #FFFFFF;
+  --o-so-btn-2:       #FFFFFF;   /* Back, My Orders — the quiet big button     */
+  --o-so-btn-2-ink:   var(--sts-purple);
+  --o-so-grad:        linear-gradient(135deg, var(--sts-orange) 0%, var(--sts-orange-deep) 100%);
+  --o-so-price:       var(--sts-purple);   /* prices, order number, selection total */
+  --o-so-paid:        #1FA855;   --o-so-paid-ink: #FFFFFF;
+  --o-so-hero-ph:     linear-gradient(145deg, var(--sts-cream) 0%, var(--sts-white) 72%);
+  --o-so-photo-pill:  rgba(255, 255, 255, .82);  /* "Average time" over a photo  */
+  --o-so-r:           10px;      /* cards, option tiles, big buttons           */
+  --o-so-h-btn:       56px;      /* big touch button                           */
+
+  /* ---- POS: order presets — one colour from register to kitchen ---------- */
+  --o-preset-dinein:    #4A8FE0;  --o-preset-dinein-soft:   #CFE2FA;
+  --o-preset-takeout:   #B09A0A;  --o-preset-takeout-soft:  #F2E7A6;
+  --o-preset-delivery:  #E3873A;  --o-preset-delivery-soft: #F8C9A0;
+  --o-preset-ink:       #1F2023;
+
+  /* ---- POS: kitchen display (KDS) ---------------------------------------- */
+  --o-kds-bg:         #F7F8FA;
+  --o-kds-bar:        #FFFFFF;
+  --o-kds-card:       #FFFFFF;
+  --o-kds-card-head:  #F0F0F0;   /* stays pale in dark mode too                */
+  --o-kds-card-head-ink: #000000;
+  --o-kds-btn:        #FFFFFF;   --o-kds-btn-ink: #1F2023;
+  --o-kds-tocook:     #CFD1D4;   --o-kds-tocook-count: #E4E5E7;
+  --o-kds-ready:      #A9CDF7;   --o-kds-ready-count:  #BFDBFE;   /* ready pill APPROX */
+  --o-kds-done:       #5BC236;   --o-kds-done-count:   #B7E4A8;
+  --o-kds-pill-ink:   #111111;   /* state pills keep dark ink in both themes  */
+  --o-kds-late:       #E53935;   --o-kds-late-ink: #FFFFFF;   /* overdue timer  */
+
+  /* ---- POS: register / floor / orders / payment (staff side) ------------ */
+  /* Observed in DARK only (Odoo 20 demo). Light values are inferred from the
+     backend palette — diff them against a light POS before a client sees it. */
+  --o-pos-bg:         #F3F4F6;
+  --o-pos-bar:        #FFFFFF;
+  --o-pos-pane:       #FFFFFF;   /* order pane, dialog body                    */
+  --o-pos-pane-2:     #F1F2F4;   /* dialog head/foot strip                     */
+  --o-pos-btn:        #E9EAEC;   --o-pos-btn-ink: #1F2023;
+  --o-pos-ink:        #1F2023;   --o-pos-ink-dim: #6B6F76;
+  --o-pos-line:       #E3E5E8;
+  --o-pos-primary:    #8E4079;   /* POS plum is brighter than the backend's    */
+  --o-pos-primary-ink:#FFFFFF;
+  --o-pos-active:     #017E84;   --o-pos-active-bg: #D7F0F2;   /* active tab, chosen option */
+  --o-pos-selrow:     #D7F0F2;   --o-pos-selrow-ink: #01686D;
+  --o-pos-sale:       #4B6A92;   --o-pos-sale-ink: #EEF3FA;    /* "Direct Sale" pill */
+  --o-pos-extra:      #6EA8F0;   --o-pos-extra-ink: #0E1A2A;   /* "+ $ 3.00" in a chip */
+  --o-pos-key:        #F1F2F4;
+  --o-pos-key-sign:   #F6EDB8;   --o-pos-key-dot: #F3DDCF;
+  --o-pos-key-del:    #F6D3D3;   --o-pos-key-cash: #CFEBD9;
+  --o-pos-amt:        #1F2023;   --o-pos-amt-dim: #9AA0A6;     /* $17.83 split  */
+  --o-pos-ok:         #28A745;   --o-pos-ok-ink: #FFFFFF;
+  /* floor plan: the floor stays pale in both themes */
+  --o-pos-floor:      #F9FAFB;
+  --o-pos-table:      #C3E0CD;   --o-pos-table-edge: #3E9E5E;  --o-pos-table-ink: #111111;
+  /* order-list status pills and tags */
+  --o-pos-ongoing:    #5B9BE6;   --o-pos-ongoing-ink: #0B1A2E;
+  --o-pos-paid:       #1E9E4A;   --o-pos-paid-ink: #FFFFFF;
+  --o-pos-invoiced:   #8D9096;   --o-pos-invoiced-ink: #111111;
+  --o-pos-tabletag:   #C8373F;   --o-pos-tabletag-ink: #FBE3E5;
+  --o-pos-due:        #C0609F;
+  /* category buttons: a colour set per POS category, same in both themes */
+  --o-pos-cat-1: #3A6399;  /* blue    */  --o-pos-cat-2: #8B5A2B;  /* ochre   */
+  --o-pos-cat-3: #8C4F3A;  /* rust    */  --o-pos-cat-4: #8A2A5A;  /* magenta */
+  --o-pos-cat-5: #8E2C8E;  /* purple  */   /* "1 day left" on a scheduled order         */
+
+  /* ---- POS: printed receipt — paper, never themed ------------------------ */
+  --o-receipt-bg:     #FFFFFF;
+  --o-receipt-ink:    #000000;
+  --o-receipt-font:   Arial, "Helvetica Neue", Helvetica, sans-serif;
+
+  /* ---- website / portal payment page: follows the WEBSITE theme, not the
+     backend. The demo's theme is salmon; read the client's own theme. ---- */
+  --o-web-primary:    var(--sts-orange);
+  --o-web-header:     var(--sts-cream);
+
+  /* ---- type -------------------------------------------------------------- */
+  --o-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
+  --o-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --o-fs-xs:    11px;   /* systray counts, column sub-labels                  */
+  --o-fs-sm:    12px;   /* hints, secondary text                              */
+  --o-fs-base:  13px;   /* list cells, fields, menus — Odoo's working size     */
+  --o-fs-md:    14px;   /* buttons, navbar items                              */
+  --o-fs-lg:    16px;   /* card headings                                      */
+  --o-fs-xl:    20px;   /* control-panel view title                           */
+  --o-fs-2xl:   26px;   /* form record title                                  */
+  --o-lh:       1.45;
+  --o-fw-normal: 400; --o-fw-medium: 500; --o-fw-semi: 600; --o-fw-bold: 700;
+
+  /* ---- spacing scale ------------------------------------------------------ */
+  --o-1: 2px;  --o-2: 4px;  --o-3: 6px;  --o-4: 8px;
+  --o-5: 12px; --o-6: 16px; --o-7: 20px; --o-8: 24px; --o-9: 32px;
+
+  /* ---- fixed heights, measured off the screenshots ------------------------ */
+  --o-h-navbar:   46px;
+  --o-h-cp:       48px;   /* control panel                                    */
+  --o-h-row:      40px;   /* list row                                         */
+  --o-h-control:  30px;   /* button, input, pill control                      */
+  --o-w-search:   470px;  /* centred searchbar                                */
+  --o-pad-cell:   8px 12px;
+  --o-pad-card:   16px;
+  --o-gutter:     16px;   /* page side padding and gap between cards          */
+
+  /* ---- radii and shadows --------------------------------------------------- */
+  --o-r-sm: 3px; --o-r-md: 4px; --o-r-lg: 8px; --o-r-pill: 999px;
+  --o-shadow-sm:  0 1px 2px rgba(0, 0, 0, .06);
+  --o-shadow-md:  0 2px 8px rgba(0, 0, 0, .10);
+  --o-shadow-pop: 0 6px 24px rgba(0, 0, 0, .16);
+}
+
+/* ===========================================================================
+   Dark theme. Same variable names, different values — nothing else changes.
+   Sampled from the dark Purchase Orders list and the dark apps home.
+   ========================================================================= */
+:root[data-theme="dark"] {
+  --o-primary:        #8B5E80;
+  --o-primary-hover:  #9E6E92;
+  --o-primary-ink:    #FFFFFF;
+  --o-accent:         #3FB3B8;
+  --o-accent-hover:   #57C8CD;
+  --o-accent-soft:    #10363A;
+
+  --o-bg:             #17181A;
+  --o-surface:        #202124;
+  --o-surface-2:      #26282B;
+  --o-surface-3:      #2E3033;
+  --o-navbar:         #111213;
+  --o-navbar-ink:     #E8E9EB;
+  --o-navbar-ink-dim: #A8ACB2;
+  --o-overlay:        rgba(0, 0, 0, .65);
+
+  --o-text:           #E4E5E7;
+  --o-text-muted:     #A0A3A8;
+  --o-text-faint:     #7A7D82;
+
+  --o-border:         #34363A;
+  --o-border-strong:  #45484D;
+  --o-focus:          rgba(63, 179, 184, .40);
+
+  --o-success:        #7BD69B;  --o-success-bg: #18321F;
+  --o-warning:        #E8BE6A;  --o-warning-bg: #332713;
+  --o-danger:         #F09AA4;  --o-danger-bg:  #3A1C21;
+  --o-info:           #7FD4D9;  --o-info-bg:    #10363A;
+  --o-neutral:        #C3C6CA;  --o-neutral-bg: #303337;
+
+  --o-date-today:     #E0A458;
+  --o-date-overdue:   #F0837C;
+
+  --o-chart-line: #6FB1E6; --o-chart-fill: rgba(96, 150, 200, .38);
+  --o-chart-grid: #2A2D31; --o-chart-axis: #8A9096;
+  --o-kpi-1: #16232F; --o-kpi-2: #2B2318; --o-kpi-3: #2E1D1F; --o-kpi-4: #16281F;
+  --o-kpi-ink: #E8EAED;
+  --o-rankbar-warm: #33291F; --o-rankbar-cool: #1B2E24;
+  --o-delta-up: #4ED17E; --o-delta-down: #F08A82; --o-delta-flat: #9AA0A6;
+
+  --o-tag-1: #332742; --o-tag-1-ink: #C9B6E8;
+  --o-tag-2: #1E3546; --o-tag-2-ink: #A8CFE8;
+  --o-tag-3: #1B3B2D; --o-tag-3-ink: #96D9BB;
+  --o-tag-4: #3D2E1C; --o-tag-4-ink: #F0C393;
+  --o-tag-5: #3D2029; --o-tag-5-ink: #F0A8C0;
+  --o-tag-6: #10363A; --o-tag-6-ink: #7FD4D9;
+
+  --o-grid:    #2C2E31;
+  --o-home-bg: radial-gradient(120% 90% at 20% 0%, #10343C 0%, #0C2229 45%, #07161B 100%);
+  --o-home-tile: #1C1E21;
+
+  /* KDS dark — sampled from the kitchen display's own theme toggle */
+  --o-kds-bg: #40434B; --o-kds-bar: #2A2B2F; --o-kds-card: #3A3C43;
+  --o-kds-card-head: #DCDCDC;
+  --o-kds-btn: #25272B; --o-kds-btn-ink: #F1F2F3;
+  --o-kds-tocook-count: #6B6D72; --o-kds-ready-count: #3E5E8E; --o-kds-done-count: #3F6B30;
+  --o-preset-delivery-soft: #E3873A; --o-preset-dinein-soft: #4A8FE0; --o-preset-takeout-soft: #B09A0A;
+  /* self-order dark — NO screenshot; inferred, diff before a client sees it */
+  --o-so-bg: #1E1B1F; --o-so-surface: #2A262B; --o-so-btn-2: #3A363B; --o-so-btn-2-ink: #E8E4E7;
+  --o-so-price: #C69BBC;
+  /* POS register dark — sampled from the Odoo 20 demo */
+  --o-pos-bg: #1F2025; --o-pos-bar: #2B2E36; --o-pos-pane: #1F2025; --o-pos-pane-2: #2B2E36;
+  --o-pos-btn: #3A3D46; --o-pos-btn-ink: #E8E9EB; --o-pos-ink: #E8E9EB; --o-pos-ink-dim: #9A9DA4;
+  --o-pos-line: #34373F; --o-pos-active: #1F8C80; --o-pos-active-bg: #22403F;
+  --o-pos-selrow: #2F4B50; --o-pos-selrow-ink: #3FC1B0;
+  --o-pos-key: #3A3D46; --o-pos-key-sign: #463B00; --o-pos-key-dot: #573A28;
+  --o-pos-key-del: #5A1B1D; --o-pos-key-cash: #0B4A26;
+  --o-pos-amt: #ECECEC; --o-pos-amt-dim: #8F9096;
+
+  --o-shadow-sm:  0 1px 2px rgba(0, 0, 0, .40);
+  --o-shadow-md:  0 2px 8px rgba(0, 0, 0, .45);
+  --o-shadow-pop: 0 6px 24px rgba(0, 0, 0, .60);
+}
+
+/* Follow the OS when the page has made no explicit choice. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --o-primary: #8B5E80; --o-primary-hover: #9E6E92;
+    --o-accent: #3FB3B8;  --o-accent-hover: #57C8CD; --o-accent-soft: #10363A;
+    --o-bg: #17181A; --o-surface: #202124; --o-surface-2: #26282B; --o-surface-3: #2E3033;
+    --o-navbar: #111213; --o-navbar-ink: #E8E9EB; --o-navbar-ink-dim: #A8ACB2;
+    --o-overlay: rgba(0, 0, 0, .65);
+    --o-text: #E4E5E7; --o-text-muted: #A0A3A8; --o-text-faint: #7A7D82;
+    --o-border: #34363A; --o-border-strong: #45484D; --o-focus: rgba(63, 179, 184, .40);
+    --o-success: #7BD69B; --o-success-bg: #18321F;
+    --o-warning: #E8BE6A; --o-warning-bg: #332713;
+    --o-danger:  #F09AA4; --o-danger-bg:  #3A1C21;
+    --o-info:    #7FD4D9; --o-info-bg:    #10363A;
+    --o-neutral: #C3C6CA; --o-neutral-bg: #303337;
+    --o-date-today: #E0A458; --o-date-overdue: #F0837C;
+    --o-grid: #2C2E31;
+    --o-home-bg: radial-gradient(120% 90% at 20% 0%, #10343C 0%, #0C2229 45%, #07161B 100%);
+    --o-home-tile: #1C1E21;
+    --o-kds-bg: #40434B; --o-kds-bar: #2A2B2F; --o-kds-card: #3A3C43; --o-kds-card-head: #DCDCDC;
+    --o-kds-btn: #25272B; --o-kds-btn-ink: #F1F2F3;
+    --o-kds-tocook-count: #6B6D72; --o-kds-ready-count: #3E5E8E; --o-kds-done-count: #3F6B30;
+    --o-preset-delivery-soft: #E3873A; --o-preset-dinein-soft: #4A8FE0; --o-preset-takeout-soft: #B09A0A;
+    --o-so-bg: #1E1B1F; --o-so-surface: #2A262B; --o-so-btn-2: #3A363B; --o-so-btn-2-ink: #E8E4E7;
+    --o-so-price: #C69BBC;
+    --o-pos-bg: #1F2025; --o-pos-bar: #2B2E36; --o-pos-pane: #1F2025; --o-pos-pane-2: #2B2E36;
+    --o-pos-btn: #3A3D46; --o-pos-btn-ink: #E8E9EB; --o-pos-ink: #E8E9EB; --o-pos-ink-dim: #9A9DA4;
+    --o-pos-line: #34373F; --o-pos-active: #1F8C80; --o-pos-active-bg: #22403F;
+    --o-pos-selrow: #2F4B50; --o-pos-selrow-ink: #3FC1B0;
+    --o-pos-key: #3A3D46; --o-pos-key-sign: #463B00; --o-pos-key-dot: #573A28;
+    --o-pos-key-del: #5A1B1D; --o-pos-key-cash: #0B4A26;
+    --o-pos-amt: #ECECEC; --o-pos-amt-dim: #8F9096;
+    --o-shadow-sm: 0 1px 2px rgba(0,0,0,.40);
+    --o-shadow-md: 0 2px 8px rgba(0,0,0,.45);
+    --o-shadow-pop: 0 6px 24px rgba(0,0,0,.60);
+  }
+}

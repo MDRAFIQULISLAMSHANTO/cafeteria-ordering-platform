@@ -1,0 +1,34 @@
+"use client";
+
+import { useEffect } from "react";
+import { useLive } from "@/components/live";
+
+type Board = { outlet: { name: string }; now: { ms: number }; preparing: string[]; ready: string[] };
+
+const num = "min-w-[2.6em] text-[clamp(2.5rem,6vw,5rem)] font-bold tabular-nums";
+
+// Pickup-area TV: order numbers only, never names.
+export function StatusBoard({ outletId }: { outletId: string }) {
+  const { data } = useLive<Board>(`/api/live/status?outlet=${outletId}`, 2000);
+  useEffect(() => { document.documentElement.dataset.theme = "dark"; }, []);
+  return (
+    <div className="grid min-h-screen grid-rows-[auto_1fr] bg-pos-bg text-pos-ink">
+      <div className="flex items-center justify-between bg-pos-bar px-6 py-4">
+        <b className="text-2xl">{data?.outlet.name ?? "…"}</b>
+        <span className="text-2xl tabular-nums text-pos-ink-dim">
+          {data ? new Date(data.now.ms).toLocaleTimeString("en-GB", { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit" }) : ""}
+        </span>
+      </div>
+      <div className="grid grid-cols-[1fr_1.4fr]">
+        <section className="p-6">
+          <h2 className="mb-5 text-3xl uppercase tracking-wider text-pos-ink-dim">Preparing</h2>
+          <div className="flex flex-wrap gap-4">{data?.preparing.map((n) => <span key={n} className={num}>{n}</span>)}</div>
+        </section>
+        <section className="border-l border-pos-line p-6">
+          <h2 className="mb-5 text-3xl uppercase tracking-wider text-pos-ok">Ready — please collect</h2>
+          <div className="flex flex-wrap gap-4">{data?.ready.map((n) => <span key={n} className={`${num} text-pos-ok`}>{n}</span>)}</div>
+        </section>
+      </div>
+    </div>
+  );
+}

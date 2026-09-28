@@ -1,0 +1,1114 @@
+/* ===========================================================================
+   Odoo 19 component layer. Reads tokens.css — no colour literals below.
+   Load order:  <link href="tokens.css"> then <link href="odoo19.css">
+   Class prefix: .o-  (matches Odoo's own convention closely enough to read)
+   ========================================================================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* every component below sets display, so hidden has to win outright */
+[hidden] { display: none !important; }
+
+html { color-scheme: light dark; }
+
+body {
+  margin: 0;
+  background: var(--o-bg);
+  color: var(--o-text);
+  font-family: var(--o-font);
+  font-size: var(--o-fs-base);
+  line-height: var(--o-lh);
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: var(--o-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--o-accent); outline-offset: 1px; border-radius: var(--o-r-sm); }
+table { border-collapse: collapse; width: 100%; }
+
+/* ---------------------------------------------------------------- navbar -- */
+.o-navbar {
+  height: var(--o-h-navbar);
+  background: var(--o-navbar);
+  color: var(--o-navbar-ink);
+  border-bottom: 1px solid var(--o-border);
+  display: flex; align-items: center; gap: var(--o-5);
+  padding: 0 var(--o-5);
+  position: sticky; top: 0; z-index: 30;
+}
+.o-navbar-brand { display: flex; align-items: center; gap: var(--o-4); font-weight: var(--o-fw-bold); font-size: var(--o-fs-lg); white-space: nowrap; }
+.o-navbar-brand .o-app-icon { width: 22px; height: 22px; border-radius: var(--o-r-sm); display: block; }
+.o-appmenus { display: flex; align-items: center; gap: var(--o-1); overflow-x: auto; scrollbar-width: none; }
+/* the collapsed menu: hidden until the strip no longer fits */
+.o-navburger { display: none; padding: var(--o-2) var(--o-4); border-radius: var(--o-r-md); font-size: var(--o-fs-lg); }
+.o-navburger:hover { background: var(--o-surface-3); }
+.o-navburger-wrap { display: none; }
+.o-appmenus::-webkit-scrollbar { display: none; }
+.o-appmenu {
+  padding: var(--o-2) var(--o-4);
+  font-size: var(--o-fs-md); color: var(--o-navbar-ink); white-space: nowrap;
+  border: 1px solid transparent; border-radius: var(--o-r-md);
+}
+.o-appmenu:hover { background: var(--o-surface-3); }
+/* an open menu keeps a visible outline — that is how Odoo shows which is open */
+.o-appmenu[aria-expanded="true"] { border-color: var(--o-accent); }
+.o-navbar-right { margin-left: auto; display: flex; align-items: center; gap: var(--o-5); white-space: nowrap; }
+.o-systray { display: flex; align-items: center; gap: var(--o-5); color: var(--o-navbar-ink-dim); }
+.o-systray-item { position: relative; display: inline-flex; }
+.o-systray-count {
+  position: absolute; top: -6px; right: -8px; min-width: 15px; height: 15px;
+  padding: 0 4px; border-radius: var(--o-r-pill);
+  background: var(--o-danger); color: #fff;
+  font-size: 9px; font-weight: var(--o-fw-bold);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.o-user { display: flex; align-items: center; gap: var(--o-4); }
+.o-avatar { width: 26px; height: 26px; border-radius: var(--o-r-sm); object-fit: cover; background: var(--o-surface-3); }
+.o-user-name { font-size: var(--o-fs-sm); line-height: 1.2; }
+.o-user-db {
+  font-size: var(--o-fs-xs); color: var(--o-warning);
+  background: var(--o-warning-bg); border-radius: var(--o-r-sm); padding: 0 var(--o-2);
+}
+.o-pill-alert {
+  background: var(--o-danger); color: #fff; border-radius: var(--o-r-md);
+  padding: var(--o-2) var(--o-4); font-size: var(--o-fs-sm); font-weight: var(--o-fw-semi);
+}
+
+/* dropdown shared by app menus, search panel, user menu, optional columns */
+.o-dropdown {
+  position: absolute; z-index: 40; min-width: 200px;
+  background: var(--o-surface); border: 1px solid var(--o-border);
+  border-radius: var(--o-r-md); box-shadow: var(--o-shadow-pop);
+  padding: var(--o-2) 0;
+}
+.o-dd-section {
+  padding: var(--o-3) var(--o-5) var(--o-1);
+  font-size: var(--o-fs-sm); font-weight: var(--o-fw-semi); color: var(--o-text-muted);
+}
+.o-dd-item {
+  display: flex; width: 100%; align-items: center; gap: var(--o-4);
+  padding: var(--o-3) var(--o-6); font-size: var(--o-fs-base); text-align: left;
+}
+.o-dd-item:hover { background: var(--o-surface-3); }
+.o-dd-sep { height: 1px; background: var(--o-border); margin: var(--o-2) 0; }
+
+/* --------------------------------------------------------- control panel -- */
+.o-cp {
+  min-height: var(--o-h-cp);
+  background: var(--o-surface);
+  border-bottom: 1px solid var(--o-border);
+  display: flex; align-items: center; gap: var(--o-5);
+  padding: var(--o-3) var(--o-gutter);
+  position: sticky; top: var(--o-h-navbar); z-index: 20;
+}
+/* Odoo puts the actions FIRST, then the view title: [New] [Upload] Invoices ⚙ */
+.o-cp-left { display: flex; align-items: center; gap: var(--o-5); min-width: 0; }
+.o-cp-titlewrap { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.o-breadcrumb { display: flex; align-items: center; gap: var(--o-3); font-size: var(--o-fs-sm); color: var(--o-text-muted); }
+.o-breadcrumb a { color: var(--o-accent); }
+.o-view-title { font-size: var(--o-fs-xl); font-weight: var(--o-fw-bold); letter-spacing: -.2px; display: flex; align-items: center; gap: var(--o-3); }
+.o-cog { color: var(--o-text-faint); font-size: var(--o-fs-base); }
+.o-cp-mid { flex: 1; display: flex; justify-content: center; min-width: 0; }
+.o-cp-right { display: flex; align-items: center; gap: var(--o-5); margin-left: auto; }
+
+.o-btn {
+  height: var(--o-h-control); padding: 0 var(--o-5); white-space: nowrap; flex: none;
+  border: 1px solid var(--o-border-strong); border-radius: var(--o-r-md);
+  background: var(--o-surface); color: var(--o-text);
+  font-size: var(--o-fs-md); display: inline-flex; align-items: center; gap: var(--o-3);
+}
+.o-btn:hover { background: var(--o-surface-3); }
+.o-btn-primary { background: var(--o-primary); border-color: var(--o-primary); color: var(--o-primary-ink); }
+.o-btn-primary:hover { background: var(--o-primary-hover); border-color: var(--o-primary-hover); }
+.o-btn-link { border-color: transparent; background: none; color: var(--o-accent); }
+.o-btn-sm { height: 26px; padding: 0 var(--o-4); font-size: var(--o-fs-sm); }
+
+/* search bar with facets */
+.o-search {
+  width: 100%; max-width: var(--o-w-search); height: var(--o-h-control);
+  display: flex; align-items: center; gap: var(--o-3);
+  background: var(--o-surface); border: 1px solid var(--o-border-strong);
+  border-radius: var(--o-r-md); padding: 0 var(--o-3);
+}
+.o-search:focus-within { border-color: var(--o-accent); box-shadow: 0 0 0 2px var(--o-focus); }
+.o-search-icon { color: var(--o-text-faint); display: inline-flex; }
+.o-search input { flex: 1; min-width: 40px; border: 0; outline: 0; background: none; color: var(--o-text); font-size: var(--o-fs-base); }
+.o-facet {
+  display: inline-flex; align-items: stretch; height: 22px;
+  border: 1px solid var(--o-primary); border-radius: var(--o-r-sm); overflow: hidden;
+  font-size: var(--o-fs-sm); white-space: nowrap;
+}
+.o-facet-k { background: var(--o-primary); color: var(--o-primary-ink); padding: 0 var(--o-3); display: flex; align-items: center; }
+.o-facet-v { padding: 0 var(--o-3); display: flex; align-items: center; color: var(--o-text); }
+.o-facet-x { padding: 0 var(--o-3); color: var(--o-text-muted); }
+.o-facet-x:hover { background: var(--o-surface-3); }
+
+.o-pager { display: flex; align-items: center; gap: var(--o-2); font-size: var(--o-fs-sm); color: var(--o-text-muted); white-space: nowrap; }
+.o-pager button { padding: var(--o-2) var(--o-3); border-radius: var(--o-r-sm); color: var(--o-text-muted); }
+.o-pager button:hover:not(:disabled) { background: var(--o-surface-3); }
+/* Odoo greys the arrow out on a single page rather than hiding it */
+.o-pager button:disabled { opacity: .35; cursor: default; }
+
+.o-switcher { display: inline-flex; border: 1px solid var(--o-border-strong); border-radius: var(--o-r-md); overflow: hidden; }
+.o-switcher button { width: 32px; height: var(--o-h-control); display: inline-flex; align-items: center; justify-content: center; color: var(--o-text-muted); border-right: 1px solid var(--o-border); }
+.o-switcher button:last-child { border-right: 0; }
+.o-switcher button:hover { background: var(--o-surface-3); }
+.o-switcher button[aria-pressed="true"] { color: var(--o-accent); box-shadow: inset 0 0 0 1px var(--o-accent); }
+
+/* ------------------------------------------------------------- content ---- */
+.o-content { padding: var(--o-gutter); min-width: 0; }
+.o-list-scroll { max-width: 100%; }
+/* Odoo's form sheet fills the window; it is not a centred card. Capping it
+   and centring it is what makes a mockup read as "zoomed in". */
+.o-sheet-wrap { padding: var(--o-5) var(--o-gutter) var(--o-8); }
+.o-sheet {
+  width: 100%; background: var(--o-surface);
+  border: 1px solid var(--o-border); border-radius: var(--o-r-md); box-shadow: var(--o-shadow-sm);
+}
+
+/* ------------------------------------------------------------- list view -- */
+.o-list { background: var(--o-surface); border: 1px solid var(--o-border); border-radius: var(--o-r-md); overflow: hidden; }
+.o-list-scroll { overflow-x: auto; }
+.o-list table { font-size: var(--o-fs-base); }
+.o-list thead th {
+  background: var(--o-surface-2); color: var(--o-text);
+  font-weight: var(--o-fw-semi); text-align: left;
+  padding: var(--o-pad-cell); white-space: nowrap;
+  border-bottom: 1px solid var(--o-border);
+  position: sticky; top: 0; z-index: 1;
+}
+.o-list th.o-num, .o-list td.o-num { text-align: right; font-variant-numeric: tabular-nums; }
+/* Odoo keeps a row on one line and lets the TABLE scroll sideways inside
+   .o-list-scroll — it never squeezes cells into three wrapped lines. */
+.o-list table { min-width: max-content; }
+.o-list thead th, .o-list tbody td { white-space: nowrap; }
+.o-list tbody td {
+  padding: var(--o-pad-cell); border-bottom: 1px solid var(--o-border);
+  height: var(--o-h-row); max-width: 320px; overflow: hidden; text-overflow: ellipsis;
+}
+.o-list tbody tr:hover td { background: var(--o-surface-3); }
+.o-list tbody tr.o-clickable { cursor: pointer; }
+.o-list tbody tr.o-group td { background: var(--o-surface-2); font-weight: var(--o-fw-semi); }
+.o-list tfoot td { padding: var(--o-pad-cell); font-weight: var(--o-fw-bold); background: var(--o-surface); border-top: 1px solid var(--o-border-strong); }
+.o-list .o-cell-check, .o-list .o-cell-handle { width: 34px; color: var(--o-text-faint); }
+.o-optional-toggle { width: 34px; text-align: right; color: var(--o-text-muted); }
+.o-record-link { color: var(--o-text); font-weight: var(--o-fw-semi); }
+.o-list tbody tr:hover .o-record-link { color: var(--o-accent); }
+
+/* ------------------------------------------------------------ kanban ------ */
+.o-kanban { display: flex; gap: var(--o-5); align-items: flex-start; overflow-x: auto; padding-bottom: var(--o-4); }
+.o-kanban-col { min-width: 260px; flex: 1; }
+.o-kanban-head { display: flex; align-items: center; gap: var(--o-4); padding: var(--o-3) var(--o-2); font-weight: var(--o-fw-semi); }
+.o-kanban-count { margin-left: auto; color: var(--o-text-muted); font-size: var(--o-fs-sm); }
+.o-kanban-bar { height: 4px; border-radius: var(--o-r-pill); background: var(--o-surface-3); margin-bottom: var(--o-4); }
+.o-kanban-card {
+  background: var(--o-surface); border: 1px solid var(--o-border); border-radius: var(--o-r-md);
+  box-shadow: var(--o-shadow-sm); padding: var(--o-5); margin-bottom: var(--o-5);
+}
+.o-kanban-card:hover { box-shadow: var(--o-shadow-md); }
+.o-kanban-title { font-weight: var(--o-fw-bold); margin-bottom: var(--o-3); }
+.o-kanban-line { display: flex; align-items: center; gap: var(--o-3); color: var(--o-text-muted); font-size: var(--o-fs-sm); margin-top: var(--o-2); }
+
+/* -------------------------------------------------------------- pills ----- */
+.o-tag, .o-badge {
+  display: inline-flex; align-items: center; gap: var(--o-2);
+  padding: 1px var(--o-4); border-radius: var(--o-r-pill);
+  font-size: var(--o-fs-sm); font-weight: var(--o-fw-medium); white-space: nowrap;
+}
+.o-badge-success { background: var(--o-success-bg); color: var(--o-success); }
+.o-badge-warning { background: var(--o-warning-bg); color: var(--o-warning); }
+.o-badge-danger  { background: var(--o-danger-bg);  color: var(--o-danger); }
+.o-badge-info    { background: var(--o-info-bg);    color: var(--o-info); }
+.o-badge-neutral { background: var(--o-neutral-bg); color: var(--o-neutral); }
+.o-tag-1 { background: var(--o-tag-1); color: var(--o-tag-1-ink); }
+.o-tag-2 { background: var(--o-tag-2); color: var(--o-tag-2-ink); }
+.o-tag-3 { background: var(--o-tag-3); color: var(--o-tag-3-ink); }
+.o-tag-4 { background: var(--o-tag-4); color: var(--o-tag-4-ink); }
+.o-tag-5 { background: var(--o-tag-5); color: var(--o-tag-5-ink); }
+.o-tag-6 { background: var(--o-tag-6); color: var(--o-tag-6-ink); }
+.o-date-today   { color: var(--o-date-today);   font-weight: var(--o-fw-medium); }
+.o-date-overdue { color: var(--o-date-overdue); font-weight: var(--o-fw-medium); }
+
+/* --------------------------------------------------------------- form ----- */
+.o-statusbar { display: flex; align-items: center; gap: var(--o-5); padding: var(--o-4) var(--o-6); border-bottom: 1px solid var(--o-border); background: var(--o-surface); }
+.o-statusbar-actions { display: flex; gap: var(--o-4); flex-wrap: wrap; }
+
+/* Stages are CHEVRONS, not a pill strip: each segment is notched into the next,
+   the current one is outlined in teal, later ones are muted. (WH/IN/00024 and
+   the RFQ form, 17 Sep.) */
+.o-stages { margin-left: auto; display: inline-flex; align-items: stretch; }
+.o-stage {
+  position: relative;
+  padding: var(--o-3) var(--o-7) var(--o-3) var(--o-8);
+  font-size: var(--o-fs-md); color: var(--o-text-muted);
+  background: var(--o-surface-3);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%, 10px 50%);
+  margin-right: -6px;
+}
+.o-stage:first-child { padding-left: var(--o-6); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%); border-radius: var(--o-r-md) 0 0 var(--o-r-md); }
+.o-stage:last-child  { margin-right: 0; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10px 50%); border-radius: 0 var(--o-r-md) var(--o-r-md) 0; }
+.o-stage.o-done { color: var(--o-text); }
+.o-stage[aria-current="step"] {
+  background: var(--o-surface); color: var(--o-accent); font-weight: var(--o-fw-semi);
+  box-shadow: inset 0 0 0 1px var(--o-accent);
+}
+
+/* unsaved-record indicator beside the breadcrumb: cloud save + discard */
+.o-dirty { display: inline-flex; gap: var(--o-3); color: var(--o-text-muted); }
+.o-dirty button:hover { color: var(--o-accent); }
+
+/* favourite star to the left of the record title */
+.o-star { font-size: 22px; color: var(--o-text-faint); line-height: 1; }
+.o-star[aria-pressed="true"] { color: var(--o-warning); }
+
+/* a field label may carry a help marker */
+.o-help { color: var(--o-accent); font-size: var(--o-fs-xs); vertical-align: super; cursor: help; }
+
+/* line table inside a notebook: add-row links, row actions, totals block */
+.o-line-actions { display: flex; gap: var(--o-5); padding: var(--o-4) var(--o-5); border-bottom: 1px solid var(--o-border); }
+.o-line-actions a { font-size: var(--o-fs-base); }
+.o-row-action { color: var(--o-text-faint); }
+.o-row-action:hover { color: var(--o-danger); }
+.o-totals { display: flex; justify-content: flex-end; padding: var(--o-5) var(--o-6); }
+.o-totals dl { display: grid; grid-template-columns: auto auto; gap: var(--o-3) var(--o-7); margin: 0; min-width: 260px; }
+.o-totals dt { color: var(--o-text-muted); }
+.o-totals dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.o-totals .o-grand dt, .o-totals .o-grand dd { font-weight: var(--o-fw-bold); font-size: var(--o-fs-lg); }
+
+/* tax toggle sits at the right edge of the notebook tab row */
+.o-tabs-right { margin-left: auto; display: flex; align-items: center; gap: var(--o-2); padding-right: var(--o-6); }
+
+.o-buttonbox { display: flex; gap: var(--o-5); padding: var(--o-5) var(--o-6) 0; flex-wrap: wrap; }
+.o-statbutton {
+  border: 1px solid var(--o-border); border-radius: var(--o-r-md);
+  padding: var(--o-4) var(--o-5); min-width: 120px; text-align: left; background: var(--o-surface);
+}
+.o-statbutton:hover { background: var(--o-surface-3); }
+.o-statbutton b { display: block; font-size: var(--o-fs-lg); color: var(--o-accent); }
+.o-statbutton span { font-size: var(--o-fs-sm); color: var(--o-text-muted); }
+
+.o-record-title { padding: var(--o-6) var(--o-6) var(--o-2); }
+.o-record-title .o-label { font-size: var(--o-fs-base); color: var(--o-text); font-weight: var(--o-fw-semi); }
+.o-record-title h1 { margin: var(--o-1) 0 0; font-size: 30px; font-weight: var(--o-fw-bold); letter-spacing: -.5px; }
+
+.o-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--o-9); padding: var(--o-5) var(--o-6) var(--o-6); }
+@media (max-width: 860px) { .o-groups { grid-template-columns: 1fr; } }
+.o-group h4 { margin: var(--o-5) 0 var(--o-3); font-size: var(--o-fs-base); font-weight: var(--o-fw-semi); border-bottom: 1px solid var(--o-border); padding-bottom: var(--o-2); }
+/* Odoo field rows are tight — roughly 26px — and the label is dark, not grey */
+.o-field { display: grid; grid-template-columns: 150px 1fr; gap: var(--o-5); align-items: baseline; padding: var(--o-2) 0; min-height: 26px; }
+.o-field > label { color: var(--o-text); font-size: var(--o-fs-base); }
+.o-field.o-required > label::after { content: " *"; color: var(--o-danger); }
+.o-input, .o-select {
+  width: 100%; height: var(--o-h-control); padding: 0 var(--o-4);
+  border: 1px solid var(--o-border-strong); border-radius: var(--o-r-md);
+  background: var(--o-surface); color: var(--o-text); font-size: var(--o-fs-base);
+}
+.o-input:focus, .o-select:focus { outline: 0; border-color: var(--o-accent); box-shadow: 0 0 0 2px var(--o-focus); }
+.o-readonly { color: var(--o-text); }
+.o-m2o { color: var(--o-accent); border-bottom: 1px dotted var(--o-accent); cursor: pointer; }
+.o-tech { font-family: var(--o-font-mono); font-size: var(--o-fs-xs); color: var(--o-text-faint); }
+
+.o-notebook { border-top: 1px solid var(--o-border); margin-top: var(--o-6); }
+.o-tabs { display: flex; gap: var(--o-2); padding: 0 var(--o-6); border-bottom: 1px solid var(--o-border); overflow-x: auto; }
+.o-tab { padding: var(--o-4) var(--o-5); font-size: var(--o-fs-md); color: var(--o-text-muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+.o-tab:hover { color: var(--o-text); }
+.o-tab[aria-selected="true"] { color: var(--o-primary); border-bottom-color: var(--o-primary); font-weight: var(--o-fw-semi); }
+.o-tabpane { padding: var(--o-6); }
+.o-tabpane[hidden] { display: none; }
+
+/* chatter: Send message is the primary action, tools sit far right, and the
+   thread is split by a date separator */
+/* the demo-guide pill and the tour launcher are fixed to the bottom corners,
+   so the last block on the page keeps clear of them */
+.o-chatter {
+  border-top: 1px solid var(--o-border); background: var(--o-surface-2);
+  padding: var(--o-6) var(--o-6) calc(var(--o-6) + 40px);
+}
+.o-content { padding-bottom: calc(var(--o-7) + 40px); }
+.o-chatter-bar { display: flex; align-items: center; gap: var(--o-4); margin-bottom: var(--o-6); }
+.o-chatter-tools { margin-left: auto; display: flex; align-items: center; gap: var(--o-5); color: var(--o-text-muted); }
+/* a form in edit mode: the widget fills the value column, a missing required
+   field is outlined red and its label goes red with it */
+.o-field-edit { display: flex; align-items: center; gap: var(--o-4); min-width: 0; }
+.o-field-edit .o-input, .o-field-edit .o-select { max-width: 320px; }
+.o-field-edit .o-input-num { max-width: 140px; text-align: right; }
+.o-field-invalid > label { color: var(--o-danger); }
+
+/* editable line table: tighter cells, a bin at the end of the row */
+.o-lines .o-list { margin-bottom: var(--o-3); }
+.o-lines td { padding: var(--o-2) var(--o-4); }
+.o-lines .o-input, .o-lines .o-select { height: 26px; max-width: none; }
+.o-lines .o-input-num { max-width: 110px; }
+.o-line-del { color: var(--o-text-faint); padding: 0 var(--o-2); }
+.o-line-del:hover { color: var(--o-danger); }
+
+/* wizard: Odoo asks for a value in a small form, never in a browser prompt */
+.o-wizard { width: min(520px, calc(100vw - 2 * var(--o-6))); }
+.o-wizard .o-field { grid-template-columns: 170px 1fr; align-items: center; padding: var(--o-3) 0; }
+.o-wizard .o-input, .o-wizard .o-select { width: 100%; }
+.o-wizard textarea.o-input { height: auto; padding: var(--o-3) var(--o-4); line-height: var(--o-lh); }
+/* Odoo marks a missing required field red and tints the input itself */
+.o-invalid, .o-invalid:hover {
+  border-color: var(--o-danger) !important;
+  background: var(--o-danger-bg);
+  color: var(--o-danger);
+}
+.o-invalid::placeholder { color: var(--o-danger); opacity: .75; }
+.o-invalid:focus { box-shadow: 0 0 0 2px var(--o-danger-bg); }
+.o-wizard-error { color: var(--o-danger); font-size: var(--o-fs-sm); margin: var(--o-4) 0 0; }
+.o-btn-danger { background: var(--o-danger); border-color: var(--o-danger); color: #fff; }
+
+.o-daysep { display: flex; align-items: center; gap: var(--o-5); color: var(--o-text-faint); font-size: var(--o-fs-sm); margin: var(--o-5) 0; }
+.o-daysep::before, .o-daysep::after { content: ""; flex: 1; height: 1px; background: var(--o-border); }
+.o-avatar-initial { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: var(--o-fs-sm); font-weight: var(--o-fw-semi); }
+
+/* Selection bar — Odoo swaps the search for this once rows are ticked */
+.o-selbar {
+  display: flex; align-items: center; gap: var(--o-4);
+  background: var(--o-accent-soft); border: 1px solid var(--o-accent);
+  border-radius: var(--o-r-md); padding: var(--o-2) var(--o-3); flex-wrap: wrap;
+}
+.o-sel-count { padding: 0 var(--o-3); color: var(--o-text); white-space: nowrap; }
+.o-sel-all {
+  background: var(--o-accent); color: var(--o-text-on-accent);
+  border-radius: var(--o-r-sm); padding: var(--o-2) var(--o-4);
+  font-size: var(--o-fs-sm); font-weight: var(--o-fw-medium); white-space: nowrap;
+}
+.o-sel-all:hover { background: var(--o-accent-hover); }
+.o-sel-x { padding: 0 var(--o-3); color: var(--o-text-muted); }
+.o-sel-actions { display: flex; gap: var(--o-3); padding-left: var(--o-3); border-left: 1px solid var(--o-accent); }
+.o-list tbody tr[aria-selected="true"] td { background: var(--o-accent-soft); }
+.o-list tbody tr[aria-selected="true"]:hover td { background: var(--o-accent-soft); }
+
+/* Demo guide — a prototype affordance, not an Odoo component */
+.o-guide-btn {
+  /* bottom-left: the guided-tour launcher owns the bottom-right corner */
+  position: fixed; left: var(--o-6); bottom: var(--o-6); z-index: 65;
+  background: var(--o-primary); color: var(--o-primary-ink);
+  border-radius: var(--o-r-pill); padding: var(--o-4) var(--o-6);
+  box-shadow: var(--o-shadow-pop); font-weight: var(--o-fw-semi);
+}
+.o-guide {
+  position: fixed; left: var(--o-6); bottom: var(--o-6); z-index: 66; width: 360px;
+  max-height: 52vh; overflow-y: auto;
+  background: var(--o-surface); border: 1px solid var(--o-border);
+  border-radius: var(--o-r-lg); box-shadow: var(--o-shadow-pop);
+}
+.o-guide-head {
+  display: flex; align-items: center; gap: var(--o-4);
+  padding: var(--o-5) var(--o-6); border-bottom: 1px solid var(--o-border);
+  font-weight: var(--o-fw-semi);
+}
+.o-guide-body { padding: var(--o-5) var(--o-6) var(--o-6); }
+.o-guide-step { display: flex; gap: var(--o-4); padding: var(--o-4) 0; border-top: 1px solid var(--o-border); }
+.o-guide-step:first-of-type { border-top: 0; }
+.o-guide-n {
+  flex: none; width: 22px; height: 22px; border-radius: var(--o-r-pill);
+  background: var(--o-accent-soft); color: var(--o-accent);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: var(--o-fs-sm); font-weight: var(--o-fw-bold);
+}
+@media (max-width: 560px) { .o-guide { width: auto; left: var(--o-5); right: var(--o-5); } }
+
+/* Search panel: three columns — Filters, Group By, Favorites — each with its
+   own icon colour, and rules between blocks inside a column. */
+.o-searchpanel { display: grid; grid-template-columns: repeat(3, minmax(210px, 1fr)); gap: 0; min-width: 660px; }
+/* the pop-over hangs centred under the searchbar and never runs off screen */
+.o-searchpanel-pop { max-width: calc(100vw - 2 * var(--o-5)); overflow-x: auto; }
+@media (max-width: 720px) {
+  .o-searchpanel { grid-template-columns: 1fr; min-width: 260px; }
+}
+.o-searchpanel > div { padding: var(--o-5) 0; border-right: 1px solid var(--o-border); }
+.o-searchpanel > div:last-child { border-right: 0; }
+.o-sp-head {
+  display: flex; align-items: center; gap: var(--o-3);
+  padding: 0 var(--o-6) var(--o-4); font-weight: var(--o-fw-semi); font-size: var(--o-fs-md);
+}
+.o-sp-filter   > span:first-child { color: var(--o-primary); }
+.o-sp-group    > span:first-child { color: var(--o-accent); }
+.o-sp-favorite > span:first-child { color: var(--o-warning); }
+.o-searchpanel .o-dd-item { padding: var(--o-3) var(--o-6); }
+.o-searchpanel .o-dd-item[aria-pressed="true"] { background: var(--o-surface-3); font-weight: var(--o-fw-medium); }
+.o-searchpanel .o-dd-sep { margin: var(--o-3) var(--o-6); }
+@media (max-width: 760px) {
+  .o-searchpanel { grid-template-columns: 1fr; min-width: 0; }
+  .o-searchpanel > div { border-right: 0; border-bottom: 1px solid var(--o-border); }
+}
+.o-message { display: flex; gap: var(--o-5); padding: var(--o-4) 0; border-top: 1px solid var(--o-border); }
+.o-message:first-of-type { border-top: 0; }
+.o-message .o-avatar { width: 32px; height: 32px; border-radius: var(--o-r-pill); }
+.o-message-meta { font-size: var(--o-fs-sm); color: var(--o-text-muted); }
+
+/* -------------------------------------------------------------- dialog ---- */
+.o-modal-backdrop { position: fixed; inset: 0; background: var(--o-overlay); display: flex; align-items: flex-start; justify-content: center; padding: 8vh var(--o-5); z-index: 50; }
+.o-modal { width: 100%; max-width: 720px; background: var(--o-surface); border-radius: var(--o-r-lg); box-shadow: var(--o-shadow-pop); overflow: hidden; }
+.o-modal-head { display: flex; align-items: center; gap: var(--o-5); padding: var(--o-5) var(--o-6); border-bottom: 1px solid var(--o-border); }
+.o-modal-title { font-size: var(--o-fs-lg); font-weight: var(--o-fw-semi); }
+.o-modal-body { padding: var(--o-6); }
+.o-modal-foot { display: flex; gap: var(--o-4); padding: var(--o-5) var(--o-6); border-top: 1px solid var(--o-border); background: var(--o-surface-2); }
+
+/* --------------------------------------------------------------- cards ---- */
+.o-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--o-gutter); }
+.o-card { background: var(--o-surface); border: 1px solid var(--o-border); border-left: 3px solid var(--o-primary); border-radius: var(--o-r-md); padding: var(--o-pad-card); box-shadow: var(--o-shadow-sm); }
+.o-card.o-card-accent { border-left-color: var(--o-accent); }
+.o-card h3 { margin: 0 0 var(--o-5); font-size: var(--o-fs-lg); font-weight: var(--o-fw-bold); color: var(--o-accent); }
+.o-card-figure { display: flex; justify-content: space-between; gap: var(--o-5); padding: var(--o-2) 0; }
+.o-card-figure a { color: var(--o-accent); }
+.o-card-figure .o-num { font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------- pivot and graph -- */
+.o-pivot th, .o-pivot td { border: 1px solid var(--o-border); padding: var(--o-3) var(--o-5); font-size: var(--o-fs-base); }
+.o-pivot thead th { background: var(--o-surface-2); font-weight: var(--o-fw-semi); text-align: center; }
+.o-pivot tbody th { text-align: left; font-weight: var(--o-fw-normal); }
+.o-pivot td { text-align: right; font-variant-numeric: tabular-nums; }
+.o-pivot .o-total, .o-pivot tfoot td, .o-pivot tfoot th { font-weight: var(--o-fw-bold); background: var(--o-surface-2); }
+.o-expander { color: var(--o-text-muted); margin-right: var(--o-3); }
+.o-chart-toolbar { display: flex; align-items: center; gap: var(--o-4); padding-bottom: var(--o-5); flex-wrap: wrap; }
+.o-chart { background: var(--o-surface); border: 1px solid var(--o-border); border-radius: var(--o-r-md); padding: var(--o-6); }
+.o-bar-track { background: var(--o-surface-3); border-radius: var(--o-r-sm); height: 10px; overflow: hidden; }
+.o-bar-fill { height: 100%; background: var(--o-chart-1); }
+
+/* --------------------------------------------------------------- gantt ---- */
+.o-gantt { display: grid; grid-template-columns: 220px 1fr; border: 1px solid var(--o-border); border-radius: var(--o-r-md); overflow: hidden; background: var(--o-surface); }
+.o-gantt-rail { border-right: 1px solid var(--o-border); background: var(--o-surface-2); }
+.o-gantt-rail div, .o-gantt-row { height: 34px; display: flex; align-items: center; padding: 0 var(--o-5); border-bottom: 1px solid var(--o-border); font-size: var(--o-fs-sm); }
+.o-gantt-block { height: 22px; border-radius: var(--o-r-sm); font-size: var(--o-fs-xs); display: inline-flex; align-items: center; padding: 0 var(--o-3); color: var(--o-tag-2-ink); background: var(--o-tag-2); }
+
+/* ----------------------------------------------------------- apps home ---- */
+.o-home { min-height: 100vh; background: var(--o-home-bg); padding: var(--o-9) var(--o-gutter); }
+.o-home-grid { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--o-8) var(--o-6); }
+@media (max-width: 900px) { .o-home-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 560px) { .o-home-grid { grid-template-columns: repeat(3, 1fr); } }
+.o-app { display: flex; flex-direction: column; align-items: center; gap: var(--o-4); color: var(--o-text); }
+.o-app-tile {
+  width: 76px; height: 76px; border-radius: var(--o-r-lg);
+  background: var(--o-home-tile); box-shadow: var(--o-shadow-sm);
+  display: flex; align-items: center; justify-content: center; font-size: 30px;
+}
+.o-app:hover .o-app-tile { box-shadow: var(--o-shadow-md); transform: translateY(-1px); }
+.o-app-name { font-size: var(--o-fs-md); text-align: center; }
+
+/* ---------------------------------------------------------- responsive ---- */
+/* Odoo folds the control panel onto a second line before it lets anything
+   overflow, and collapses the app menus on a phone. Nothing scrolls sideways
+   except a table, inside its own .o-list-scroll. */
+@media (max-width: 900px) {
+  .o-cp { flex-wrap: wrap; row-gap: var(--o-4); }
+  .o-cp-mid { order: 3; flex-basis: 100%; justify-content: flex-start; }
+  .o-search { max-width: none; }
+  .o-cp-right { margin-left: auto; }
+}
+@media (max-width: 1100px) { .o-navbar-right > .o-hint { display: none; } }
+@media (max-width: 900px) { .o-user-name, .o-user-db { display: none; } }
+@media (max-width: 760px) {
+  .o-navbar { gap: var(--o-4); padding: 0 var(--o-4); }
+  /* the right group must be allowed to shrink, or it pushes the page wider
+     than the phone it is being read on */
+  .o-navbar-right { min-width: 0; }
+  .o-pill-alert { display: none; }
+  .o-appmenus { display: none; }
+  .o-navburger, .o-navburger-wrap { display: inline-flex; }
+  .o-navbar-right > .o-hint { display: none; }
+  .o-user-name, .o-user-db { display: none; }
+  .o-view-title { font-size: var(--o-fs-lg); }
+  .o-content, .o-sheet-wrap { padding: var(--o-5); }
+  .o-groups { padding: var(--o-5); }
+  .o-field { grid-template-columns: 1fr; gap: var(--o-2); }
+  .o-field > label { font-size: var(--o-fs-sm); }
+}
+
+/* --------------------------------------------------------------- misc ----- */
+.o-empty { padding: var(--o-9); text-align: center; color: var(--o-text-muted); }
+.o-hint { font-size: var(--o-fs-sm); color: var(--o-text-muted); }
+/* Odoo raises a notification at the top right, clear of the bottom corners
+   where the guided-tour launcher and the demo guide sit */
+.o-toast {
+  position: fixed; right: var(--o-6); top: calc(var(--o-h-navbar) + var(--o-5)); z-index: 60;
+  min-width: 280px; max-width: 420px; background: var(--o-surface);
+  border: 1px solid var(--o-border); border-left: 3px solid var(--o-accent);
+  border-radius: var(--o-r-md); box-shadow: var(--o-shadow-pop); padding: var(--o-5);
+}
+.o-toast.o-toast-danger { border-left-color: var(--o-danger); }
+.o-toast-title { font-weight: var(--o-fw-semi); margin-bottom: var(--o-2); }
+
+/* ======================================================= dashboards ======
+   The Dashboards app: an index of dashboards down the left, a date range in
+   the control panel, then blocks — KPI tiles, charts, ranked tables, a
+   treemap, ratio tables. Nothing on a dashboard is editable; a row drills
+   into the list it came from. */
+
+.o-dashpage { display: grid; grid-template-columns: var(--o-w-dashnav, 232px) minmax(0, 1fr); min-height: 0; }
+/* a grid child defaults to min-content width, which lets a wide chart or a
+   treemap push the column past the viewport — this is what keeps them in */
+.o-dashpage > * { min-width: 0; }
+
+/* ---- the dashboard index ------------------------------------------------ */
+.o-dashnav {
+  border-right: 1px solid var(--o-border); background: var(--o-surface);
+  padding: var(--o-5) var(--o-4); overflow-y: auto;
+}
+.o-dashnav-top { display: flex; justify-content: flex-end; margin-bottom: var(--o-3); }
+.o-dashnav-collapse {
+  border: 0; background: none; cursor: pointer; color: var(--o-text-faint);
+  font-size: var(--o-fs-md); line-height: 1; padding: var(--o-2);
+}
+.o-dashnav-group {
+  font-size: var(--o-fs-xs); font-weight: var(--o-fw-semi); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--o-text-muted);
+  padding: var(--o-5) var(--o-4) var(--o-3);
+}
+.o-dashnav-item {
+  display: block; width: 100%; text-align: left; border: 0; background: none;
+  cursor: pointer; padding: var(--o-3) var(--o-4); border-radius: var(--o-r-sm);
+  color: var(--o-text); font-size: var(--o-fs-md); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.o-dashnav-item:hover { background: var(--o-surface-3); }
+.o-dashnav-item.o-active { background: var(--o-accent-soft); color: var(--o-accent); font-weight: var(--o-fw-semi); }
+
+/* ---- the period control: a pill, and a step either side ----------------- */
+.o-daterange { display: inline-flex; align-items: center; gap: var(--o-2); }
+.o-daterange-pill {
+  display: inline-flex; align-items: center; gap: var(--o-3);
+  background: var(--o-surface-3); border: 0; border-radius: var(--o-r-sm);
+  padding: var(--o-3) var(--o-5); font-size: var(--o-fs-md); cursor: pointer;
+}
+.o-daterange-step {
+  border: 1px solid var(--o-border); background: var(--o-surface); cursor: pointer;
+  border-radius: var(--o-r-sm); width: 28px; height: 28px; line-height: 1;
+  color: var(--o-text-muted);
+}
+
+/* ---- KPI tiles ---------------------------------------------------------- */
+.o-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--o-5); }
+/* the value is nowrap, so without this the tile refuses to shrink and the
+   row overflows on a narrow window */
+.o-kpi { background: var(--o-kpi-1); border-radius: var(--o-r-md); min-width: 0;
+         padding: var(--o-5) var(--o-6) var(--o-6); }
+.o-kpi-money { background: var(--o-kpi-2); }
+.o-kpi-best  { background: var(--o-kpi-3); }
+.o-kpi-stock { background: var(--o-kpi-4); }
+.o-kpi-label { font-size: var(--o-fs-md); font-weight: var(--o-fw-semi); color: var(--o-kpi-ink); }
+.o-kpi-value {
+  font-size: 2.4rem; line-height: 1.15; font-weight: var(--o-fw-bold);
+  color: var(--o-kpi-ink); font-variant-numeric: tabular-nums;
+  margin: var(--o-3) 0 var(--o-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.o-kpi-delta { font-size: var(--o-fs-md); color: var(--o-delta-flat); }
+.o-kpi-delta .o-up   { color: var(--o-delta-up);   font-weight: var(--o-fw-semi); }
+.o-kpi-delta .o-down { color: var(--o-delta-down); font-weight: var(--o-fw-semi); }
+
+/* ---- a block: teal heading, a rule under it, tools at the right --------- */
+.o-dash-block { margin-top: var(--o-8); }
+.o-dash-head {
+  display: flex; align-items: baseline; gap: var(--o-5);
+  border-bottom: 1px solid var(--o-border); padding-bottom: var(--o-3); margin-bottom: var(--o-5);
+}
+.o-dash-title { font-size: var(--o-fs-xl); font-weight: var(--o-fw-bold); color: var(--o-accent); margin: 0; }
+.o-dash-tools { margin-left: auto; display: flex; gap: var(--o-5); }
+.o-dash-tool {
+  border: 0; background: none; cursor: pointer; color: var(--o-text-muted);
+  font-size: var(--o-fs-md); padding: 0;
+}
+.o-dash-tool.o-active { color: var(--o-accent); font-weight: var(--o-fw-semi); }
+.o-dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--o-7); }
+@media (max-width: 980px) { .o-dash-grid { grid-template-columns: 1fr; } }
+
+/* ---- ranked table: the label cell carries its own bar ------------------- */
+.o-rank { width: 100%; border-collapse: collapse; }
+.o-rank th {
+  text-align: left; font-size: var(--o-fs-sm); font-weight: var(--o-fw-semi);
+  color: var(--o-text); border-bottom: 1px solid var(--o-border); padding: var(--o-3) var(--o-4);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.o-rank td { padding: var(--o-3) var(--o-4); font-size: var(--o-fs-md); border-bottom: 1px solid var(--o-border); }
+.o-rank th.o-num, .o-rank td.o-num { text-align: right; font-variant-numeric: tabular-nums; }
+.o-rank-label { position: relative; }
+.o-rank-bar {
+  position: absolute; inset: 2px auto 2px 0; border-radius: var(--o-r-sm);
+  background: var(--o-rankbar-warm); z-index: 0;
+}
+.o-rank-cool .o-rank-bar { background: var(--o-rankbar-cool); }
+.o-rank-label > span { position: relative; z-index: 1; }
+
+/* ---- treemap: sized by value, one label on the largest tile ------------- */
+.o-treemap { display: flex; gap: 2px; height: 260px; }
+.o-treemap-col { display: flex; flex-direction: column; gap: 2px; }
+.o-treemap-tile { position: relative; overflow: hidden; }
+.o-treemap-tile > span {
+  position: absolute; left: var(--o-4); bottom: var(--o-4); color: #fff;
+  font-size: var(--o-fs-sm); line-height: 1.3;
+}
+
+/* ---- ratio table: this period, last period, delta ----------------------- */
+/* Odoo clips a long balance-sheet figure at the column edge rather than
+   wrapping it — a wrapped money row reads as broken, a clipped one does not */
+.o-ratio { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.o-ratio th, .o-ratio td { white-space: nowrap; overflow: hidden; }
+.o-ratio th {
+  font-size: var(--o-fs-md); font-weight: var(--o-fw-bold); text-align: right;
+  padding: var(--o-3) var(--o-4); border-bottom: 1px solid var(--o-border-strong);
+}
+.o-ratio th:first-child { text-align: left; }
+.o-ratio td { padding: var(--o-3) var(--o-4); font-size: var(--o-fs-md); text-align: right; font-variant-numeric: tabular-nums; }
+.o-ratio td:first-child { text-align: left; }
+.o-ratio tr + tr td { border-top: 1px solid var(--o-border); }
+.o-ratio .o-delta-good { color: var(--o-delta-up); font-weight: var(--o-fw-bold); }
+.o-ratio .o-delta-bad  { color: var(--o-delta-down); font-weight: var(--o-fw-bold); }
+
+@media (max-width: 900px) {
+  .o-dashpage { grid-template-columns: 1fr; }
+  .o-dashnav { display: none; }
+  .o-kpi-value { font-size: 1.9rem; }
+}
+
+/* ============================================================ POS =========
+   Point of Sale, from an Odoo 20 demo (28 Sep 2026): the customer-facing
+   self-order screens, the website payment page, the preset picker in the
+   register, the kitchen display and the printed receipt. Each has its own
+   ground — none of them uses the backend navbar or control panel. */
+
+/* ---- self-order: kiosk / mobile ---------------------------------------- */
+.o-so {
+  background: var(--o-so-bg); color: var(--o-text); font-family: var(--o-font);
+  min-height: 100%; display: flex; flex-direction: column;
+}
+.o-so-wrap { width: 100%; max-width: 880px; margin: 0 auto; padding: var(--o-8) var(--o-6); flex: 1; }
+.o-so-title { font-size: 2rem; font-weight: var(--o-fw-bold); margin: 0 0 var(--o-6); }
+.o-so-title.o-center { text-align: center; }
+.o-so-spacer { flex: 1; }
+
+/* big touch buttons: the one action is a plum gradient, the rest quiet grey */
+.o-so-btn {
+  height: var(--o-so-h-btn); padding: 0 var(--o-8); border: 0; border-radius: var(--o-so-r);
+  font: var(--o-fw-medium) 1.15rem var(--o-font); cursor: pointer;
+  background: var(--o-so-btn-2); color: var(--o-so-btn-2-ink);
+}
+.o-so-btn-primary { background: var(--o-so-grad); color: var(--o-primary-ink); }
+.o-so-btn-block { width: 100%; }
+.o-so-btn-white { background: var(--o-so-surface); }
+
+/* a white strip pinned to the bottom: Back left, total + action right */
+.o-so-bottombar {
+  position: sticky; bottom: 0; background: var(--o-so-surface);
+  border-top: 1px solid var(--o-border); box-shadow: var(--o-shadow-md);
+  padding: var(--o-4) var(--o-6) calc(var(--o-4) + env(safe-area-inset-bottom, 0px));
+}
+.o-so-bottombar-in { max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: var(--o-6); }
+.o-so-selection { text-align: center; line-height: 1.2; }
+.o-so-selection small { display: block; color: var(--o-text-muted); font-weight: var(--o-fw-semi); font-size: var(--o-fs-md); }
+.o-so-selection b { color: var(--o-so-price); font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+
+/* landing: one full-bleed photo, two buttons side by side at its foot */
+.o-so-hero {
+  position: relative; min-height: 70vh; background: var(--o-so-hero-ph) center / cover no-repeat;
+  display: flex; align-items: flex-end;
+}
+.o-so-hero-actions {
+  width: 100%; max-width: 1400px; margin: 0 auto; padding: var(--o-6) var(--o-8);
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--o-6);
+}
+.o-so-hero-actions .o-so-btn { height: 72px; font-size: 1.4rem; }
+
+/* preset chooser: "Where do you want to eat?" — photo cards, label under */
+.o-so-presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--o-6); }
+.o-so-preset {
+  background: var(--o-so-surface); border: 0; border-radius: var(--o-so-r); overflow: hidden;
+  box-shadow: var(--o-shadow-md); cursor: pointer; padding: 0; text-align: center; color: var(--o-text);
+}
+.o-so-preset-img { position: relative; aspect-ratio: 1 / 1; background: var(--o-surface-3); display: grid; place-items: center; font-size: 5rem; }
+.o-so-preset-img img { width: 100%; height: 100%; object-fit: cover; }
+.o-so-preset-name { padding: var(--o-6); font-size: 1.25rem; font-weight: var(--o-fw-bold); }
+.o-so-eta {
+  position: absolute; right: var(--o-4); bottom: var(--o-4); background: var(--o-so-photo-pill);
+  color: var(--o-text); border-radius: var(--o-r-pill); padding: var(--o-2) var(--o-5); font-size: var(--o-fs-md);
+}
+
+/* product list: sticky text tabs, then a section per category */
+.o-so-cats {
+  position: sticky; top: 0; z-index: 2; background: var(--o-so-surface); display: flex; gap: var(--o-2);
+  overflow-x: auto; padding: var(--o-4) var(--o-6); border-bottom: 1px solid var(--o-border);
+  scrollbar-width: none;
+}
+.o-so-cat {
+  flex: none; border: 0; background: none; border-radius: var(--o-r-lg); padding: var(--o-3) var(--o-5);
+  font: var(--o-fw-medium) var(--o-fs-md) var(--o-font); color: var(--o-text); cursor: pointer;
+}
+.o-so-cat.o-active { background: var(--o-so-price); color: var(--o-primary-ink); }
+.o-so-section { font-size: 1.25rem; font-weight: var(--o-fw-bold); margin: var(--o-8) 0 var(--o-5); }
+.o-so-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--o-6) var(--o-5); }
+.o-so-product { border: 0; background: none; padding: 0; cursor: pointer; text-align: center; color: var(--o-text); }
+.o-so-product-img {
+  aspect-ratio: 1 / 1; border-radius: var(--o-so-r); background: var(--o-so-surface);
+  display: grid; place-items: center; font-size: 3.5rem; overflow: hidden;
+}
+.o-so-product-img img { width: 100%; height: 100%; object-fit: cover; }
+.o-so-product-name { font-weight: var(--o-fw-bold); font-size: var(--o-fs-md); margin-top: var(--o-4); }
+.o-so-product-price { color: var(--o-so-price); font-size: var(--o-fs-md); font-variant-numeric: tabular-nums; }
+
+/* product configurator: plum band, round photo straddling it */
+.o-so-config-head { background: var(--o-primary); color: var(--o-primary-ink); text-align: center; padding: var(--o-5) var(--o-6) 0; height: 280px; position: relative; }
+.o-so-discard { position: absolute; left: max(var(--o-6), calc(50% - 440px)); top: var(--o-5); background: none; border: 0; color: inherit; font: var(--o-fw-medium) 1.1rem var(--o-font); cursor: pointer; }
+.o-so-config-title { font-size: 2rem; font-weight: var(--o-fw-bold); margin: var(--o-9) 0 var(--o-6); }
+.o-so-config-img {
+  width: 200px; height: 200px; border-radius: 50%; margin: 0 auto; background: var(--o-surface-3);
+  display: grid; place-items: center; font-size: 7rem; overflow: hidden; box-shadow: var(--o-shadow-md);
+}
+.o-so-config-img img { width: 100%; height: 100%; object-fit: cover; }
+.o-so-config-body { padding-top: 110px; }
+.o-so-attr { font-size: 1.2rem; font-weight: var(--o-fw-bold); margin: 0 0 var(--o-5); }
+.o-so-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--o-5); }
+.o-so-option {
+  position: relative; min-height: 96px; background: var(--o-so-surface); border: 1px solid transparent;
+  border-radius: var(--o-so-r); box-shadow: var(--o-shadow-sm); cursor: pointer;
+  font: var(--o-fw-medium) var(--o-fs-lg) var(--o-font); color: var(--o-text);
+}
+.o-so-option.o-selected { border-color: var(--o-primary); }
+.o-so-option-price {
+  position: absolute; top: var(--o-4); right: var(--o-4); background: var(--o-so-price); color: var(--o-primary-ink);
+  border-radius: var(--o-r-pill); padding: 1px var(--o-4); font-size: var(--o-fs-xs); font-weight: var(--o-fw-semi);
+}
+.o-so-qty-row { display: flex; margin-top: var(--o-5); }
+.o-so-qty { display: inline-flex; margin-left: auto; border-radius: var(--o-so-r); overflow: hidden; box-shadow: var(--o-shadow-sm); }
+.o-so-qty > * {
+  width: 56px; height: 44px; display: grid; place-items: center; background: var(--o-so-surface);
+  border: 0; font: var(--o-fw-bold) 1.1rem var(--o-font); color: var(--o-text);
+}
+.o-so-qty > * + * { border-left: 1px solid var(--o-border); }
+.o-so-qty button { cursor: pointer; font-weight: var(--o-fw-normal); font-size: 1.4rem; }
+
+/* my orders: one white card per order */
+.o-so-order { background: var(--o-so-surface); border-radius: 12px; padding: var(--o-6) var(--o-6) var(--o-5); box-shadow: var(--o-shadow-sm); margin-bottom: var(--o-6); }
+.o-so-order-head { display: flex; align-items: center; gap: var(--o-5); padding-bottom: var(--o-5); border-bottom: 1px solid var(--o-border); }
+.o-so-order-ref { font-weight: var(--o-fw-bold); font-size: 1.1rem; }
+.o-so-order-meta { color: var(--o-text-muted); font-size: 1rem; }
+.o-so-iconbtn { background: none; border: 0; cursor: pointer; font-size: 1.2rem; color: var(--o-text); }
+.o-so-paid { background: var(--o-so-paid); color: var(--o-so-paid-ink); border-radius: var(--o-r-pill); padding: var(--o-2) var(--o-5); font-size: var(--o-fs-sm); font-weight: var(--o-fw-medium); }
+.o-so-line { display: flex; gap: var(--o-5); padding-top: var(--o-5); }
+.o-so-line > div:first-child { flex: 1; }
+.o-so-line-name { font-weight: var(--o-fw-bold); }
+.o-so-line-sub { color: var(--o-text-muted); font-size: var(--o-fs-md); }
+.o-so-line-sub b { color: var(--o-text); font-weight: var(--o-fw-normal); }
+.o-so-line-amt, .o-so-order-total { font-variant-numeric: tabular-nums; }
+.o-so-order-total { margin: var(--o-5) 0 0 auto; width: max-content; min-width: 40%; border-top: 1px solid var(--o-border); padding-top: var(--o-4); text-align: right; }
+.o-so-order-total b { display: block; font-size: 1.05rem; }
+.o-so-order-total span { color: var(--o-text-muted); }
+
+/* confirmation: check disc, headline, order-number card, one Ok */
+.o-so-confirm { text-align: center; display: flex; flex-direction: column; align-items: center; gap: var(--o-6); padding-top: 10vh; }
+.o-so-check { width: 72px; height: 72px; border-radius: 50%; background: var(--o-primary); color: var(--o-primary-ink); display: grid; place-items: center; font-size: 2.4rem; }
+.o-so-confirm h1 { font-size: 2rem; margin: 0; }
+.o-so-number { background: var(--o-so-surface); border: 1px solid var(--o-border); border-radius: 12px; width: min(400px, 100%); }
+.o-so-number-in { padding: var(--o-8) var(--o-6) var(--o-5); border-bottom: 1px solid var(--o-border); }
+.o-so-number small { display: block; font-size: var(--o-fs-xs); font-weight: var(--o-fw-semi); letter-spacing: .05em; text-transform: uppercase; color: var(--o-text-faint); }
+.o-so-number strong { font-size: 3rem; line-height: 1.1; color: var(--o-so-price); }
+.o-so-number button { background: none; border: 0; padding: var(--o-5); font: var(--o-fw-bold) var(--o-fs-md) var(--o-font); color: var(--o-text); cursor: pointer; }
+
+@media (max-width: 640px) {
+  .o-so-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .o-so-hero-actions { grid-template-columns: 1fr; padding: var(--o-6); }
+  .o-so-title, .o-so-config-title, .o-so-confirm h1 { font-size: 1.5rem; }
+  .o-so-bottombar-in { gap: var(--o-4); }
+  .o-so-btn { padding: 0 var(--o-6); }
+}
+
+/* ---- website payment page: portal chrome, WEBSITE theme colours --------- */
+.o-webpay { background: var(--o-surface); color: var(--o-text); font-family: var(--o-font); }
+.o-webpay-head { background: var(--o-web-header); display: flex; justify-content: space-between; padding: var(--o-6); font-size: var(--o-fs-md); border-bottom: 1px solid var(--o-border); }
+.o-webpay-head b { font-weight: var(--o-fw-bold); }
+.o-webpay-head span { color: var(--o-text-muted); }
+.o-webpay-body { padding: var(--o-6); }
+.o-webpay-kicker { display: flex; align-items: center; gap: var(--o-5); font: var(--o-fw-bold) var(--o-fs-lg) Georgia, serif; letter-spacing: .02em; }
+.o-webpay-kicker::after { content: ""; flex: 1; height: 1px; background: var(--o-border); }
+.o-webpay-amount { color: var(--o-web-primary); font-size: 2.6rem; font-weight: var(--o-fw-bold); margin: var(--o-7) 0 0; font-variant-numeric: tabular-nums; }
+.o-webpay-method { border: 1px solid var(--o-border); border-radius: var(--o-r-md); padding: var(--o-6); margin-top: var(--o-5); }
+.o-webpay-pay { display: block; margin: var(--o-4) 0 0 auto; background: var(--o-web-primary); color: var(--o-primary-ink); border: 0; padding: var(--o-5) 0; width: min(140px, 100%); font-size: var(--o-fs-lg); border-radius: var(--o-r-sm); cursor: pointer; }
+.o-webpay-cancel { display: block; width: 100%; margin-top: var(--o-8); padding: var(--o-7); background: var(--o-web-header); border: 1px solid var(--o-border-strong); font-size: var(--o-fs-lg); color: var(--o-text); cursor: pointer; }
+
+/* ---- register: the preset picker ----------------------------------------- */
+.o-pos-presets { background: var(--o-surface); border: 1px solid var(--o-border); border-radius: var(--o-r-lg); box-shadow: var(--o-shadow-pop); padding: var(--o-5); width: min(280px, 100%); }
+.o-pos-presets-head { display: flex; justify-content: space-between; font-weight: var(--o-fw-bold); margin-bottom: var(--o-4); }
+.o-pos-presets-head button { background: none; border: 0; color: var(--o-text-muted); cursor: pointer; }
+.o-pos-preset {
+  display: flex; width: 100%; justify-content: space-between; align-items: center; border: 0; margin-top: var(--o-3);
+  border-radius: var(--o-r-md); padding: var(--o-4) var(--o-5); font: var(--o-fs-base) var(--o-font);
+  color: var(--o-preset-ink); cursor: pointer;
+}
+.o-pos-preset-dinein   { background: var(--o-preset-dinein); }
+.o-pos-preset-takeout  { background: var(--o-preset-takeout); }
+.o-pos-preset-delivery { background: var(--o-preset-delivery); }
+
+/* ---- kitchen display ----------------------------------------------------- */
+.o-kds { background: var(--o-kds-bg); color: var(--o-text); font-family: var(--o-font); min-height: 100vh; }
+.o-kds-bar {
+  background: var(--o-kds-bar); border-bottom: 1px solid var(--o-border);
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--o-6);
+  padding: var(--o-5) var(--o-6);
+}
+.o-kds-bar-left { display: flex; gap: var(--o-6); }
+.o-kds-iconbtn, .o-kds-close {
+  height: 50px; min-width: 56px; border: 1px solid var(--o-border); border-radius: var(--o-r-lg);
+  background: var(--o-kds-bar); color: var(--o-text); font: var(--o-fw-medium) 1.15rem var(--o-font);
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--o-4); cursor: pointer; padding: 0 var(--o-6);
+}
+.o-kds-tabs { display: flex; justify-content: center; gap: var(--o-5); overflow-x: auto; }
+.o-kds-tab {
+  height: 50px; padding: 0 var(--o-6); border: 1px solid transparent; border-radius: var(--o-r-lg);
+  background: none; color: var(--o-text); font: var(--o-fw-medium) 1.15rem var(--o-font);
+  display: inline-flex; align-items: center; gap: var(--o-4); cursor: pointer; white-space: nowrap;
+}
+.o-kds-tab.o-active { background: var(--o-surface-3); border-color: var(--o-border-strong); }
+.o-kds-count { min-width: 30px; padding: 1px var(--o-3); border-radius: var(--o-r-md); font-size: 1.1rem; text-align: center; font-variant-numeric: tabular-nums; }
+.o-kds-count-tocook { background: var(--o-kds-tocook-count); }
+.o-kds-count-ready  { background: var(--o-kds-ready-count); }
+.o-kds-count-done   { background: var(--o-kds-done-count); }
+
+.o-kds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--o-6); padding: var(--o-6); align-items: start; }
+.o-kds-ticket { background: var(--o-kds-card); border: 2px solid var(--o-border); border-radius: var(--o-r-lg); overflow: hidden; box-shadow: var(--o-shadow-sm); cursor: pointer; }
+.o-kds-ticket-head { background: var(--o-kds-card-head); color: var(--o-kds-card-head-ink); font-weight: var(--o-fw-bold); font-size: 1.05rem; padding: var(--o-5); }
+.o-kds-ticket-meta { display: flex; justify-content: space-between; align-items: center; padding: var(--o-5) var(--o-5) 0; }
+.o-kds-state, .o-kds-preset {
+  border-radius: var(--o-r-md); padding: 2px var(--o-5); font-size: var(--o-fs-md); font-weight: var(--o-fw-medium); color: var(--o-kds-pill-ink);
+}
+.o-kds-state-tocook { background: var(--o-kds-tocook); }
+.o-kds-state-ready  { background: var(--o-kds-ready); }
+.o-kds-state-done   { background: var(--o-kds-done); }
+.o-kds-preset-dinein   { background: var(--o-preset-dinein-soft); }
+.o-kds-preset-takeout  { background: var(--o-preset-takeout-soft); }
+.o-kds-preset-delivery { background: var(--o-preset-delivery-soft); }
+.o-kds-timer { border: 1px solid var(--o-border); border-radius: var(--o-r-pill); padding: 1px var(--o-4); font-size: var(--o-fs-md); font-variant-numeric: tabular-nums; }
+.o-kds-lines { padding: var(--o-5); }
+.o-kds-line { font-size: 1.1rem; }
+.o-kds-line + .o-kds-line { margin-top: var(--o-4); }
+.o-kds-qty { margin-right: var(--o-4); }
+.o-kds-attr { font-style: italic; color: var(--o-text-muted); margin: var(--o-2) 0 0 var(--o-6); font-size: var(--o-fs-md); }
+.o-kds-line.o-struck { text-decoration: line-through; color: var(--o-text-faint); }
+.o-kds-actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--o-3); padding: 0 var(--o-5) var(--o-5); }
+.o-kds-btn {
+  height: 38px; border: 1px solid var(--o-border); border-radius: var(--o-r-md); background: var(--o-kds-btn);
+  color: var(--o-kds-btn-ink); font: var(--o-fw-medium) var(--o-fs-md) var(--o-font); cursor: pointer;
+}
+.o-kds-btn.o-strong { font-weight: var(--o-fw-bold); }
+
+@media (max-width: 760px) {
+  .o-kds-bar { grid-template-columns: auto auto; justify-content: space-between; }
+  .o-kds-tabs { grid-column: 1 / -1; order: 3; justify-content: flex-start; }
+}
+
+/* ---- printed receipt: 80mm paper, black on white in every theme ---------- */
+.o-receipt {
+  width: 302px; max-width: 100%; margin: 0 auto; padding: var(--o-6) var(--o-5);
+  background: var(--o-receipt-bg); color: var(--o-receipt-ink);
+  font: 15px/1.35 var(--o-receipt-font); font-variant-numeric: tabular-nums;
+}
+.o-receipt-logo { text-align: center; margin-bottom: var(--o-6); font-weight: var(--o-fw-bold); font-size: 22px; }
+.o-receipt-logo img { max-height: 48px; }
+.o-receipt-center { text-align: center; }
+.o-receipt-rule { border: 0; border-top: 1px dashed var(--o-receipt-ink); margin: var(--o-4) 0; }
+.o-receipt-preset { font-weight: var(--o-fw-bold); font-size: 16px; }
+.o-receipt-tracking { text-align: center; font-size: 56px; font-weight: var(--o-fw-bold); line-height: 1.1; margin: var(--o-3) 0 var(--o-7); }
+.o-receipt-line { display: grid; grid-template-columns: 1.6em 1fr auto; gap: var(--o-3); font-size: 18px; margin-bottom: var(--o-5); }
+.o-receipt-line small { display: block; font-size: 13px; margin-top: var(--o-1); }
+.o-receipt-row { display: flex; justify-content: space-between; font-size: 18px; }
+.o-receipt-row.o-strong { font-weight: var(--o-fw-bold); }
+.o-receipt-gap { margin-top: var(--o-6); }
+.o-receipt-invoice { display: flex; gap: var(--o-3); font-size: 11.5px; margin-top: var(--o-3); word-break: break-all; }
+.o-receipt-invoice b { font-size: 13px; word-break: normal; }
+.o-receipt-qr { width: 76px; height: 76px; flex: none; }
+.o-receipt-foot { display: flex; justify-content: space-between; gap: var(--o-4); font-size: 11.5px; margin-top: var(--o-7); }
+.o-receipt-foot > :last-child { text-align: right; }
+.o-receipt-powered { text-align: center; margin-top: var(--o-6); font-size: 14px; }
+
+/* ---- kitchen display, second pass: guests, late timer, Recall ------------ */
+.o-kds-ticket-head { display: flex; justify-content: space-between; align-items: center; }
+.o-kds-guests { font-size: var(--o-fs-md); display: inline-flex; gap: var(--o-2); align-items: center; }
+.o-kds-timer.o-late { background: var(--o-kds-late); color: var(--o-kds-late-ink); border-color: var(--o-kds-late); }
+.o-kds-ticket-meta > :only-child { margin-left: auto; }   /* timer alone sits right */
+.o-kds-preset-dinein { color: var(--o-primary-ink); }       /* Odoo draws white on the pale blue */
+.o-kds-bar-right { display: flex; gap: var(--o-5); }
+.o-kds-close:disabled { color: var(--o-text-faint); cursor: default; }
+
+/* ======================================================= POS register ====
+   The staff side of POS: top bar, floor plan, register, product
+   configurator, payment, amount paid, orders list. Its own chrome — no
+   backend navbar. Observed in dark; light values are inferred. */
+.o-pos { background: var(--o-pos-bg); color: var(--o-pos-ink); font-family: var(--o-font); min-height: 100vh; display: flex; flex-direction: column; }
+
+/* top bar: [Tables|Register|Orders] · logo or Direct Sale + search · cash, avatar, menu */
+.o-pos-top {
+  background: var(--o-pos-bar); border-bottom: 1px solid var(--o-pos-line);
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--o-5);
+  padding: var(--o-4) var(--o-4);
+}
+.o-pos-top-left, .o-pos-top-right { display: flex; align-items: center; gap: var(--o-5); }
+.o-pos-top-right { justify-content: flex-end; }
+.o-pos-logo { font: var(--o-fw-bold) 2rem var(--o-font); letter-spacing: -.03em; }
+.o-pos-nav { display: inline-flex; border: 1px solid var(--o-pos-line); border-radius: var(--o-r-lg); overflow: hidden; }
+.o-pos-nav button {
+  background: none; border: 1px solid transparent; color: var(--o-pos-ink); cursor: pointer;
+  font: var(--o-fw-medium) 1.05rem var(--o-font); padding: var(--o-4) var(--o-5);
+}
+.o-pos-nav button + button { border-left-color: var(--o-pos-line); }
+.o-pos-nav button.o-active { border-color: var(--o-pos-active); background: var(--o-pos-active-bg); border-radius: var(--o-r-md); }
+.o-pos-nav.o-dim button:not(.o-active) { color: var(--o-pos-ink-dim); }   /* while an order is open */
+.o-pos-sale { background: var(--o-pos-sale); color: var(--o-pos-sale-ink); border-radius: var(--o-r-pill); padding: var(--o-3) var(--o-5); font-weight: var(--o-fw-bold); font-size: var(--o-fs-md); border: 0; }
+.o-pos-search { display: flex; align-items: center; gap: var(--o-4); border: 1px solid var(--o-pos-line); border-radius: var(--o-r-lg); padding: var(--o-3) var(--o-5); background: var(--o-pos-bg); min-width: 0; width: min(280px, 100%); color: var(--o-pos-ink-dim); }
+.o-pos-search input { border: 0; background: none; color: var(--o-pos-ink); font: var(--o-fs-lg) var(--o-font); width: 100%; outline: none; }
+.o-pos-icon { background: var(--o-pos-bar); border: 0; color: var(--o-pos-ink); font-size: 1.3rem; width: 44px; height: 44px; border-radius: var(--o-r-lg); cursor: pointer; }
+.o-pos-avatar { width: 44px; height: 44px; border-radius: var(--o-r-md); background: var(--o-primary); display: grid; place-items: center; color: var(--o-primary-ink); }
+
+/* generic POS buttons */
+.o-pos-btn {
+  background: var(--o-pos-btn); color: var(--o-pos-btn-ink); border: 0; border-radius: var(--o-r-md);
+  font: var(--o-fw-medium) 1.05rem var(--o-font); padding: var(--o-5) var(--o-6); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--o-4);
+}
+.o-pos-btn-primary { background: var(--o-pos-primary); color: var(--o-pos-primary-ink); }
+.o-pos-btn:disabled { opacity: .45; cursor: default; }
+
+/* floor plan: a second bar, then a pale floor with table tiles */
+.o-pos-floorbar { background: var(--o-pos-bar); display: flex; gap: var(--o-3); padding: var(--o-4); border-bottom: 1px solid var(--o-pos-line); }
+.o-pos-floorbar .o-so-spacer { flex: 1; }
+.o-pos-floor { flex: 1; background: var(--o-pos-floor); position: relative; min-height: 420px; }
+.o-pos-table {
+  position: absolute; width: 150px; height: 150px; display: grid; place-items: center;
+  background: var(--o-pos-table); border: 3px solid var(--o-pos-table-edge); border-radius: var(--o-r-lg);
+  color: var(--o-pos-table-ink); font-weight: var(--o-fw-bold); font-size: var(--o-fs-lg); cursor: pointer;
+}
+.o-pos-table.o-round { border-radius: 50%; }
+
+/* register: order pane left, catalogue right */
+.o-pos-register { flex: 1; display: grid; grid-template-columns: minmax(300px, 35%) 1fr; min-height: 0; }
+.o-pos-order { background: var(--o-pos-pane); border-right: 1px solid var(--o-pos-line); display: flex; flex-direction: column; }
+.o-pos-lines { flex: 1; overflow-y: auto; }
+.o-pos-line {
+  display: grid; grid-template-columns: 1.6em 1fr auto; gap: var(--o-3); padding: var(--o-4) var(--o-5);
+  border-left: 4px solid var(--o-pos-primary); cursor: pointer; font-size: var(--o-fs-lg);
+}
+.o-pos-line b { font-variant-numeric: tabular-nums; }
+.o-pos-line i { display: block; color: var(--o-pos-ink-dim); font-size: var(--o-fs-md); }
+.o-pos-line.o-selected { background: var(--o-pos-selrow); }
+.o-pos-totals { padding: var(--o-4) var(--o-5); border-top: 1px solid var(--o-pos-line); }
+.o-pos-totals div { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+.o-pos-totals .o-tax { color: var(--o-pos-ink-dim); font-size: var(--o-fs-md); font-weight: var(--o-fw-semi); }
+.o-pos-totals .o-total { font-size: 1.3rem; font-weight: var(--o-fw-bold); }
+.o-pos-controls { display: flex; flex-wrap: wrap; gap: var(--o-4); padding: var(--o-4); }
+.o-pos-controls .o-pos-btn { padding: var(--o-5); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+.o-pos-controls .o-preset-set { background: var(--o-preset-dinein); color: var(--o-pos-primary-ink); }
+
+/* numpad: 4×4, sign/dot/delete tinted, a fourth column of modes or +10/+20/+50 */
+.o-pos-numpad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--o-pos-line); margin: 0 var(--o-4); }
+.o-pos-numpad button {
+  height: 62px; border: 0; background: var(--o-pos-key); color: var(--o-pos-ink);
+  font: var(--o-fw-medium) 1.2rem var(--o-font); cursor: pointer;
+}
+.o-pos-numpad .o-sign { background: var(--o-pos-key-sign); }
+.o-pos-numpad .o-dot  { background: var(--o-pos-key-dot); }
+.o-pos-numpad .o-del  { background: var(--o-pos-key-del); }
+.o-pos-numpad .o-cash { background: var(--o-pos-key-cash); }
+.o-pos-numpad .o-mode { background: var(--o-pos-bg); color: var(--o-pos-ink-dim); }
+.o-pos-numpad .o-mode.o-active { color: var(--o-pos-ink); outline: 1px solid var(--o-pos-active); outline-offset: -1px; background: var(--o-pos-selrow); }
+.o-pos-actions { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: var(--o-4); padding: var(--o-4); }
+.o-pos-actions .o-pos-btn { height: 80px; font-size: 1.2rem; }
+
+/* catalogue: coloured category buttons, product cards with a category edge */
+.o-pos-catalog { padding: var(--o-4); overflow-y: auto; }
+.o-pos-cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--o-4); margin-bottom: var(--o-5); }
+.o-pos-cat { height: 74px; border: 0; border-radius: var(--o-r-md); background: var(--o-pos-bar); color: var(--o-pos-ink); font: var(--o-fs-lg) var(--o-font); cursor: pointer; }
+.o-pos-cat.o-c1 { background: var(--o-pos-cat-1); } .o-pos-cat.o-c2 { background: var(--o-pos-cat-2); }
+.o-pos-cat.o-c3 { background: var(--o-pos-cat-3); } .o-pos-cat.o-c4 { background: var(--o-pos-cat-4); }
+.o-pos-cat.o-c5 { background: var(--o-pos-cat-5); }
+.o-pos-cat[class*="o-c"] { color: var(--o-preset-ink); }   /* dark ink on a coloured category */
+.o-pos-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--o-4); }
+.o-pos-product { background: var(--o-pos-bar); border: 0; border-radius: var(--o-r-md); overflow: hidden; padding: 0; cursor: pointer; color: var(--o-pos-ink); text-align: left; border-bottom: 5px solid var(--o-pos-cat-edge, var(--o-pos-cat-4)); }
+.o-pos-product-img { aspect-ratio: 1 / .85; display: grid; place-items: center; font-size: 4rem; }
+.o-pos-product-name { padding: var(--o-3) var(--o-4); font-weight: var(--o-fw-semi); font-size: var(--o-fs-md); background: var(--o-pos-btn); }
+
+/* product configurator dialog: "Name | $ price", option chips, Add | Discard */
+.o-pos-dialog { background: var(--o-pos-pane); color: var(--o-pos-ink); border: 1px solid var(--o-pos-line); border-radius: var(--o-r-lg); box-shadow: var(--o-shadow-pop); width: min(1160px, 100%); overflow: hidden; }
+.o-pos-dialog-head { background: var(--o-pos-pane-2); display: flex; justify-content: space-between; align-items: center; padding: var(--o-6) var(--o-6); font-size: 1.4rem; font-weight: var(--o-fw-semi); }
+.o-pos-dialog-head button { background: none; border: 0; color: var(--o-pos-ink-dim); font-size: 1.4rem; cursor: pointer; }
+.o-pos-dialog-body { padding: var(--o-6); }
+.o-pos-dialog-body h4 { margin: 0 0 var(--o-4); font-size: var(--o-fs-md); }
+.o-pos-chips { display: flex; flex-wrap: wrap; gap: var(--o-4); }
+.o-pos-chip {
+  background: var(--o-pos-btn); color: var(--o-pos-btn-ink); border: 1px solid transparent; border-radius: var(--o-r-md);
+  padding: var(--o-5) var(--o-5); font: var(--o-fw-medium) 1.2rem var(--o-font); cursor: pointer;
+  display: inline-flex; align-items: center; gap: var(--o-4);
+}
+.o-pos-chip.o-selected { border-color: var(--o-pos-active); background: var(--o-pos-active-bg); }
+.o-pos-chip-extra { background: var(--o-pos-extra); color: var(--o-pos-extra-ink); border-radius: var(--o-r-pill); padding: var(--o-1) var(--o-4); font-size: 1.05rem; }
+.o-pos-dialog-foot { background: var(--o-pos-pane-2); display: grid; grid-template-columns: 1fr 1fr; gap: var(--o-4); padding: var(--o-5) var(--o-6); }
+.o-pos-dialog-foot .o-pos-btn { font-weight: var(--o-fw-bold); font-size: 1.2rem; }
+
+/* payment: methods and numpad left, the due amount huge right */
+.o-pos-payment { flex: 1; display: grid; grid-template-columns: minmax(300px, 35%) 1fr; }
+.o-pos-paypane { display: flex; flex-direction: column; gap: var(--o-4); padding: var(--o-4) 0; }
+.o-pos-method { margin: 0 var(--o-4); justify-content: flex-start; height: 74px; font-size: 1.2rem; gap: var(--o-6); }
+.o-pos-paypane .o-grow { flex: 1; }
+.o-pos-paypane .o-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--o-4); margin: 0 var(--o-4); }
+.o-pos-paypane .o-row2 .o-pos-btn { justify-content: flex-start; }
+.o-pos-paypane .o-row2.o-foot .o-pos-btn { justify-content: center; height: 80px; font-weight: var(--o-fw-bold); font-size: 1.2rem; }
+.o-pos-bigamt { display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.o-pos-amt { color: var(--o-pos-amt-dim); font-size: 5rem; line-height: 1; white-space: nowrap; }
+.o-pos-amt .o-int { color: var(--o-pos-amt); font-size: 1.6em; }
+.o-pos-amt.o-xl { font-size: 11rem; }
+
+/* amount paid: green check, headline, the amount, four big buttons */
+.o-pos-paid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--o-6); padding: var(--o-6); text-align: center; }
+.o-pos-paid-check { width: 96px; height: 96px; border-radius: 50%; background: var(--o-pos-ok); color: var(--o-pos-ok-ink); display: grid; place-items: center; font-size: 3rem; }
+.o-pos-paid h1 { font-size: 3.4rem; margin: 0; }
+.o-pos-paid-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--o-6); width: min(1420px, 100%); }
+.o-pos-paid-actions .o-pos-btn { height: 80px; font-size: 1.4rem; }
+
+/* orders: filter bar + list left, detail or empty state right */
+.o-pos-orders { flex: 1; display: grid; grid-template-columns: 1.85fr 1fr; min-height: 0; }
+.o-pos-orders-list { border-right: 1px solid var(--o-pos-line); overflow-y: auto; }
+.o-pos-orders-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--o-3); padding: var(--o-4); position: relative; }
+.o-pos-orders-bar .o-pos-search { width: auto; flex: 1; min-width: 200px; padding: 0 0 0 var(--o-5); }
+.o-pos-orders-bar .o-pos-search button { white-space: nowrap; align-self: stretch; background: var(--o-pos-btn); color: var(--o-pos-ink); border: 0; padding: var(--o-4) var(--o-5); font: var(--o-fw-medium) var(--o-fs-md) var(--o-font); cursor: pointer; }
+.o-pos-pager { display: inline-flex; align-items: center; gap: var(--o-3); font-variant-numeric: tabular-nums; }
+.o-pos-pager button { background: var(--o-pos-btn); color: var(--o-pos-ink); border: 0; border-radius: var(--o-r-md); width: 44px; height: 36px; cursor: pointer; }
+.o-pos-menu { position: absolute; z-index: 3; background: var(--o-pos-btn); border-radius: var(--o-r-lg); box-shadow: var(--o-shadow-pop); padding: var(--o-3) 0; min-width: 200px; }
+.o-pos-menu div { padding: var(--o-3) var(--o-7); cursor: pointer; font-size: 1.05rem; }
+.o-pos-menu div.o-sub { padding-left: 42px; }
+.o-pos-orow {
+  display: grid; grid-template-columns: 80px 1.2fr 1fr 1fr 0.8fr 90px 90px 70px; align-items: center; gap: var(--o-4);
+  padding: var(--o-5) var(--o-4); border-top: 1px solid var(--o-pos-line); cursor: pointer; font-size: var(--o-fs-md);
+}
+.o-pos-orow:nth-child(even) { background: var(--o-pos-pane-2); }
+.o-pos-orow b { display: block; }
+.o-pos-orow small { color: var(--o-pos-ink-dim); display: block; }
+.o-pos-orow.o-selected { background: var(--o-pos-selrow); }
+.o-pos-orow.o-selected b { color: var(--o-pos-selrow-ink); }
+.o-pos-orow .o-amt { text-align: right; font-weight: var(--o-fw-bold); font-variant-numeric: tabular-nums; }
+.o-pos-orow .o-tools { display: flex; gap: var(--o-5); justify-content: flex-end; font-size: 1.2rem; }
+.o-pos-due { text-align: center; font-size: var(--o-fs-sm); }
+.o-pos-due b { display: block; }
+.o-pos-due-bar { height: 5px; border-radius: var(--o-r-pill); background: var(--o-pos-btn); margin: var(--o-2) 0; }
+.o-pos-due span { color: var(--o-pos-due); font-weight: var(--o-fw-bold); }
+.o-pos-pill { display: inline-block; border-radius: var(--o-r-md); padding: 1px var(--o-4); font-size: var(--o-fs-sm); line-height: 1.5; }
+.o-pos-pill + .o-pos-pill { margin-left: var(--o-2); }
+.o-pos-pill.o-dinein   { background: var(--o-preset-dinein);   color: var(--o-pos-ongoing-ink); }
+.o-pos-pill.o-takeout  { background: var(--o-preset-takeout);  color: var(--o-preset-ink); }
+.o-pos-pill.o-delivery { background: var(--o-preset-delivery); color: var(--o-preset-ink); }
+.o-pos-pill.o-table    { background: var(--o-pos-tabletag); color: var(--o-pos-tabletag-ink); }
+.o-pos-pill.o-ongoing  { background: var(--o-pos-ongoing);  color: var(--o-pos-ongoing-ink); font-size: var(--o-fs-lg); }
+.o-pos-pill.o-paid     { background: var(--o-pos-paid);     color: var(--o-pos-paid-ink); }
+.o-pos-pill.o-invoiced { background: var(--o-pos-invoiced); color: var(--o-pos-invoiced-ink); }
+.o-pos-detail { display: flex; flex-direction: column; background: var(--o-pos-pane-2); }
+.o-pos-empty { flex: 1; display: grid; place-items: center; align-content: center; gap: var(--o-5); font-size: 1.4rem; font-weight: var(--o-fw-semi); }
+.o-pos-empty span { font-size: 5rem; }
+.o-pos-detail-hint { text-align: center; padding: var(--o-5); font-size: var(--o-fs-md); }
+.o-pos-detail-tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--o-3); padding: var(--o-4); }
+
+@media (max-width: 900px) {
+  .o-pos-register, .o-pos-payment, .o-pos-orders { grid-template-columns: 1fr; }
+  .o-pos-top { grid-template-columns: 1fr auto; }
+  .o-pos-top > :nth-child(2) { display: none; }
+  .o-pos-orow { grid-template-columns: 70px 1fr auto auto; }
+  .o-pos-orow > :nth-child(3), .o-pos-orow > :nth-child(4), .o-pos-orow > :nth-child(5), .o-pos-orow > :nth-child(8) { display: none; }
+  .o-pos-paid-actions { grid-template-columns: 1fr 1fr; }
+  .o-pos-amt.o-xl { font-size: 6rem; }
+}
