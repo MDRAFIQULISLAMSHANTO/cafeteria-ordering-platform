@@ -39,7 +39,7 @@ export default async function OrderPage({ searchParams }: PageProps<"/order">) {
 
   const initial: MenuPayload = { now, date, dates, menu, slots };
   return (
-    <CustomerShell customer={cust} outlet={outlet} active="menu">
+    <CustomerShell customer={cust} outlet={outlet} active="menu" theme="sts">
       {/* keyed so the demo actor switch (same route, new account) or an edit starts a fresh menu and cart */}
       <OrderScreen
         key={`${cust.id}:${outlet.id}:${editing?.id ?? "new"}`}

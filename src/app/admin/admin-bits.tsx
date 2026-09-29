@@ -9,7 +9,7 @@ import { money } from "@/lib/rules";
 export function AdminOutletSelect({ outlets, value }: { outlets: { id: string; name: string }[]; value: string }) {
   const router = useRouter();
   return (
-    <select className="o-select w-60" value={value} aria-label="Outlet" onChange={(e) => router.push(`/admin?outlet=${e.target.value}`)}>
+    <select className="o-select w-40 min-w-0 sm:w-60" value={value} aria-label="Outlet" onChange={(e) => router.push(`/admin?outlet=${e.target.value}`)}>
       {outlets.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
     </select>
   );

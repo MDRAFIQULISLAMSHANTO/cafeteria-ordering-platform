@@ -2,6 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useEffectEvent, useMemo, useState, useTransition } from "react";
+import { FoodArt } from "@/components/food/food-art";
+import { MenuCard } from "@/components/food/menu-card";
+import { foodLook } from "@/lib/food-kind";
+import { takeHandoff } from "@/lib/tray-handoff";
 import Link from "next/link";
 import { editOrderAction, placeOrderAction } from "@/app/actions";
 import { useLocalState } from "@/components/local-store";
@@ -28,11 +32,7 @@ type Props = {
 };
 
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-const initials = (s: string) => s.replace(/\(.*?\)/g, "").split(/[\s+&-]+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("");
 const EMPTY_CART: Record<string, number> = {};
-// placeholder tiles until real product photos arrive
-const TONES = ["bg-tag-1 text-tag-1-ink", "bg-tag-2 text-tag-2-ink", "bg-tag-3 text-tag-3-ink", "bg-tag-4 text-tag-4-ink", "bg-tag-5 text-tag-5-ink", "bg-tag-6 text-tag-6-ink"];
-const tone = (s: string) => (Array.from(s).reduce((a, c) => a + c.charCodeAt(0), 0) % 6) + 1;
 
 export function OrderScreen({ initial, customer, outlet, welcome, editing }: Props) {
   const router = useRouter();
@@ -59,6 +59,25 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
     if (welcome === "employee") show({ title: "Welcome! Your staff account was verified from the HR list.", tone: "info" });
     else if (welcome) show({ title: "Account created. You can order now.", tone: "info" });
   }, [welcome, show]);
+
+  // items sent from the landing page or the Balanced Tray game (once)
+  const applyHandoff = useEffectEvent(() => {
+    const h = takeHandoff();
+    if (!h) return;
+    const byId = new Map(initial.menu.map((p) => [p.id, p]));
+    const ok = h.items.filter((i) => byId.get(i.id)?.available);
+    const skipped = h.items.filter((i) => !byId.get(i.id)?.available);
+    if (ok.length) setCart((c) => {
+      const next = { ...c };
+      for (const i of ok) next[i.id] = Math.min(50, (next[i.id] ?? 0) + i.qty);
+      return next;
+    });
+    if (ok.length) show({ title: `${ok.reduce((a, i) => a + i.qty, 0)} item${ok.length === 1 && ok[0].qty === 1 ? "" : "s"} from your tray added`, tone: "info" });
+    if (skipped.length) show({ title: `Not on ${outlet.name}'s menu today: ${skipped.map((i) => i.name).join(", ")}`, rule: "Menu by outlet and day", tone: "danger" });
+  });
+  useEffect(() => {
+    if (!editing) applyHandoff();
+  }, [editing]);
 
   const load = async (date: string) => {
     const res = await fetch(`/api/menu?date=${date}`, { cache: "no-store" });
@@ -283,7 +302,7 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
           )}
           <div className="mb-2 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold md:text-3xl">{formatDay(data.date, data.now.date)}</h1>
+              <h1 className="font-display text-3xl font-extrabold tracking-[-.02em] text-sts-accent md:text-4xl">{formatDay(data.date, data.now.date)}</h1>
               <p className="mt-1 text-muted">
                 {outlet.name} menu{" "}
                 {!outlet.menuAssignmentConfirmed && <span className="pill-pending" title={PENDING.menu}>sample menu assignment</span>}{" "}
@@ -309,39 +328,24 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
           {categories.length === 0 && <div className="o-empty">Nothing matches “{query}”.</div>}
           {categories.map((c) => (
             <div key={c.name} id={slug(c.name)} className="scroll-mt-21">
-              <h2 className="mb-3 mt-6 flex items-baseline gap-2 text-xl font-bold">{c.name} <small className="text-xs font-normal text-muted">{c.items.length} item{c.items.length === 1 ? "" : "s"}</small></h2>
+              <h2 className="mb-3 mt-7 flex items-baseline gap-2 font-display text-2xl font-bold text-sts-accent">{c.name} <small className="text-xs font-normal text-muted">{c.items.length} item{c.items.length === 1 ? "" : "s"}</small></h2>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fill,minmax(190px,1fr))] md:gap-4">
                 {c.items.map((p) => (
-                  <div key={p.id} className={`flex flex-col overflow-hidden rounded-so bg-so-surface text-left shadow-o-sm transition hover:-translate-y-px hover:shadow-o-md ${p.available ? "" : "opacity-55"}`}>
-                    <button className="block w-full" onClick={() => { setOpen(p); setPanelQty(1); }} aria-label={`Details for ${p.name}`}>
-                      <div className={`relative grid aspect-[16/10] place-items-center text-3xl font-bold tracking-wide ${TONES[tone(p.name) - 1]}`}>
-                        {initials(p.name)}
-                        <div className="absolute inset-x-2 top-2 flex flex-wrap gap-1 text-2xs">
-                          {p.weekday && <span className="rounded-full bg-so-price px-2 py-px font-semibold text-primary-ink">Day special</span>}
-                          {!p.available && <span className="rounded-full bg-surface px-2 py-px font-semibold text-ink">{p.reason}</span>}
-                          {p.flags && p.available && <span className="pill-confirm" title={p.flags.join("\n")}>to confirm</span>}
-                        </div>
-                      </div>
-                    </button>
-                    <div className="flex flex-1 flex-col gap-1 px-3 pb-2 pt-3">
-                      <button onClick={() => { setOpen(p); setPanelQty(1); }} className="p-0 text-left">
-                        <div className="text-sm font-bold leading-snug">{p.name}</div>
-                      </button>
-                      {p.description && <div className="line-clamp-2 text-xs text-muted">{p.description}</div>}
-                      {p.comboItems && <div className="line-clamp-2 text-xs text-muted">Combo: {p.comboItems.join(" + ")}</div>}
-                      <div className="mt-auto flex items-center justify-between pt-1.5">
-                        <span className="font-bold tabular-nums text-so-price">{p.price != null ? money(p.price) : "—"}{p.unit !== "each" && <small className="font-normal text-muted"> / {p.unit}</small>}</span>
-                        <button
-                          aria-label={`Add ${p.name}`}
-                          disabled={!p.available}
-                          onClick={() => add(p)}
-                          className="grid h-8.5 w-8.5 place-items-center rounded-full bg-so-grad text-xl leading-none text-primary-ink disabled:cursor-default disabled:bg-none disabled:bg-surface-3 disabled:text-faint"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <MenuCard
+                    key={p.id}
+                    compact
+                    item={{ id: p.id, name: p.name, price: p.price, description: p.comboItems ? `Combo: ${p.comboItems.join(" + ")}` : p.description, look: foodLook(p.name, p.category), unit: p.unit }}
+                    disabled={!p.available}
+                    onAdd={() => add(p)}
+                    onOpen={() => { setOpen(p); setPanelQty(1); }}
+                    badges={
+                      <>
+                        {p.weekday && <span className="rounded-full bg-sts-purple px-2 py-px font-semibold text-sts-white">Day special</span>}
+                        {!p.available && <span className="rounded-full bg-sts-white px-2 py-px font-semibold text-sts-ink shadow-sm">{p.reason}</span>}
+                        {p.flags && p.available && <span className="pill-confirm" title={p.flags.join("\n")}>to confirm</span>}
+                      </>
+                    }
+                  />
                 ))}
               </div>
             </div>
@@ -363,10 +367,11 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
       {open && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-overlay p-4" role="dialog" aria-modal="true" aria-label={open.name} onClick={(e) => e.target === e.currentTarget && setOpen(null)}>
           <div className="flex max-h-[92vh] w-[min(560px,100%)] flex-col overflow-hidden rounded-2xl bg-so-surface shadow-o-pop">
-            <div className="relative bg-primary px-5 pb-5 pt-4 text-primary-ink">
-              <button onClick={() => setOpen(null)} aria-label="Close" className="absolute right-3 top-3 h-9 w-9 rounded-full text-xl">✕</button>
-              <small className="text-2xs uppercase tracking-wider opacity-80">{open.category}</small>
-              <h2 className="mt-1 text-2xl font-bold">{open.name}</h2>
+            <div className="relative bg-[radial-gradient(circle_at_50%_70%,var(--sts-orange-soft)_0%,var(--sts-cream-2)_72%)] px-5 pb-4 pt-4 text-sts-ink">
+              <button onClick={() => setOpen(null)} aria-label="Close" className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-sts-white text-lg shadow-sm">✕</button>
+              <FoodArt kind={foodLook(open.name, open.category).kind} tint={foodLook(open.name, open.category).tint} className="mx-auto h-40 w-auto drop-shadow-[0_16px_16px_var(--sts-drop)] sm:h-48" />
+              <small className="text-2xs font-semibold uppercase tracking-wider text-sts-orange-text">{open.category}</small>
+              <h2 className="mt-0.5 font-display text-2xl font-bold text-sts-purple">{open.name}</h2>
             </div>
             <div className="flex flex-col gap-3 overflow-y-auto p-5">
               {open.description && <p className="text-muted">{open.description}</p>}

@@ -2,12 +2,13 @@ import { redirect } from "next/navigation";
 import { currentCustomer } from "@/lib/session";
 import { LoginForm } from "./login-form";
 
+// Only same-site paths may follow sign-in ("//host" or "/\\host" would leave the site).
+function safeNext(v: unknown) {
+  return typeof v === "string" && /^\/(?![\/\\])/.test(v) ? v : undefined;
+}
+
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
-  const next = (await searchParams).next;
-  if (await currentCustomer()) redirect(typeof next === "string" ? next : "/order");
-  return (
-    <div className="min-h-screen bg-so-bg text-ink">
-      <LoginForm next={typeof next === "string" ? next : undefined} />
-    </div>
-  );
+  const next = safeNext((await searchParams).next);
+  if (await currentCustomer()) redirect(next ?? "/order");
+  return <LoginForm next={next} />;
 }

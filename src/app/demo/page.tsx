@@ -32,10 +32,11 @@ export default async function DemoHub() {
       <div className="min-h-screen bg-page text-ink">
         <div className="flex h-(--o-h-navbar) items-center gap-4 border-b border-line bg-navbar px-4">
           <b className="text-sm">STS Café · Demo hub</b>
-          <span className="pill-sandbox">PROTOTYPE — payment, SMS and HR list are sandbox</span>
+          <span className="pill-sandbox hidden sm:inline-flex">PROTOTYPE — payment, SMS and HR list are sandbox</span>
+          <span className="pill-sandbox sm:hidden">SANDBOX</span>
           <span className="o-hint ml-auto hidden md:inline">Production system: Odoo</span>
         </div>
-        <div className="mx-auto grid max-w-[1240px] items-start gap-4 px-4 py-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+        <div className="mx-auto grid max-w-[1240px] items-start gap-4 px-3 py-5 sm:px-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] [&>*]:min-w-0">
           <div>
             <section className="mb-4 rounded-lg border border-line bg-surface p-4">
               <h2 className="mb-2 flex items-center justify-between gap-2 text-base font-semibold">Screens</h2>

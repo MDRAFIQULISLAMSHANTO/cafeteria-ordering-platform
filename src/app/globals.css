@@ -67,6 +67,17 @@
   --color-sts-cream: var(--sts-cream);
   --color-sts-white: var(--sts-white);
   --color-sts-ornament: var(--sts-ornament);
+  --color-sts-purple-deep: var(--sts-purple-deep);
+  --color-sts-purple-soft: var(--sts-purple-soft);
+  --color-sts-lilac: var(--sts-lilac);
+  --color-sts-cream-2: var(--sts-cream-2);
+  --color-sts-orange-soft: var(--sts-orange-soft);
+  --color-sts-orange-text: var(--sts-orange-text);
+  --color-sts-orange-display: var(--sts-orange-display);
+  --color-sts-hairline: var(--sts-hairline);
+  --color-sts-page: var(--sts-page);
+  --color-sts-accent: var(--sts-accent);
+  --color-sts-accent-ink: var(--sts-accent-ink);
 
   /* staff screens */
   --color-kds-bg: var(--o-kds-bg);
@@ -94,6 +105,23 @@
   --shadow-o-sm: var(--o-shadow-sm);
   --shadow-o-md: var(--o-shadow-md);
   --shadow-o-pop: var(--o-shadow-pop);
+  --shadow-sts-card: var(--sts-shadow-card);
+  --shadow-sts-float: var(--sts-shadow-float);
+
+  --font-display: var(--font-display-face), var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-steam: steam 3.2s ease-in-out infinite;
+  --animate-spin-slow: spin 40s linear infinite;
+
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes steam {
+    0% { transform: translateY(6px) scaleY(.9); opacity: 0; }
+    35% { opacity: .9; }
+    100% { transform: translateY(-14px) scaleY(1.1); opacity: 0; }
+  }
 
   /* desktop ordering layout: cart becomes a third column */
   --breakpoint-cart: 68.75rem;
@@ -103,9 +131,22 @@
 }
 
 /* gradients and images can't be theme colours */
-.sts-public-theme {
-  /* The STS campaign palette is limited to the public landing page. */
-  --o-so-grad: linear-gradient(135deg, var(--sts-orange), var(--sts-orange-deep));
+
+/* STS palette on the menu page (user decision, 29 Sep 2026): the self-order
+   components keep their shapes, the accent becomes STS purple/orange. */
+.sts-theme {
+  --o-so-bg: var(--sts-page);
+  --o-so-price: var(--sts-accent);
+  --o-so-grad: var(--sts-action-grad);
+  --o-primary: var(--sts-accent);
+  --o-primary-ink: var(--sts-accent-ink);
+}
+
+@utility bg-sts-action {
+  background-image: var(--sts-action-grad);
+}
+@utility bg-sts-glow {
+  background-image: var(--sts-hero-glow);
 }
 
 @utility bg-so-grad {
@@ -144,6 +185,25 @@
 .o-kds-acct-student { background: var(--o-tag-3); color: var(--o-tag-3-ink); }
 .o-kds-acct-employee { background: var(--o-preset-delivery-soft); }
 .o-receipt-sub { font-size: 12px; display: flex; justify-content: space-between; }
+
+/* Motion: anything animated in by script starts visible; scripts hide it only
+   when they are about to animate it (see src/components/landing/motion.tsx). */
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe-only { animation: none !important; }
+}
+
+/* Staff screens are built for tablets and counter PCs; on a phone the bar
+   wraps and tickets stack (overrides the Odoo kit, which stays untouched). */
+@media (max-width: 640px) {
+  .o-kds-bar { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 8px 10px; }
+  .o-kds-bar-left { min-width: 0; gap: 6px; }
+  .o-kds-bar-left select { min-width: 0; max-width: 46vw; height: 42px; }
+  .o-kds-tabs { min-width: 0; gap: 4px; }
+  .o-kds-bar-right { min-width: 0; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .o-kds-iconbtn, .o-kds-close { height: 42px; min-width: 42px; padding: 0 10px; font-size: 1rem; }
+  .o-kds-tab { height: 42px; padding: 0 12px; font-size: 1rem; }
+  .o-kds-grid { grid-template-columns: minmax(0, 1fr); padding: 10px; gap: 10px; }
+}
 
 @media print {
   .no-print { display: none !important; }

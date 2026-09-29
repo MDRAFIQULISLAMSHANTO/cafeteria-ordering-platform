@@ -60,15 +60,15 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           <span className="o-hint ml-auto hidden md:inline">Demo clock {now.date} {now.time}</span>
           <ActorSwitcher tone="staff" staffScreen="admin" personaId={(await currentCustomer())?.id ?? null} outletId={outlet.id} staffUnlocked />
         </div>
-        <div className="grid items-start gap-4 p-4 lg:grid-cols-2">
-          <section className="rounded-md border border-line bg-surface">
-            <h2 className="flex items-center justify-between border-b border-line px-4 py-3 text-base font-semibold">Menu availability · today <span className="o-hint">switch off = sold out for {outlet.name}, today only</span></h2>
+        <div className="grid items-start gap-4 p-3 sm:p-4 lg:grid-cols-2 [&>*]:min-w-0">
+          <section className="min-w-0 overflow-x-auto rounded-md border border-line bg-surface">
+            <h2 className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-4 py-3 text-base font-semibold">Menu availability · today <span className="o-hint">switch off = sold out for {outlet.name}, today only</span></h2>
             <AvailabilityList outletId={outlet.id} items={menu.map((m) => ({ id: m.id, name: m.name, category: m.category, price: m.price, available: m.available, reason: m.reason }))} />
           </section>
 
           <div className="flex flex-col gap-4">
-            <section className="rounded-md border border-line bg-surface">
-              <h2 className="flex items-center justify-between border-b border-line px-4 py-3 text-base font-semibold">Today <span className="o-hint tabular-nums">{today.length} orders · {money(revenue)} confirmed</span></h2>
+            <section className="min-w-0 overflow-x-auto rounded-md border border-line bg-surface">
+              <h2 className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-4 py-3 text-base font-semibold">Today <span className="o-hint tabular-nums">{today.length} orders · {money(revenue)} confirmed</span></h2>
               <table className="w-full">
                 <thead><tr><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold">No.</th><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold">Customer</th><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold">Slot</th><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold">Status</th><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold">Kitchen</th><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold text-right">Total</th></tr></thead>
                 <tbody>
@@ -87,7 +87,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
               </table>
             </section>
 
-            <section className="rounded-md border border-line bg-surface">
+            <section className="min-w-0 overflow-x-auto rounded-md border border-line bg-surface">
               <h2 className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3 text-base font-semibold">Cost-centre invoices · monthly <span className="o-hint">coordinator bulk orders, all outlets</span></h2>
               {invoices.length === 0 && <p className="px-4 py-3 o-hint">No bulk orders yet. Coordinators book them from “Bulk order”.</p>}
               {invoices.map((g) => (
@@ -113,8 +113,8 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
               ))}
             </section>
 
-            <section className="rounded-md border border-line bg-surface">
-              <h2 className="flex items-center justify-between border-b border-line px-4 py-3 text-base font-semibold">Production list · pre-orders <span className="o-hint">joins the kitchen on the pickup day</span></h2>
+            <section className="min-w-0 overflow-x-auto rounded-md border border-line bg-surface">
+              <h2 className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-4 py-3 text-base font-semibold">Production list · pre-orders <span className="o-hint">joins the kitchen on the pickup day</span></h2>
               <table className="w-full">
                 <thead><tr><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold">Date</th><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold">Slot</th><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold">Item</th><th className="border-b border-line bg-surface-2 px-3 py-1.5 text-left text-xs font-semibold text-right">Qty</th></tr></thead>
                 <tbody>

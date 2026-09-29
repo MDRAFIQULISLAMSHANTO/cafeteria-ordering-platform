@@ -21,6 +21,53 @@
   --sts-ornament:     #E5E5E5;
   --sts-ink:          #1D1D1D;
 
+  /* ---- STS extras for the public pages and the menu (29 Sep 2026) ------- */
+  /* Derived from the palette above; contrast checked on white/cream.       */
+  --sts-purple-deep:    #2B1550;
+  --sts-purple-soft:    #EFE8F8;
+  --sts-lilac:          #C9B3EE;
+  --sts-cream-2:        #FFF8F1;
+  --sts-orange-soft:    #FDE3CC;
+  --sts-orange-text:    #A94E07;   /* orange text on white, 5.3:1            */
+  --sts-orange-display: #D9680C;   /* large display text only, 3.4:1         */
+  --sts-action-grad:    linear-gradient(135deg, #F68B2F 0%, #EC6F0E 100%);
+  --sts-hero-glow:      radial-gradient(60% 55% at 72% 42%, rgba(245, 124, 24, .20) 0%, rgba(245, 124, 24, 0) 70%),
+                        radial-gradient(50% 50% at 12% 18%, rgba(70, 37, 118, .10) 0%, rgba(70, 37, 118, 0) 70%);
+  --sts-shadow-card:    0 18px 40px -22px rgba(70, 37, 118, .45);
+  --sts-shadow-float:   0 30px 60px -24px rgba(43, 21, 80, .45);
+  --sts-hairline:       rgba(70, 37, 118, .12);
+  --sts-panel:          radial-gradient(70% 60% at 70% 38%, rgba(245, 124, 24, .30) 0%, rgba(245, 124, 24, 0) 70%),
+                        linear-gradient(160deg, #462576 0%, #2B1550 100%);
+  --sts-on-dark-line:   rgba(255, 255, 255, .18);
+  --sts-on-dark-dash:   rgba(255, 255, 255, .25);
+  --sts-on-dark-dot:    rgba(255, 255, 255, .14);
+  --sts-drop:           rgba(20, 8, 40, .42);
+  --sts-action-shadow:  0 10px 24px -12px rgba(236, 111, 14, .8);
+  /* menu page (sts-theme) — light values; dark values below */
+  --sts-page:           #FFF8F1;
+  --sts-accent:         #462576;
+  --sts-accent-ink:     #FFFFFF;
+
+  /* ---- food illustrations (drawn in code, src/components/food) ---------- */
+  --food-plate: #FFFFFF;        --food-plate-rim: #F3E5D8;   --food-plate-shade: rgba(70, 37, 118, .16);
+  --food-bun: #E6A457;          --food-bun-dark: #C27B2E;    --food-seed: #FFF3DA;
+  --food-patty: #6B3A1F;        --food-cheese: #FFC83D;      --food-lettuce: #6DBE45;   --food-tomato: #E4462F;
+  --food-fry: #F7C548;          --food-fry-dark: #E0A526;    --food-carton: #E4462F;
+  --food-crust: #DDA15A;        --food-crust-dark: #B5752F;  --food-egg: #FFE08A;       --food-spinach: #3E8E41;
+  --food-choc: #5A3321;         --food-choc-light: #7B4A30;  --food-cream: #FFF6E8;     --food-berry: #B3263E;
+  --food-strawberry: #E8505B;   --food-coffee: #6F4428;      --food-foam: #EBD3B5;      --food-cup: #FFFFFF;
+  --food-lemon: #FFE66B;        --food-lemonade: #FFF3B0;    --food-mint: #57B26A;      --food-orange: #FF9F2E;
+  --food-mango: #FFB627;        --food-melon: #F2545B;       --food-glass: rgba(255, 255, 255, .55);
+  --food-ice: rgba(255, 255, 255, .85);
+  --food-rice: #FFF1D0;         --food-saffron: #F4B63F;     --food-meat: #9C4A2B;      --food-chicken: #D98C4A;
+  --food-chicken-dark: #A9602A; --food-pasta: #F6D27A;       --food-sauce: #D9432E;     --food-salad: #7CC35A;
+  --food-cucumber: #B5E08F;     --food-fish: #F58B6A;        --food-waffle: #E7A94C;    --food-waffle-dark: #C9852E;
+  --food-banana: #FFE27A;       --food-wrap: #F2D9A6;        --food-wrap-dark: #D3AE70; --food-soup: #E8A33B;
+  --food-steam: rgba(70, 37, 118, .30);                      --food-shine: rgba(255, 255, 255, .6);
+
+  /* ---- 3D lunch tray (game) --------------------------------------------- */
+  --tray-base: #F4ECF9;         --tray-rim: #462576;         --tray-well: #FCEBDA;      --tray-floor: #FEF0E5;
+
   /* ---- brand ------------------------------------------------------------ */
   --o-primary:        #714B67;   /* New button, primary actions, active nav   */
   --o-primary-hover:  #5C3D54;
@@ -272,6 +319,7 @@
   /* self-order dark — NO screenshot; inferred, diff before a client sees it */
   --o-so-bg: #1E1B1F; --o-so-surface: #2A262B; --o-so-btn-2: #3A363B; --o-so-btn-2-ink: #E8E4E7;
   --o-so-price: #C69BBC;
+    --sts-page: #1B1523; --sts-accent: #C9B3EE; --sts-accent-ink: #1D1D1D;
   /* POS register dark — sampled from the Odoo 20 demo */
   --o-pos-bg: #1F2025; --o-pos-bar: #2B2E36; --o-pos-pane: #1F2025; --o-pos-pane-2: #2B2E36;
   --o-pos-btn: #3A3D46; --o-pos-btn-ink: #E8E9EB; --o-pos-ink: #E8E9EB; --o-pos-ink-dim: #9A9DA4;
@@ -311,6 +359,7 @@
     --o-preset-delivery-soft: #E3873A; --o-preset-dinein-soft: #4A8FE0; --o-preset-takeout-soft: #B09A0A;
     --o-so-bg: #1E1B1F; --o-so-surface: #2A262B; --o-so-btn-2: #3A363B; --o-so-btn-2-ink: #E8E4E7;
     --o-so-price: #C69BBC;
+    --sts-page: #1B1523; --sts-accent: #C9B3EE; --sts-accent-ink: #1D1D1D;
     --o-pos-bg: #1F2025; --o-pos-bar: #2B2E36; --o-pos-pane: #1F2025; --o-pos-pane-2: #2B2E36;
     --o-pos-btn: #3A3D46; --o-pos-btn-ink: #E8E9EB; --o-pos-ink: #E8E9EB; --o-pos-ink-dim: #9A9DA4;
     --o-pos-line: #34373F; --o-pos-active: #1F8C80; --o-pos-active-bg: #22403F;
