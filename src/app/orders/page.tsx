@@ -4,7 +4,7 @@ import { getDb } from "@/db/client";
 import { CustomerShell } from "@/components/customer-shell";
 import { StateBadge, type stateBadge } from "@/components/ui";
 import { customerOrders, demoNow, getOutlet } from "@/lib/orders";
-import { money } from "@/lib/rules";
+import { money, vatLabel } from "@/lib/rules";
 import { formatDay, time12 } from "@/lib/time";
 import { currentCustomer } from "@/lib/session";
 
@@ -51,7 +51,7 @@ export default async function MyOrders() {
                   <div className="o-so-line-amt">{money(l.lineTotal)}</div>
                 </div>
               ))}
-              <div className="o-so-order-total"><b>Total: {money(o.order.total)}</b><span>{o.order.vatRule}{o.order.vat ? `: ${money(o.order.vat)}` : ""}</span></div>
+              <div className="o-so-order-total"><b>Total: {money(o.order.total)}</b><span>{vatLabel(o.order.accountType)}: {money(o.order.vat)}</span></div>
             </Link>
           );
         })}

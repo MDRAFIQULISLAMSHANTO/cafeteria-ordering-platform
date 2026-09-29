@@ -5,7 +5,8 @@ import { getDb } from "@/db/client";
 import { CustomerShell } from "@/components/customer-shell";
 import { StateBadge } from "@/components/ui";
 import { cutoffMs, demoNow, orderDetail } from "@/lib/orders";
-import { money } from "@/lib/rules";
+import { paymentLabel, taxAndDiscountRows } from "@/lib/receipt";
+import { money, unitBeforeDiscount } from "@/lib/rules";
 import { formatDay, time12 } from "@/lib/time";
 import { currentCustomer } from "@/lib/session";
 import { CancelButton, LiveRefresh } from "./live-bits";
@@ -34,6 +35,7 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
   const qr = await QRCode.toDataURL(order.qrToken, { margin: 1, width: 480, errorCorrectionLevel: "M" });
 
   const step = progress(order.state, order.kitchenState);
+  const rows = taxAndDiscountRows(order, outlet, d.customer);
   const closed = ["cancelled", "rejected"].includes(order.state);
   const canCancel =
     ["awaiting_payment", "awaiting_acceptance", "confirmed"].includes(order.state) &&
@@ -91,25 +93,27 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
               <dt className="text-muted">Reference</dt><dd className="text-right font-medium tabular-nums">{order.ref}</dd>
               <dt className="text-muted">Pickup</dt><dd className="text-right font-medium">{formatDay(order.pickupDate, now.date)} · {slot.label} {time12(slot.startsAt)}</dd>
               <dt className="text-muted">Outlet</dt><dd className="text-right font-medium">{outlet.name}</dd>
-              <dt className="text-muted">Payment</dt><dd className="text-right font-medium">{order.paymentMode === "online" ? "Online" : "At the counter"}</dd>
+              <dt className="text-muted">Payment</dt><dd className="text-right font-medium">{order.paymentMode === "online" ? "Online" : order.paymentMode === "invoice" ? "Cost-centre invoice" : "At the counter"}</dd>
+              {order.accountType === "employee" && <><dt className="text-muted">Employee ID</dt><dd className="text-right font-medium">{d.customer.employeeId ?? "—"}</dd></>}
+              {order.accountType === "student" && <><dt className="text-muted">Class</dt><dd className="text-right font-medium">{d.customer.classGrade}{d.customer.section}</dd></>}
             </dl>
             <div className="my-4 border-t border-line" />
             {lines.map((l) => (
               <div key={l.id} className="o-so-line pt-2">
-                <div><div className="o-so-line-name">{l.name}</div><div className="o-so-line-sub"><b>{l.qty}x</b> {money(l.unitPrice)}</div></div>
-                <div className="o-so-line-amt">{money(l.lineTotal)}</div>
+                <div><div className="o-so-line-name">{l.name}</div><div className="o-so-line-sub"><b>{l.qty}x</b> {money(unitBeforeDiscount(order.accountType, l.unitPrice))}{order.accountType === "employee" ? " excl. VAT" : ""}</div></div>
+                <div className="o-so-line-amt">{money(unitBeforeDiscount(order.accountType, l.unitPrice) * l.qty)}</div>
               </div>
             ))}
             <div className="o-so-order-total">
-              {order.discount > 0 && <span className="block text-success">{order.discountRule}: −{money(order.discount)}</span>}
+              {rows.discount && <span className={`block ${rows.discount.amount < 0 ? "text-success" : ""}`}>{rows.discount.label}: {rows.discount.amount < 0 ? `−${money(-rows.discount.amount)}` : money(0)}</span>}
               <b>Total: {money(order.total)}</b>
-              <span>{order.vatRule}{order.vat > 0 ? `: ${money(order.vat)}` : ""}</span>
+              <span>{rows.vat.label}: {money(rows.vat.amount)}</span>
             </div>
             {payments.length > 0 && (
               <div className="mt-4 flex flex-col gap-1.5 border-t border-line pt-3">
                 {payments.map((p) => (
                   <div key={p.id} className="flex items-center justify-between gap-2 text-13">
-                    <span>{p.kind === "refund" ? "Refund" : "Payment"} · {p.method} · <span className="text-muted">{p.reference}</span></span>
+                    <span>{p.kind === "refund" ? "Refund" : "Payment"} · {paymentLabel(p.method)} · <span className="text-muted">{p.reference}</span></span>
                     <StateBadge tone={p.status === "failed" ? "bad" : p.kind === "refund" ? "wait" : "paid"}>{p.status} {money(p.amount)}</StateBadge>
                   </div>
                 ))}

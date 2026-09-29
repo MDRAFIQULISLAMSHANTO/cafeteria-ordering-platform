@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { bumpAction, recallAction, rejectAction } from "@/app/actions";
+import { ActorSwitcher } from "@/components/demo/actor-switcher";
 import { useLive } from "@/components/live";
 import { Clock, OutletSelect, ThemeToggle, type OutletOpt } from "@/components/staff";
 import { useResult } from "@/components/toast";
@@ -37,7 +38,7 @@ const STATE_LABEL: Record<string, [string, string]> = {
 
 const REASONS = ["Item out of stock", "Kitchen closing early", "Duplicate order", "Customer request"];
 
-export function KitchenDisplay({ outletId, outlets }: { outletId: string; outlets: OutletOpt[] }) {
+export function KitchenDisplay({ outletId, outlets, personaId }: { outletId: string; outlets: OutletOpt[]; personaId: string | null }) {
   const { data, refresh } = useLive<Board>(`/api/live/kitchen?outlet=${outletId}`, 2000);
   const handle = useResult();
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("all");
@@ -71,6 +72,7 @@ export function KitchenDisplay({ outletId, outlets }: { outletId: string; outlet
           ))}
         </nav>
         <div className="o-kds-bar-right">
+          <ActorSwitcher tone="staff" staffScreen="kds" personaId={personaId} outletId={outletId} staffUnlocked />
           <Clock ms={data?.now.ms} />
           <button className="o-kds-close" disabled={pending} onClick={() => act(() => recallAction(outletId))}>↶ Recall</button>
         </div>

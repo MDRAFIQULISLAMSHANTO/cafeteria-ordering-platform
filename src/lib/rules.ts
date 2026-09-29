@@ -53,7 +53,25 @@ export type PriceResult = {
   total: number;
   vatRule: string;
   discountRule: string | null;
+  /** For employees without the discount: why (shown as a ৳0 line). */
+  discountNote: string | null;
 };
+
+/** VAT label by account type (C8 §9: VAT depends on account type, not outlet). */
+export function vatLabel(accountType: string): string {
+  return accountType === "employee" ? "VAT 0% — employee (VAT-free)" : `VAT ${RULES.vatRate}% included`;
+}
+
+/** The employee-discount line every employee receipt carries (C8 §8–9). */
+export function employeeDiscountNote(isParentLounge: boolean, discountEligible: boolean): string {
+  if (!isParentLounge) return "Employee discount — Parent Lounge only";
+  return discountEligible ? `Employee ${RULES.employeeDiscountPercent}% · Parent Lounge` : "Employee discount — not eligible on the HR list";
+}
+
+/** Unit price the account pays before any discount: VAT is taken out for employees. */
+export function unitBeforeDiscount(accountType: string, menuPrice: number): number {
+  return accountType === "employee" ? Math.round((menuPrice * 100) / (100 + RULES.vatRate)) : menuPrice;
+}
 
 // Printed prices are treated as VAT-inclusive (pending Finance).
 // - Parent/Student: pay the printed price; 5% VAT is shown as included.
@@ -63,9 +81,9 @@ export type PriceResult = {
 export function price(input: PriceInput): PriceResult {
   const { accountType, isParentLounge, discountEligible } = input;
   const employee = accountType === "employee";
-  const exVat = (p: number) => Math.round((p * 100) / (100 + RULES.vatRate));
+  const exVat = (p: number) => unitBeforeDiscount("employee", p);
 
-  const base = input.lines.map((l) => (employee ? exVat(l.unitPrice) : l.unitPrice) * l.qty);
+  const base = input.lines.map((l) => unitBeforeDiscount(accountType, l.unitPrice) * l.qty);
   const subtotal = base.reduce((a, b) => a + b, 0);
 
   const discountApplies = employee && discountEligible && isParentLounge;
@@ -80,7 +98,8 @@ export function price(input: PriceInput): PriceResult {
     discount,
     vat,
     total,
-    vatRule: employee ? "VAT-free (employee)" : `VAT ${RULES.vatRate}% included`,
+    vatRule: vatLabel(accountType),
     discountRule: discountApplies ? `Employee ${RULES.employeeDiscountPercent}% · Parent Lounge` : null,
+    discountNote: employee && !discountApplies ? employeeDiscountNote(isParentLounge, discountEligible) : null,
   };
 }

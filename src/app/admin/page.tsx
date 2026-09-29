@@ -3,7 +3,9 @@ import Link from "next/link";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import * as t from "@/db/schema";
+import { ActorSwitcher } from "@/components/demo/actor-switcher";
 import { ToastProvider } from "@/components/toast";
+import { currentCustomer } from "@/lib/session";
 import { demoNow, listOutlets, menuFor } from "@/lib/orders";
 import { ACCOUNT_LABEL, money, type AccountType } from "@/lib/rules";
 import { time12 } from "@/lib/time";
@@ -53,7 +55,8 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           <Link href="/demo">☰</Link>
           <b className="text-sm">STS Café · Operations</b>
           <AdminOutletSelect outlets={outlets.map((o) => ({ id: o.id, name: o.name }))} value={outlet.id} />
-          <span className="o-hint ml-auto">Demo clock {now.date} {now.time}</span>
+          <span className="o-hint ml-auto hidden md:inline">Demo clock {now.date} {now.time}</span>
+          <ActorSwitcher tone="staff" staffScreen="admin" personaId={(await currentCustomer())?.id ?? null} outletId={outlet.id} staffUnlocked />
         </div>
         <div className="grid items-start gap-4 p-4 lg:grid-cols-2">
           <section className="rounded-md border border-line bg-surface">

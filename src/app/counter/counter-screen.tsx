@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { acceptAction, collectAction, lookupAction, rejectAction } from "@/app/actions";
+import { ActorSwitcher } from "@/components/demo/actor-switcher";
 import { useLive } from "@/components/live";
 import { Clock, OutletSelect, ThemeToggle, type OutletOpt } from "@/components/staff";
 import { useResult, useToast } from "@/components/toast";
@@ -28,7 +29,7 @@ type Found = {
   lines: { name: string; qty: number }[];
 };
 
-export function CounterScreen({ outletId, outlets }: { outletId: string; outlets: OutletOpt[] }) {
+export function CounterScreen({ outletId, outlets, personaId }: { outletId: string; outlets: OutletOpt[]; personaId: string | null }) {
   const { data, refresh } = useLive<Board>(`/api/live/counter?outlet=${outletId}`, 2000);
   const handle = useResult();
   const { show } = useToast();
@@ -79,7 +80,7 @@ export function CounterScreen({ outletId, outlets }: { outletId: string; outlets
           <OutletSelect outlets={outlets} value={outletId} path="/counter" />
         </div>
         <nav className="o-kds-tabs"><b className="text-lg">Counter · collection</b></nav>
-        <div className="o-kds-bar-right"><Clock ms={data?.now.ms} /></div>
+        <div className="o-kds-bar-right"><ActorSwitcher tone="staff" staffScreen="counter" personaId={personaId} outletId={outletId} staffUnlocked /><Clock ms={data?.now.ms} /></div>
       </header>
 
       <div className="grid items-start gap-4 p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">

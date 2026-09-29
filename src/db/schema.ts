@@ -26,6 +26,7 @@ export const outlet = pgTable("outlet", {
   menuKey: text("menu_key").notNull(), // which supplied menu this outlet sells
   menuAssignmentConfirmed: boolean("menu_assignment_confirmed").notNull().default(false),
   sequence: integer("sequence").notNull().default(0),
+  address: text("address"), // shown on receipts; null = "to be confirmed"
 });
 
 export const product = pgTable(
@@ -138,6 +139,12 @@ export const foodOrder = pgTable(
     readyAt: timestamp("ready_at", { withTimezone: true }),
     collectedAt: timestamp("collected_at", { withTimezone: true }),
     collectedBy: text("collected_by"), // qr | lookup
+    // bulk (coordinator) orders: delivered to a room, billed to a cost centre
+    eventName: text("event_name"),
+    deliverTo: text("deliver_to"),
+    costCentre: text("cost_centre"),
+    notes: text("notes"),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
@@ -193,4 +200,33 @@ export const demoState = pgTable("demo_state", {
   id: integer("id").primaryKey(),
   clockOffsetMinutes: integer("clock_offset_minutes").notNull().default(0),
   substitutionTimeoutSeconds: integer("substitution_timeout_seconds").notNull().default(900),
+});
+
+// An item that became unavailable after it was ordered: the customer picks a
+// substitute or a refund; no answer before the deadline refunds it (C8 §6).
+export const substitution = pgTable(
+  "substitution",
+  {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").notNull().references(() => foodOrder.id),
+    lineId: text("line_id").notNull().references(() => orderLine.id),
+    productId: text("product_id").notNull(),
+    offered: jsonb("offered").$type<string[]>().notNull(),
+    deadline: timestamp("deadline", { withTimezone: true }).notNull(),
+    status: text("status").notNull().default("pending"), // pending | substituted | refunded | expired
+    chosenProductId: text("chosen_product_id"),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("substitution_order_idx").on(t.orderId)],
+);
+
+// Monthly HR staff-list imports (C8 §8).
+export const hrSyncRun = pgTable("hr_sync_run", {
+  id: text("id").primaryKey(),
+  source: text("source").notNull(),
+  added: integer("added").notNull(),
+  updated: integer("updated").notNull(),
+  deactivated: integer("deactivated").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

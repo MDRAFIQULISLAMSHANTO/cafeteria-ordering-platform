@@ -52,20 +52,18 @@ export default async function DemoHub() {
                   {TEST_PHONES.map((p) => (
                     <tr key={p.phone}>
                       <td className="border-b border-line px-2 py-1.5 text-left text-sm tabular-nums"><b>{p.phone}</b></td>
-                      <td className="border-b border-line px-2 py-1.5 text-left text-sm">{p.name} · {p.type}</td>
+                      <td className="border-b border-line px-2 py-1.5 text-left text-sm">{p.actor}</td>
                       <td className="border-b border-line px-2 py-1.5 text-left text-sm o-hint">
-                        {p.phone.endsWith("1") && "Parent, same-day lunch, pays online (ISD Cafeteria)"}
-                        {p.phone.endsWith("2") && "Student, pre-order for a later day"}
-                        {p.phone.endsWith("3") && "Employee at Parent Lounge: 20% off, VAT-free, pay at counter"}
-                        {p.phone.endsWith("4") && "Coordinator, corporate cafeteria"}
+                        {p.who}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <p className="o-hint mt-3">
-                New numbers can register as parent or student (code in the inbox). Staff numbers 01700000005–06 are on the HR list and
-                register as employees automatically; 01700000009 is a leaver and is refused.
+                Sign in once with any of these, then switch actor from the <b>DEMO</b> menu in the header (no second login). New numbers
+                can register as parent or student (code in the inbox). 01700000006 is on the HR list and registers as an employee
+                automatically; 01700000009 is a leaver and is refused.
               </p>
             </section>
 

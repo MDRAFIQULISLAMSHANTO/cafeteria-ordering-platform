@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ActorSwitcher } from "@/components/demo/actor-switcher";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
@@ -219,7 +220,9 @@ function BalancedTrayGame() {
   );
 }
 
-export function LandingExperience({ visitor }: { visitor: Visitor }) {
+type Demo = { personaId: string; outletId: string; staffUnlocked: boolean } | null;
+
+export function LandingExperience({ visitor, demo = null }: { visitor: Visitor; demo?: Demo }) {
   const root = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const orderHref = visitor ? "/order" : "/login";
@@ -284,6 +287,7 @@ export function LandingExperience({ visitor }: { visitor: Visitor }) {
             <a href="#outlets" className="rounded-lg px-3 py-2 text-sm font-semibold text-sts-purple hover:bg-sts-cream">Outlets</a>
             <a href="#help" className="rounded-lg px-3 py-2 text-sm font-semibold text-sts-purple hover:bg-sts-cream">Help</a>
           </nav>
+          {demo && <ActorSwitcher className="ml-auto min-w-0 md:ml-0" personaId={demo.personaId} outletId={demo.outletId} staffUnlocked={demo.staffUnlocked} />}
           <Link
             href={ordersHref}
             className="ml-auto hidden min-h-11 items-center rounded-xl px-4 text-sm font-bold text-sts-purple hover:bg-sts-cream md:flex"
@@ -293,7 +297,8 @@ export function LandingExperience({ visitor }: { visitor: Visitor }) {
           {/* Dark ink on orange gradient — WCAG AA contrast (#1D1D1D on ~#F07020 ≈ 5:1) */}
           <Link
             href={orderHref}
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-so-grad px-4 text-sm font-bold text-sts-ink shadow-o-sm hover:no-underline md:px-5"
+            // on phones the fixed bottom bar carries "Order Now" when the demo switcher needs the room
+            className={`${demo ? "hidden md:inline-flex" : "inline-flex"} min-h-11 items-center gap-2 rounded-xl bg-so-grad px-4 text-sm font-bold text-sts-ink shadow-o-sm hover:no-underline md:px-5`}
           >
             Order Now <ArrowIcon />
           </Link>

@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import type { Db } from "./client";
 import * as t from "./schema";
 import catalog from "./data/menu-catalog.json";
+import { PERSONAS } from "@/lib/demo-personas";
 
 // Demo data. Outlets come from the client's online-ordering answers (C8);
 // hours from the original checklist where known. Products are the two
@@ -68,15 +69,11 @@ const HR: (typeof t.hrStaff.$inferInsert)[] = [
   { employeeId: "E1090", name: "Imran Kabir (left)", phone: "01700000009", outletId: "ISD-CAF", costCentre: "ISD-ACAD", active: false },
 ];
 
-// The four demo logins. Test numbers always receive OTP 123456.
-const CUSTOMERS: (typeof t.customer.$inferInsert)[] = [
-  { id: "c-parent", phone: "01700000001", name: "Nusrat Rahman", accountType: "parent", outletId: "ISD-CAF" },
-  { id: "c-student", phone: "01700000002", name: "Arif Hossain", accountType: "student", outletId: "ISD-CAF", classGrade: "8", section: "B" },
-  { id: "c-employee", phone: "01700000003", name: "Farhana Akter", accountType: "employee", outletId: "ISD-PL", employeeId: "E1023", costCentre: "ISD-ADMIN", discountEligible: true },
-  { id: "c-coordinator", phone: "01700000004", name: "Tanvir Ahmed", accountType: "employee", outletId: "HO", employeeId: "E2001", costCentre: "HO-FIN", coordinator: true },
-];
+// The demo personas (see src/lib/demo-personas.ts). Test numbers always
+// receive OTP 123456; the presenter switches between them after one login.
+const CUSTOMERS: (typeof t.customer.$inferInsert)[] = PERSONAS.map((p) => ({ ...p.customer }));
 
-export const TEST_PHONES = CUSTOMERS.map((c) => ({ phone: c.phone, name: c.name, type: c.accountType }));
+export const TEST_PHONES = PERSONAS.map((p) => ({ phone: p.customer.phone, name: p.customer.name, type: p.customer.accountType, actor: p.actor, who: p.who }));
 
 async function insertAll(db: Db) {
   await db.insert(t.outlet).values(OUTLETS);
@@ -90,9 +87,15 @@ async function insertAll(db: Db) {
 export async function seedIfEmpty(db: Db) {
   const rows = await db.select({ n: sql<number>`count(*)::int` }).from(t.outlet);
   if (rows[0].n === 0) await insertAll(db);
+  else await ensureDemoPersonas(db);
+}
+
+/** Adds any demo persona missing from an existing database (no wipe). */
+export async function ensureDemoPersonas(db: Db) {
+  await db.insert(t.customer).values(CUSTOMERS).onConflictDoNothing();
 }
 
 export async function resetDemo(db: Db) {
-  await db.execute(sql`TRUNCATE TABLE audit_log, notification, payment, order_line, food_order, otp, customer, hr_staff, unavailability, pickup_slot, product, outlet, demo_state CASCADE`);
+  await db.execute(sql`TRUNCATE TABLE substitution, hr_sync_run, audit_log, notification, payment, order_line, food_order, otp, customer, hr_staff, unavailability, pickup_slot, product, outlet, demo_state CASCADE`);
   await insertAll(db);
 }

@@ -19,7 +19,9 @@ export default async function OrderPage({ searchParams }: PageProps<"/order">) {
   const initial: MenuPayload = { now, date, dates, menu, slots };
   return (
     <CustomerShell customer={cust} outlet={outlet} active="menu">
+      {/* keyed so the demo actor switch (same route, new account) starts a fresh menu and cart */}
       <OrderScreen
+        key={`${cust.id}:${outlet.id}`}
         initial={initial}
         customer={{ id: cust.id, name: cust.name, accountType: cust.accountType as "parent" | "student" | "employee", discountEligible: cust.discountEligible }}
         outlet={{ id: outlet.id, name: outlet.name, kind: outlet.kind, menuAssignmentConfirmed: outlet.menuAssignmentConfirmed }}

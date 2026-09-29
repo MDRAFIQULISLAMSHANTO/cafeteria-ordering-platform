@@ -200,7 +200,8 @@ export function OrderScreen({ initial, customer, outlet, welcome }: Props) {
         <div className="flex flex-col gap-0.5 text-sm tabular-nums">
           <div className="flex justify-between"><span className="text-muted">Items</span><span>{money(totals.subtotal)}</span></div>
           {totals.discount > 0 && <div className="flex justify-between text-success"><span>{totals.discountRule}</span><span>−{money(totals.discount)}</span></div>}
-          <div className="flex justify-between text-muted"><span>{totals.vatRule}</span><span>{customer.accountType === "employee" ? "৳0" : money(totals.vat)}</span></div>
+          {totals.discountNote && <div className="flex justify-between text-muted"><span>{totals.discountNote}</span><span>৳0</span></div>}
+          <div className="flex justify-between text-muted"><span>{totals.vatRule}</span><span>{money(totals.vat)}</span></div>
           <div className="mt-1.5 flex justify-between text-xl font-bold"><span>Total</span><span className="text-so-price">{money(totals.total)}</span></div>
         </div>
         {customer.accountType === "employee" ? (

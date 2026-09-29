@@ -21,7 +21,8 @@ import {
   rejectOrder,
   type PlaceInput,
 } from "@/lib/orders";
-import { DEMO_COOKIE, hasDemoAccess } from "@/lib/demo-access";
+import { DEMO_COOKIE, DEMO_COOKIE_MAX_AGE, demoKey, demoToken, hasDemoAccess, openWithoutKey, sameToken } from "@/lib/demo-access";
+import { isPersonaId, type PersonaId } from "@/lib/demo-personas";
 import { clearPendingPhone, currentCustomer, endSession, getPendingPhone, setPendingPhone, startSession } from "@/lib/session";
 
 // Server Actions are reachable by direct POST, so every one re-checks who is
@@ -85,6 +86,51 @@ export async function registerAction(input: { name: string; accountType: "parent
     await clearPendingPhone();
     await startSession(id);
     return { next: "/order?welcome=1" };
+  });
+}
+
+// ------------------------------------------------------------ demo actors
+
+/**
+ * Switch the signed-in demo persona without another OTP. Allowed only when
+ * the caller is already a demo persona or holds presenter access, and only
+ * towards another seeded persona — real customers can never be impersonated.
+ */
+export async function switchPersonaAction(personaId: PersonaId, fromPath: string) {
+  return run(async () => {
+    if (!isPersonaId(personaId)) throw new RuleError("Unknown demo actor.", "Only seeded demo personas can be switched to");
+    const current = await currentCustomer();
+    const presenter = await hasDemoAccess((await cookies()).get(DEMO_COOKIE)?.value);
+    if (!presenter && !isPersonaId(current?.id)) throw new RuleError("Switching actors is for demo accounts only.", "Sign in with a demo number first");
+    const db = await getDb();
+    const target = (await db.select().from(t.customer).where(eq(t.customer.id, personaId)))[0];
+    if (!target || !target.active) throw new RuleError("That demo account is not available.", "Demo personas are seeded accounts");
+    await startSession(target.id);
+    await db.insert(t.auditLog).values({ id: crypto.randomUUID(), actor: `demo:${current?.id ?? "presenter"}`, action: "switch_persona", orderId: null, outletId: target.outletId, detail: { to: target.id } });
+    // an order page belongs to the previous actor; go to the matching list instead.
+    // Only known customer pages — fromPath comes from the client.
+    const next = fromPath.startsWith("/orders/") || fromPath.startsWith("/pay/") ? "/orders" : ["/", "/order", "/orders"].includes(fromPath) ? fromPath : "/order";
+    return { next, outletId: target.outletId };
+  });
+}
+
+/** Presenter key → staff screens cookie (the SMS inbox shows OTPs, so this stays gated). */
+export async function unlockStaffAction(key: string) {
+  return run(async () => {
+    const expected = demoKey();
+    if (!expected) {
+      if (openWithoutKey()) return { unlocked: true };
+      throw new RuleError("Staff screens are disabled on this deployment.", "DEMO_KEY must be configured");
+    }
+    const ok = sameToken(await demoToken(key.trim()), await demoToken(expected));
+    if (!ok) {
+      await new Promise((r) => setTimeout(r, 400));
+      throw new RuleError("That presenter key is not right.", "Staff and demo screens need the demo key");
+    }
+    (await cookies()).set(DEMO_COOKIE, await demoToken(expected), {
+      httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: DEMO_COOKIE_MAX_AGE,
+    });
+    return { unlocked: true };
   });
 }
 

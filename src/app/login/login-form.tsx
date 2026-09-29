@@ -49,6 +49,9 @@ export function LoginForm({ next }: { next?: string }) {
           </Field>
           <button type="submit" className="o-so-btn w-full" disabled={pending || phone.trim().length < 10}>{pending ? "Sending…" : "Continue with mobile →"}</button>
           <p className="mt-4 text-sm leading-6 text-muted">New here? Verify your number and we’ll help you set up your profile. Employees are recognised through the HR list.</p>
+          <button type="button" className="mt-2 text-sm font-semibold text-sts-purple underline" onClick={() => setPhone("01700000001")}>
+            Demo: use the parent account
+          </button>
         </form>
       ) : (
         <form onSubmit={(e) => { e.preventDefault(); verify(); }}>
@@ -75,7 +78,7 @@ export function LoginForm({ next }: { next?: string }) {
 
       <SandboxNote>
         <b>Sandbox:</b> no SMS is sent — the presenter reads codes from the <Link href="/demo" target="_blank" className="underline">demo inbox</Link>.
-        Demo numbers 01700000001–04 always use code <b>123456</b>.
+        Demo numbers 01700000001–05 always use code <b>123456</b>. After signing in, switch actor (student, employee, coordinator, kitchen…) from the <b>DEMO</b> menu — no second login.
       </SandboxNote>
     </AuthShell>
   );
