@@ -62,8 +62,8 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </div>
         <div className="grid items-start gap-4 p-3 sm:p-4 lg:grid-cols-2 [&>*]:min-w-0">
           <section className="min-w-0 overflow-x-auto rounded-md border border-line bg-surface">
-            <h2 className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-4 py-3 text-base font-semibold">Menu availability · today <span className="o-hint">switch off = sold out for {outlet.name}, today only</span></h2>
-            <AvailabilityList outletId={outlet.id} items={menu.map((m) => ({ id: m.id, name: m.name, category: m.category, price: m.price, available: m.available, reason: m.reason }))} />
+            <h2 className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-4 py-3 text-base font-semibold">Menu · availability and photos <span className="o-hint">switch off = sold out for {outlet.name}, today only · photos show on every outlet with this menu</span></h2>
+            <AvailabilityList outletId={outlet.id} items={menu.map((m) => ({ id: m.id, name: m.name, category: m.category, price: m.price, available: m.available, reason: m.reason, photos: m.photos }))} />
           </section>
 
           <div className="flex flex-col gap-4">

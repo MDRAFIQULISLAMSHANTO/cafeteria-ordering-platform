@@ -6,6 +6,7 @@ import * as t from "@/db/schema";
 import { demoNow, type DemoNow } from "./clock";
 import { RULES, money, price, type AccountType } from "./rules";
 import { addDays, at, daysBetween, time12, weekdayOf } from "./time";
+import { photosFor } from "./food-photos";
 
 type FoodOrder = typeof t.foodOrder.$inferSelect;
 type Payment = typeof t.payment.$inferSelect;
@@ -80,13 +81,44 @@ export async function menuFor(db: Db, outletId: string, date: string) {
   const products = await db.select().from(t.product).where(eq(t.product.menuKey, outlet.menuKey)).orderBy(asc(t.product.sort));
   const off = await db.select().from(t.unavailability).where(and(eq(t.unavailability.outletId, outletId), eq(t.unavailability.date, date)));
   const offIds = new Set(off.map((o) => o.productId));
+  const uploaded = await uploadedPhotos(db);
   return products
     .filter((p) => !p.weekday || p.weekday === wd)
     .map((p) => ({
       ...p,
       available: p.active && p.price != null && !offIds.has(p.id),
       reason: !p.active || p.price == null ? "Not priced yet" : offIds.has(p.id) ? "Sold out today" : null,
+      photos: photosFor(p.id, uploaded),
     }));
+}
+
+/** product id → upload time (ms), for cache-busting photo URLs. */
+export async function uploadedPhotos(db: Db) {
+  const rows = await db.select({ id: t.productPhoto.productId, at: t.productPhoto.updatedAt }).from(t.productPhoto);
+  return new Map(rows.map((r) => [r.id, new Date(r.at).getTime()]));
+}
+
+const PHOTO_TYPES = ["image/webp", "image/jpeg", "image/png"];
+const PHOTO_MAX_BYTES = 900_000;
+
+/** Save (or replace) an outlet's photo of a menu item. The browser resizes it first. */
+export async function savePhoto(db: Db, productId: string, mime: string, base64: string, width: number, height: number) {
+  const product = (await db.select({ id: t.product.id }).from(t.product).where(eq(t.product.id, productId)))[0];
+  if (!product) throw new RuleError("Unknown menu item.", "Photos belong to a menu item");
+  if (!PHOTO_TYPES.includes(mime)) throw new RuleError("Use a JPEG, PNG or WebP photo.", "Menu photos: JPEG, PNG or WebP");
+  const data = Buffer.from(base64, "base64");
+  if (data.length === 0 || data.length > PHOTO_MAX_BYTES) throw new RuleError("That photo is too large — try a smaller one.", "Menu photos up to 900 KB after resizing");
+  if (!Number.isInteger(width) || !Number.isInteger(height) || width < 64 || height < 64 || width > 2000 || height > 2000) {
+    throw new RuleError("That photo is too small or too large.", "Menu photos 64–2000 px");
+  }
+  const row = { productId, mime, data, width, height, updatedAt: new Date() };
+  await db.insert(t.productPhoto).values(row).onConflictDoUpdate({ target: t.productPhoto.productId, set: { mime, data, width, height, updatedAt: row.updatedAt } });
+  await audit(db, "operations", "photo_upload", null, null, { productId, bytes: data.length });
+}
+
+export async function removePhoto(db: Db, productId: string) {
+  await db.delete(t.productPhoto).where(eq(t.productPhoto.productId, productId));
+  await audit(db, "operations", "photo_remove", null, null, { productId });
 }
 
 export async function slotsFor(db: Db, outletId: string, date: string, now: DemoNow) {

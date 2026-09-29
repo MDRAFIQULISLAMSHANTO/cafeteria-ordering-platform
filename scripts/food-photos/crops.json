@@ -1,0 +1,69 @@
+{
+  "note": "Food photos cut from STS-supplied files (C6 S Cafe menu, Glenrich invitation banner). Native resolution, no upscaling. Rerun: python scripts/food-photos/crop.py",
+  "sources": {
+    "c6": "../../Requiremnts and files shared with invento/WhatsApp Image 2026-07-22 at 11.17.09.jpeg",
+    "banner": "../../assets/branding/sts-group/references/food-tasting-white-purple.jpeg"
+  },
+  "crops": [
+    {
+      "out": "biryani",
+      "src": "c6",
+      "box": [
+        330,
+        556,
+        582,
+        726
+      ]
+    },
+    {
+      "out": "wings",
+      "src": "c6",
+      "box": [
+        596,
+        638,
+        888,
+        822
+      ]
+    },
+    {
+      "out": "croissant-sandwich",
+      "src": "c6",
+      "box": [
+        276,
+        234,
+        476,
+        382
+      ]
+    },
+    {
+      "out": "latte",
+      "src": "c6",
+      "box": [
+        0,
+        226,
+        120,
+        364
+      ]
+    },
+    {
+      "out": "lemonade",
+      "src": "c6",
+      "box": [
+        1152,
+        664,
+        1236,
+        826
+      ]
+    },
+    {
+      "out": "burger",
+      "src": "banner",
+      "box": [
+        0,
+        1046,
+        168,
+        1306
+      ]
+    }
+  ]
+}

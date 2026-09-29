@@ -22,6 +22,8 @@ import {
   paySandbox,
   placeBulkOrder,
   placeOrder,
+  removePhoto,
+  savePhoto,
   recall,
   rejectOrder,
   resolveSubstitution,
@@ -253,6 +255,14 @@ export async function deliverAction(orderId: string) {
 
 export async function collectAction(orderId: string, via: "qr" | "lookup", nameConfirmed: boolean) {
   return run(async () => { await requireDemoAccess(); return collect(await getDb(), orderId, via, nameConfirmed); });
+}
+
+export async function uploadPhotoAction(productId: string, mime: string, base64: string, width: number, height: number) {
+  return run(async () => { await requireDemoAccess(); return savePhoto(await getDb(), productId, mime, base64, width, height); });
+}
+
+export async function removePhotoAction(productId: string) {
+  return run(async () => { await requireDemoAccess(); return removePhoto(await getDb(), productId); });
 }
 
 export async function toggleAvailabilityAction(outletId: string, productId: string) {

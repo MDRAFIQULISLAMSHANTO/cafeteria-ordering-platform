@@ -6,6 +6,7 @@ import { FoodArt } from "@/components/food/food-art";
 import { MenuCard } from "@/components/food/menu-card";
 import { foodLook } from "@/lib/food-kind";
 import { takeHandoff } from "@/lib/tray-handoff";
+import Image from "next/image";
 import Link from "next/link";
 import { editOrderAction, placeOrderAction } from "@/app/actions";
 import { useLocalState } from "@/components/local-store";
@@ -16,6 +17,7 @@ import { formatDay, time12 } from "@/lib/time";
 type Product = {
   id: string; category: string; name: string; description: string | null; price: number | null; unit: string;
   weekday: string | null; comboItems: string[] | null; flags: string[] | null; available: boolean; reason: string | null;
+  photos: string[] | null;
 };
 type Slot = { id: string; label: string; startsAt: string; endsAt: string; capacity: number; remaining: number; open: boolean; reason: string | null; cutoffMs: number; cutoffRule: string };
 type DateOpt = { date: string; weekday: string; open: boolean; reason: string | null };
@@ -334,7 +336,7 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
                   <MenuCard
                     key={p.id}
                     compact
-                    item={{ id: p.id, name: p.name, price: p.price, description: p.comboItems ? `Combo: ${p.comboItems.join(" + ")}` : p.description, look: foodLook(p.name, p.category), unit: p.unit }}
+                    item={{ id: p.id, name: p.name, price: p.price, description: p.comboItems ? `Combo: ${p.comboItems.join(" + ")}` : p.description, look: foodLook(p.name, p.category), unit: p.unit, photos: p.photos }}
                     disabled={!p.available}
                     onAdd={() => add(p)}
                     onOpen={() => { setOpen(p); setPanelQty(1); }}
@@ -369,7 +371,17 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
           <div className="flex max-h-[92vh] w-[min(560px,100%)] flex-col overflow-hidden rounded-2xl bg-so-surface shadow-o-pop">
             <div className="relative bg-[radial-gradient(circle_at_50%_70%,var(--sts-orange-soft)_0%,var(--sts-cream-2)_72%)] px-5 pb-4 pt-4 text-sts-ink">
               <button onClick={() => setOpen(null)} aria-label="Close" className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-sts-white text-lg shadow-sm">✕</button>
-              <FoodArt kind={foodLook(open.name, open.category).kind} tint={foodLook(open.name, open.category).tint} className="mx-auto h-40 w-auto drop-shadow-[0_16px_16px_var(--sts-drop)] sm:h-48" />
+              {open.photos?.length ? (
+                <div className={`mx-auto mb-3 grid h-44 max-w-sm gap-1 overflow-hidden rounded-2xl sm:h-52 ${open.photos.length > 1 ? "grid-cols-2" : ""}`}>
+                  {open.photos.slice(0, 2).map((src) => (
+                    <div key={src} className="relative">
+                      <Image src={src} alt={open.photos!.length > 1 ? "" : open.name} fill sizes="384px" className="object-cover" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <FoodArt kind={foodLook(open.name, open.category).kind} tint={foodLook(open.name, open.category).tint} className="mx-auto h-40 w-auto drop-shadow-[0_16px_16px_var(--sts-drop)] sm:h-48" />
+              )}
               <small className="text-2xs font-semibold uppercase tracking-wider text-sts-orange-text">{open.category}</small>
               <h2 className="mt-0.5 font-display text-2xl font-bold text-sts-purple">{open.name}</h2>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FoodArt } from "@/components/food/food-art";
@@ -65,7 +66,13 @@ export function SpecialCountdown({ data, orderHref }: { data: LandingData; order
         </div>
         <div className="relative mx-auto mt-8 w-[min(70vw,300px)] md:mt-0">
           <div aria-hidden className="absolute inset-[8%] rounded-full bg-sts-white/35" />
-          <FoodArt kind={sp?.look.kind ?? "rice"} tint={sp?.look.tint} className="relative w-full animate-float motion-safe-only drop-shadow-[0_24px_24px_var(--sts-drop)]" />
+          {sp?.photos?.length ? (
+            <div className="relative aspect-square w-full overflow-hidden rounded-full border-[6px] border-sts-white shadow-sts-float">
+              <Image src={sp.photos[0]} alt={sp.name} fill sizes="300px" className="object-cover" />
+            </div>
+          ) : (
+            <FoodArt kind={sp?.look.kind ?? "rice"} tint={sp?.look.tint} className="relative w-full animate-float motion-safe-only drop-shadow-[0_24px_24px_var(--sts-drop)]" />
+          )}
         </div>
       </div>
     </section>

@@ -84,7 +84,7 @@ export function MenuShowcase({ data, orderHref }: { data: LandingData; orderHref
             </AnimatePresence>
           </motion.div>
         </LayoutGroup>
-        <p className="mt-5 text-center text-xs text-muted">Pictures are drawn illustrations. Prices in BDT as printed, VAT included for parents and students.</p>
+        <p className="mt-5 text-center text-xs text-muted">Photos are from the cafeteria&apos;s own menu; items without one show a drawn plate until the outlet adds a photo. Prices in BDT as printed, VAT included for parents and students.</p>
       </div>
     </section>
   );

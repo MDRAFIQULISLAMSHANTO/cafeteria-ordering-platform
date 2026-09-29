@@ -5,6 +5,7 @@
 // Money is stored in poisha (BDT × 100) as integers.
 import {
   boolean,
+  customType,
   index,
   integer,
   jsonb,
@@ -229,4 +230,19 @@ export const hrSyncRun = pgTable("hr_sync_run", {
   updated: integer("updated").notNull(),
   deactivated: integer("deactivated").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+const bytea = customType<{ data: Uint8Array; driverData: Uint8Array }>({
+  dataType: () => "bytea",
+});
+
+// Menu photos uploaded by the outlet (Operations). Kept outside the demo
+// Reset on purpose (no foreign key), so real photos survive a data reset.
+export const productPhoto = pgTable("product_photo", {
+  productId: text("product_id").primaryKey(),
+  mime: text("mime").notNull(), // image/webp | image/jpeg
+  data: bytea("data").notNull(),
+  width: integer("width").notNull(),
+  height: integer("height").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

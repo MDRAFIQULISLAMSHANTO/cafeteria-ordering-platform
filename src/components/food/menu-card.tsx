@@ -1,16 +1,18 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import { useState, type ReactNode } from "react";
 import type { FoodLook } from "@/lib/food-kind";
 import { money } from "@/lib/rules";
 import { FoodArt } from "./food-art";
 
-export type CardItem = { id: string; name: string; price: number | null; description?: string | null; look: FoodLook; unit?: string };
+export type CardItem = { id: string; name: string; price: number | null; description?: string | null; look: FoodLook; unit?: string; photos?: string[] | null };
 
 /**
- * One menu item: drawn plate, name, price and a round add button that
- * turns into a tick. Used on the landing page and the /order menu.
+ * One menu item: photo (or the drawn plate until the outlet adds one), name,
+ * price and a round add button that turns into a tick. Used on the landing
+ * page and the /order menu.
  */
 export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact }: {
   item: CardItem;
@@ -28,11 +30,22 @@ export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact 
     setAdded((n) => n + 1);
     setTimeout(() => setAdded((n) => Math.max(0, n - 1)), 1100);
   };
+  const photos = item.photos?.slice(0, 2) ?? [];
   const Art = (
     <div className="relative grid aspect-[5/4] place-items-center overflow-hidden rounded-t-[1.35rem] bg-[radial-gradient(circle_at_50%_60%,var(--sts-orange-soft)_0%,var(--sts-cream-2)_70%)]">
-      <motion.div whileHover={reduce ? undefined : { rotate: -8, scale: 1.05 }} transition={{ type: "spring", stiffness: 260, damping: 16 }} className="w-[72%]">
-        <FoodArt kind={item.look.kind} tint={item.look.tint} steam={false} className="w-full drop-shadow-[0_12px_12px_var(--sts-drop)]" />
-      </motion.div>
+      {photos.length ? (
+        <div className={`absolute inset-0 grid bg-sts-white ${photos.length > 1 ? "grid-cols-2 gap-px" : ""}`}>
+          {photos.map((src) => (
+            <div key={src} className="relative overflow-hidden">
+              <Image src={src} alt={photos.length > 1 ? "" : item.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <motion.div whileHover={reduce ? undefined : { rotate: -8, scale: 1.05 }} transition={{ type: "spring", stiffness: 260, damping: 16 }} className="w-[72%]">
+          <FoodArt kind={item.look.kind} tint={item.look.tint} steam={false} className="w-full drop-shadow-[0_12px_12px_var(--sts-drop)]" />
+        </motion.div>
+      )}
       {badges && <div className="absolute inset-x-2.5 top-2.5 flex flex-wrap gap-1 text-2xs">{badges}</div>}
     </div>
   );
