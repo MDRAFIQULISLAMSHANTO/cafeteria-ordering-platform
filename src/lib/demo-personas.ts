@@ -58,8 +58,8 @@ export const PERSONAS: Persona[] = [
 ];
 
 export const STAFF_SCREENS = [
-  { id: "kds", actor: "Kitchen display", path: "/kds" },
-  { id: "counter", actor: "Counter · collection", path: "/counter" },
+  { id: "kds", actor: "Kitchen", path: "/kds" },
+  { id: "counter", actor: "Counter", path: "/counter" },
   { id: "status", actor: "Pickup TV", path: "/status" },
   { id: "admin", actor: "Operations", path: "/admin" },
 ] as const;
