@@ -7,6 +7,7 @@ import { demoNow, type DemoNow } from "./clock";
 import { RULES, money, price, type AccountType } from "./rules";
 import { addDays, at, daysBetween, time12, weekdayOf } from "./time";
 import { photosFor } from "./food-photos";
+import { readOptionalPhotos } from "./optional-photo-table";
 
 type FoodOrder = typeof t.foodOrder.$inferSelect;
 type Payment = typeof t.payment.$inferSelect;
@@ -94,7 +95,7 @@ export async function menuFor(db: Db, outletId: string, date: string) {
 
 /** product id → upload time (ms), for cache-busting photo URLs. */
 export async function uploadedPhotos(db: Db) {
-  const rows = await db.select({ id: t.productPhoto.productId, at: t.productPhoto.updatedAt }).from(t.productPhoto);
+  const rows = await readOptionalPhotos(async () => db.select({ id: t.productPhoto.productId, at: t.productPhoto.updatedAt }).from(t.productPhoto));
   return new Map(rows.map((r) => [r.id, new Date(r.at).getTime()]));
 }
 
