@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { requestOtpAction, verifyOtpAction } from "@/app/actions";
-import { CenterCard, Field, FormError, SandboxNote } from "@/components/ui";
+import { Field, FormError, SandboxNote } from "@/components/ui";
+import { AuthShell } from "@/components/auth-shell";
 
 export function LoginForm({ next }: { next?: string }) {
   const router = useRouter();
@@ -33,13 +33,11 @@ export function LoginForm({ next }: { next?: string }) {
     });
 
   return (
-    <CenterCard>
-      <Link href="/" aria-label="Home">
-        <Image src="/branding/sts-group-logo.png" alt="STS Group" width={110} height={47} className="mb-4" />
-      </Link>
-      <h1 className="mb-1.5 text-2xl font-bold">{sentTo ? "Enter your code" : "Sign in with your mobile"}</h1>
+    <AuthShell>
+      <span className="mb-3 block text-xs font-semibold uppercase tracking-widest text-sts-purple">Welcome to your cafeteria</span>
+      <h1 className="mb-3 text-2xl font-bold">{sentTo ? "Check your mobile" : "Let’s get you a good meal."}</h1>
       <p className="mb-5 text-muted">
-        {sentTo ? `We sent a 6-digit code to ${sentTo}.` : "Parents, students and STS staff sign in with their mobile number. No password needed."}
+        {sentTo ? `Enter the 6-digit verification code for ${sentTo}.` : "Sign in or create an account with your mobile number. No password to remember."}
       </p>
 
       {error && <FormError msg={error.msg} rule={error.rule} />}
@@ -47,9 +45,10 @@ export function LoginForm({ next }: { next?: string }) {
       {!sentTo ? (
         <form onSubmit={(e) => { e.preventDefault(); send(); }}>
           <Field label="Mobile number" htmlFor="phone">
-            <input id="phone" className="so-input" inputMode="tel" autoComplete="tel" placeholder="01712 345678" value={phone} onChange={(e) => setPhone(e.target.value)} autoFocus />
+            <input id="phone" type="tel" required className="so-input" inputMode="tel" autoComplete="tel" placeholder="01712 345678" value={phone} onChange={(e) => setPhone(e.target.value)} autoFocus />
           </Field>
-          <button className="o-so-btn o-so-btn-primary w-full" disabled={pending || phone.trim().length < 10}>{pending ? "Sending…" : "Send code"}</button>
+          <button type="submit" className="o-so-btn w-full" disabled={pending || phone.trim().length < 10}>{pending ? "Sending…" : "Continue with mobile →"}</button>
+          <p className="mt-4 text-sm leading-6 text-muted">New here? Verify your number and we’ll help you set up your profile. Employees are recognised through the HR list.</p>
         </form>
       ) : (
         <form onSubmit={(e) => { e.preventDefault(); verify(); }}>
@@ -65,9 +64,9 @@ export function LoginForm({ next }: { next?: string }) {
               autoFocus
             />
           </Field>
-          <button className="o-so-btn o-so-btn-primary w-full" disabled={pending || code.length !== 6}>{pending ? "Checking…" : "Verify and continue"}</button>
+          <button type="submit" className="o-so-btn w-full" disabled={pending || code.length !== 6}>{pending ? "Checking…" : "Verify and continue →"}</button>
           <p className="mt-4 text-center">
-            <button type="button" className="font-semibold text-so-price" onClick={() => { setSentTo(null); setCode(""); setError(null); }}>Use a different number</button>
+            <button type="button" disabled={pending} className="min-h-11 font-semibold text-so-price" onClick={() => { setSentTo(null); setCode(""); setError(null); }}>Use a different number</button>
             {" · "}
             <button type="button" className="font-semibold text-so-price" onClick={send} disabled={pending}>Resend code</button>
           </p>
@@ -78,6 +77,6 @@ export function LoginForm({ next }: { next?: string }) {
         <b>Sandbox:</b> no SMS is sent — the presenter reads codes from the <Link href="/demo" target="_blank" className="underline">demo inbox</Link>.
         Demo numbers 01700000001–04 always use code <b>123456</b>.
       </SandboxNote>
-    </CenterCard>
+    </AuthShell>
   );
 }

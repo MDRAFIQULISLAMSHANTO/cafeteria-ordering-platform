@@ -62,6 +62,11 @@
   --color-so-paid-ink: var(--o-so-paid-ink);
   --color-sts-ink: var(--sts-ink);
   --color-sts-purple: var(--sts-purple);
+  --color-sts-orange: var(--sts-orange);
+  --color-sts-orange-deep: var(--sts-orange-deep);
+  --color-sts-cream: var(--sts-cream);
+  --color-sts-white: var(--sts-white);
+  --color-sts-ornament: var(--sts-ornament);
 
   /* staff screens */
   --color-kds-bg: var(--o-kds-bg);
@@ -98,6 +103,11 @@
 }
 
 /* gradients and images can't be theme colours */
+.sts-public-theme {
+  /* The STS campaign palette is limited to the public landing page. */
+  --o-so-grad: linear-gradient(135deg, var(--sts-orange), var(--sts-orange-deep));
+}
+
 @utility bg-so-grad {
   background-image: var(--o-so-grad);
 }

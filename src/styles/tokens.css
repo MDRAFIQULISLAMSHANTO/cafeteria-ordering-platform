@@ -96,12 +96,12 @@
   /* ---- POS: self-order kiosk / mobile (Odoo 20 demo, 28 Sep 2026) ------- */
   /* The customer-facing screens: lavender-grey ground, white cards, plum as
      a gradient on the one big action, prices in plum. */
-  --o-so-bg:          var(--sts-cream);
+  --o-so-bg:          #EBE5EA;
   --o-so-surface:     #FFFFFF;
-  --o-so-btn-2:       #FFFFFF;   /* Back, My Orders — the quiet big button     */
-  --o-so-btn-2-ink:   var(--sts-purple);
-  --o-so-grad:        linear-gradient(135deg, var(--sts-orange) 0%, var(--sts-orange-deep) 100%);
-  --o-so-price:       var(--sts-purple);   /* prices, order number, selection total */
+  --o-so-btn-2:       #EFEFEF;   /* Back, My Orders — the quiet big button     */
+  --o-so-btn-2-ink:   #3A3F47;
+  --o-so-grad:        linear-gradient(135deg, #95698C 0%, #7F4F74 100%);
+  --o-so-price:       #7F4F74;   /* Odoo prices, order number, selection total */
   --o-so-paid:        #1FA855;   --o-so-paid-ink: #FFFFFF;
   --o-so-hero-ph:     linear-gradient(145deg, var(--sts-cream) 0%, var(--sts-white) 72%);
   --o-so-photo-pill:  rgba(255, 255, 255, .82);  /* "Average time" over a photo  */
@@ -169,8 +169,8 @@
 
   /* ---- website / portal payment page: follows the WEBSITE theme, not the
      backend. The demo's theme is salmon; read the client's own theme. ---- */
-  --o-web-primary:    var(--sts-orange);
-  --o-web-header:     var(--sts-cream);
+  --o-web-primary:    var(--o-primary);
+  --o-web-header:     var(--o-surface-2);
 
   /* ---- type -------------------------------------------------------------- */
   --o-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,

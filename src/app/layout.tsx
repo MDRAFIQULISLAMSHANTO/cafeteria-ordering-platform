@@ -7,10 +7,10 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const bengali = Noto_Sans_Bengali({ variable: "--font-bengali", subsets: ["bengali"], weight: ["400", "700"] });
 
 export const metadata: Metadata = {
-  title: "STS Café — Online Ordering (prototype)",
+  title: "STS Group — Online Cafeteria Ordering",
   description: "Order ahead from STS Group cafeterias. Working prototype: payment, SMS and HR list are sandbox.",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, title: "STS Café", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "Cafeteria Ordering", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
