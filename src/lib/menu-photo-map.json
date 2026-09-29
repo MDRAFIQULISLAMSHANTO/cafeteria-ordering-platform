@@ -1,0 +1,290 @@
+{
+  "menu-a-001": [
+    "/menu/online/fried-chicken.webp"
+  ],
+  "menu-a-009": [
+    "/menu/online/fried-chicken.webp"
+  ],
+  "menu-a-002": [
+    "/menu/online/chicken-burger.webp"
+  ],
+  "menu-a-012": [
+    "/menu/online/chicken-burger.webp"
+  ],
+  "menu-a-003": [
+    "/menu/online/samosa.webp"
+  ],
+  "menu-a-023": [
+    "/menu/online/samosa.webp"
+  ],
+  "menu-a-004": [
+    "/menu/online/coffee-cookies.webp"
+  ],
+  "menu-a-005": [
+    "/menu/online/chicken-bake.webp"
+  ],
+  "menu-a-006": [
+    "/menu/online/spinach-quiche.webp"
+  ],
+  "menu-b-048": [
+    "/menu/online/spinach-quiche.webp"
+  ],
+  "menu-b-067": [
+    "/menu/online/spinach-quiche.webp"
+  ],
+  "menu-a-007": [
+    "/menu/online/beef-patty.webp"
+  ],
+  "menu-a-008": [
+    "/menu/online/vegetable-quiche.webp"
+  ],
+  "menu-b-053": [
+    "/menu/online/vegetable-quiche.webp"
+  ],
+  "menu-b-054": [
+    "/menu/online/vegetable-quiche.webp"
+  ],
+  "menu-a-010": [
+    "/menu/online/club-sandwich.webp"
+  ],
+  "menu-b-068": [
+    "/menu/online/club-sandwich.webp"
+  ],
+  "menu-a-011": [
+    "/menu/online/chicken-sandwich.webp"
+  ],
+  "menu-a-013": [
+    "/menu/online/sub-sandwich.webp"
+  ],
+  "menu-a-014": [
+    "/menu/online/wings.webp"
+  ],
+  "menu-a-015": [
+    "/menu/online/beef-burger.webp"
+  ],
+  "menu-b-069": [
+    "/menu/online/beef-burger.webp"
+  ],
+  "menu-a-016": [
+    "/menu/online/cheesecake.webp"
+  ],
+  "menu-b-075": [
+    "/menu/online/cheesecake.webp"
+  ],
+  "menu-a-017": [
+    "/menu/online/brownie.webp"
+  ],
+  "menu-a-018": [
+    "/menu/online/basbousa.webp"
+  ],
+  "menu-a-019": [
+    "/menu/online/chocolate-cookies.webp"
+  ],
+  "menu-b-078": [
+    "/menu/online/chocolate-cookies.webp"
+  ],
+  "menu-b-080": [
+    "/menu/online/chocolate-cookies.webp"
+  ],
+  "menu-a-020": [
+    "/menu/online/oat-cookies.webp"
+  ],
+  "menu-a-021": [
+    "/menu/online/fries.webp"
+  ],
+  "menu-a-022": [
+    "/menu/online/wedges.webp"
+  ],
+  "menu-a-024": [
+    "/menu/online/spring-rolls.webp"
+  ],
+  "menu-a-025": [
+    "/menu/online/kebab-wrap.webp"
+  ],
+  "menu-b-070": [
+    "/menu/online/kebab-wrap.webp"
+  ],
+  "menu-a-026": [
+    "/menu/online/cheese-balls.webp"
+  ],
+  "menu-a-027": [
+    "/menu/online/waffle.webp"
+  ],
+  "menu-a-028": [
+    "/menu/online/lemonade.webp"
+  ],
+  "menu-a-029": [
+    "/menu/online/mango-cooler.webp"
+  ],
+  "menu-a-030": [
+    "/menu/online/strawberry-mojito.webp"
+  ],
+  "menu-a-031": [
+    "/menu/online/orange-juice.webp"
+  ],
+  "menu-a-032": [
+    "/menu/online/watermelon-juice.webp"
+  ],
+  "menu-a-033": [
+    "/menu/online/mango-smoothie.webp"
+  ],
+  "menu-a-034": [
+    "/menu/online/blueberry-smoothie.webp"
+  ],
+  "menu-a-035": [
+    "/menu/online/americano.webp"
+  ],
+  "menu-b-081": [
+    "/menu/online/americano.webp"
+  ],
+  "menu-b-083": [
+    "/menu/online/americano.webp"
+  ],
+  "menu-a-036": [
+    "/menu/online/cappuccino.webp"
+  ],
+  "menu-b-084": [
+    "/menu/online/cappuccino.webp"
+  ],
+  "menu-a-037": [
+    "/menu/online/latte.webp"
+  ],
+  "menu-a-038": [
+    "/menu/online/latte.webp"
+  ],
+  "menu-a-039": [
+    "/menu/online/latte.webp"
+  ],
+  "menu-b-085": [
+    "/menu/online/latte.webp"
+  ],
+  "menu-b-088": [
+    "/menu/online/latte.webp"
+  ],
+  "menu-a-040": [
+    "/menu/online/mocha.webp"
+  ],
+  "menu-b-087": [
+    "/menu/online/mocha.webp"
+  ],
+  "menu-a-041": [
+    "/menu/online/hot-chocolate.webp"
+  ],
+  "menu-b-089": [
+    "/menu/online/hot-chocolate.webp"
+  ],
+  "menu-a-042": [
+    "/menu/online/omelette.webp"
+  ],
+  "menu-a-043": [
+    "/menu/online/biryani.webp"
+  ],
+  "menu-a-044": [
+    "/menu/online/quesadilla.webp"
+  ],
+  "menu-a-045": [
+    "/menu/online/dosa.webp"
+  ],
+  "menu-a-046": [
+    "/menu/online/kebab-paratha.webp"
+  ],
+  "menu-b-047": [
+    "/menu/online/mushroom-quiche.webp"
+  ],
+  "menu-b-049": [
+    "/menu/online/puff-pastry.webp"
+  ],
+  "menu-b-050": [
+    "/menu/online/puff-pastry.webp"
+  ],
+  "menu-b-051": [
+    "/menu/online/cottage-pie.webp"
+  ],
+  "menu-b-064": [
+    "/menu/online/cottage-pie.webp"
+  ],
+  "menu-b-052": [
+    "/menu/online/mac-cheese.webp"
+  ],
+  "menu-b-055": [
+    "/menu/online/salad.webp"
+  ],
+  "menu-b-056": [
+    "/menu/online/prawns.webp"
+  ],
+  "menu-b-057": [
+    "/menu/online/salmon.webp"
+  ],
+  "menu-b-061": [
+    "/menu/online/salmon.webp"
+  ],
+  "menu-b-058": [
+    "/menu/online/vegetable-pasta.webp"
+  ],
+  "menu-b-059": [
+    "/menu/online/chicken-fillet.webp"
+  ],
+  "menu-b-060": [
+    "/menu/online/beef-steak.webp"
+  ],
+  "menu-b-062": [
+    "/menu/online/mixed-grill.webp"
+  ],
+  "menu-b-063": [
+    "/menu/online/seafood-pasta.webp"
+  ],
+  "menu-b-065": [
+    "/menu/online/beef-pie.webp"
+  ],
+  "menu-b-066": [
+    "/menu/online/soup.webp"
+  ],
+  "menu-b-071": [
+    "/menu/online/pizza.webp"
+  ],
+  "menu-b-072": [
+    "/menu/online/fruit-cheese.webp"
+  ],
+  "menu-b-073": [
+    "/menu/online/charcuterie.webp"
+  ],
+  "menu-b-074": [
+    "/menu/online/chocolate-cake.webp"
+  ],
+  "menu-b-076": [
+    "/menu/online/eclairs.webp"
+  ],
+  "menu-b-077": [
+    "/menu/online/mousse.webp"
+  ],
+  "menu-b-079": [
+    "/menu/online/chocolate.webp"
+  ],
+  "menu-b-082": [
+    "/menu/online/espresso.webp"
+  ],
+  "menu-b-086": [
+    "/menu/online/matcha.webp"
+  ],
+  "menu-b-090": [
+    "/menu/online/matcha-latte.webp"
+  ],
+  "menu-b-091": [
+    "/menu/online/tea.webp"
+  ],
+  "menu-b-092": [
+    "/menu/online/oreo-shake.webp"
+  ],
+  "menu-b-093": [
+    "/menu/online/chocolate-shake.webp"
+  ],
+  "menu-b-094": [
+    "/menu/online/chocolate-shake.webp"
+  ],
+  "menu-b-095": [
+    "/menu/online/chocolate-shake.webp"
+  ],
+  "menu-b-096": [
+    "/menu/online/frappe.webp"
+  ]
+}

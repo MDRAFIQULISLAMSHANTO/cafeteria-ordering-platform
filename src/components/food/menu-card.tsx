@@ -37,7 +37,7 @@ export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact 
         <div className={`absolute inset-0 grid bg-sts-white ${photos.length > 1 ? "grid-cols-2 gap-px" : ""}`}>
           {photos.map((src) => (
             <div key={src} className="relative overflow-hidden">
-              <Image src={src} alt={photos.length > 1 ? "" : item.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
+              <Image src={src} alt={photos.length > 1 ? `${item.name} — photo ${photos.indexOf(src) + 1}` : item.name} fill sizes="(max-width: 640px) 50vw, (max-width: 1100px) 33vw, 320px" className="object-cover object-center transition-transform duration-500 motion-safe:group-hover:scale-[1.025]" />
             </div>
           ))}
         </div>

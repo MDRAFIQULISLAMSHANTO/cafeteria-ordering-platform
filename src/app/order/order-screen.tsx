@@ -375,7 +375,7 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
                 <div className={`mx-auto mb-3 grid h-44 max-w-sm gap-1 overflow-hidden rounded-2xl sm:h-52 ${open.photos.length > 1 ? "grid-cols-2" : ""}`}>
                   {open.photos.slice(0, 2).map((src) => (
                     <div key={src} className="relative">
-                      <Image src={src} alt={open.photos!.length > 1 ? "" : open.name} fill sizes="384px" className="object-cover" />
+                      <Image src={src} alt={open.photos!.length > 1 ? `${open.name} — photo ${open.photos!.indexOf(src) + 1}` : open.name} fill sizes="384px" className="object-cover" />
                     </div>
                   ))}
                 </div>
@@ -384,6 +384,9 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
               )}
               <small className="text-2xs font-semibold uppercase tracking-wider text-sts-orange-text">{open.category}</small>
               <h2 className="mt-0.5 font-display text-2xl font-bold text-sts-purple">{open.name}</h2>
+              {open.photos?.length ? (
+                <p className="mt-2 text-xs text-muted">Representative food photo; actual servings may vary. <Link href="/photo-credits" className="underline">Photo credits</Link></p>
+              ) : null}
             </div>
             <div className="flex flex-col gap-3 overflow-y-auto p-5">
               {open.description && <p className="text-muted">{open.description}</p>}

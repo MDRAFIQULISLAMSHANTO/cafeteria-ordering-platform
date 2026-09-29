@@ -44,3 +44,8 @@ next-env.d.ts
 # local embedded database
 /.data
 /.data-dev.log
+
+# Download originals are reproducible from the photo source manifests.
+# Ship only the reviewed, optimized WebP assets.
+/public/menu/online/*.jpg
+/public/menu/online/*.png
