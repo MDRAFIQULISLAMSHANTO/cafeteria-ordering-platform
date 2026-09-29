@@ -77,7 +77,7 @@ export function LoginForm({ next }: { next?: string }) {
       )}
 
       <SandboxNote>
-        <b>Sandbox:</b> demo numbers 01700000001–05 use code <b>123456</b>; other codes are in the <Link href="/demo" target="_blank" className="underline">demo inbox</Link>.
+        <b>Sandbox:</b> demo numbers 01700000001–05 use code <b>123456</b>; other codes are in the <Link href="/demo" prefetch={false} target="_blank" className="underline">demo inbox</Link>.
         After signing in, the <b>DEMO</b> button switches actor — no second login.
       </SandboxNote>
     </AuthShell>
