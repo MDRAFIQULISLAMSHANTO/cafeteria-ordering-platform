@@ -1,35 +1,20 @@
 {
   "menu-a-001": [
-    "/menu/online/fried-chicken.webp"
-  ],
-  "menu-a-009": [
-    "/menu/online/fried-chicken.webp"
+    "/menu/online/chicken-leg-fries-meal.webp"
   ],
   "menu-a-002": [
-    "/menu/online/chicken-burger.webp"
-  ],
-  "menu-a-012": [
-    "/menu/online/chicken-burger.webp"
+    "/menu/online/chicken-burger-fries-set.webp"
   ],
   "menu-a-003": [
-    "/menu/online/samosa.webp"
-  ],
-  "menu-a-023": [
-    "/menu/online/samosa.webp"
+    "/menu/online/tea-with-samosa.webp"
   ],
   "menu-a-004": [
     "/menu/online/coffee-cookies.webp"
   ],
   "menu-a-005": [
-    "/menu/online/chicken-bake.webp"
+    "/menu/online/chicken-mushroom-pie.webp"
   ],
   "menu-a-006": [
-    "/menu/online/spinach-quiche.webp"
-  ],
-  "menu-b-048": [
-    "/menu/online/spinach-quiche.webp"
-  ],
-  "menu-b-067": [
     "/menu/online/spinach-quiche.webp"
   ],
   "menu-a-007": [
@@ -38,20 +23,17 @@
   "menu-a-008": [
     "/menu/online/vegetable-quiche.webp"
   ],
-  "menu-b-053": [
-    "/menu/online/vegetable-quiche.webp"
-  ],
-  "menu-b-054": [
-    "/menu/online/vegetable-quiche.webp"
+  "menu-a-009": [
+    "/menu/online/fried-drumsticks.webp"
   ],
   "menu-a-010": [
-    "/menu/online/club-sandwich.webp"
-  ],
-  "menu-b-068": [
-    "/menu/online/club-sandwich.webp"
+    "/menu/online/focaccia-sandwich.webp"
   ],
   "menu-a-011": [
-    "/menu/online/chicken-sandwich.webp"
+    "/menu/online/chicken-salad-sandwich.webp"
+  ],
+  "menu-a-012": [
+    "/menu/online/crispy-chicken-burger.webp"
   ],
   "menu-a-013": [
     "/menu/online/sub-sandwich.webp"
@@ -62,14 +44,8 @@
   "menu-a-015": [
     "/menu/online/beef-burger.webp"
   ],
-  "menu-b-069": [
-    "/menu/online/beef-burger.webp"
-  ],
   "menu-a-016": [
-    "/menu/online/cheesecake.webp"
-  ],
-  "menu-b-075": [
-    "/menu/online/cheesecake.webp"
+    "/menu/online/baked-cheesecake-berries.webp"
   ],
   "menu-a-017": [
     "/menu/online/brownie.webp"
@@ -80,14 +56,8 @@
   "menu-a-019": [
     "/menu/online/chocolate-cookies.webp"
   ],
-  "menu-b-078": [
-    "/menu/online/chocolate-cookies.webp"
-  ],
-  "menu-b-080": [
-    "/menu/online/chocolate-cookies.webp"
-  ],
   "menu-a-020": [
-    "/menu/online/oat-cookies.webp"
+    "/menu/online/oatmeal-raisin-cookies.webp"
   ],
   "menu-a-021": [
     "/menu/online/fries.webp"
@@ -95,13 +65,13 @@
   "menu-a-022": [
     "/menu/online/wedges.webp"
   ],
+  "menu-a-023": [
+    "/menu/online/samosa.webp"
+  ],
   "menu-a-024": [
     "/menu/online/spring-rolls.webp"
   ],
   "menu-a-025": [
-    "/menu/online/kebab-wrap.webp"
-  ],
-  "menu-b-070": [
     "/menu/online/kebab-wrap.webp"
   ],
   "menu-a-026": [
@@ -134,43 +104,22 @@
   "menu-a-035": [
     "/menu/online/americano.webp"
   ],
-  "menu-b-081": [
-    "/menu/online/americano.webp"
-  ],
-  "menu-b-083": [
-    "/menu/online/americano.webp"
-  ],
   "menu-a-036": [
-    "/menu/online/cappuccino.webp"
-  ],
-  "menu-b-084": [
     "/menu/online/cappuccino.webp"
   ],
   "menu-a-037": [
     "/menu/online/latte.webp"
   ],
   "menu-a-038": [
-    "/menu/online/latte.webp"
+    "/menu/online/latte-mug.webp"
   ],
   "menu-a-039": [
-    "/menu/online/latte.webp"
-  ],
-  "menu-b-085": [
-    "/menu/online/latte.webp"
-  ],
-  "menu-b-088": [
-    "/menu/online/latte.webp"
+    "/menu/online/caramel-latte-art.webp"
   ],
   "menu-a-040": [
     "/menu/online/mocha.webp"
   ],
-  "menu-b-087": [
-    "/menu/online/mocha.webp"
-  ],
   "menu-a-041": [
-    "/menu/online/hot-chocolate.webp"
-  ],
-  "menu-b-089": [
     "/menu/online/hot-chocolate.webp"
   ],
   "menu-a-042": [
@@ -189,22 +138,28 @@
     "/menu/online/kebab-paratha.webp"
   ],
   "menu-b-047": [
-    "/menu/online/mushroom-quiche.webp"
+    "/menu/online/mushroom-leek-quiche.webp"
+  ],
+  "menu-b-048": [
+    "/menu/online/spinach-quiche-whole.webp"
   ],
   "menu-b-049": [
     "/menu/online/puff-pastry.webp"
   ],
   "menu-b-050": [
-    "/menu/online/puff-pastry.webp"
+    "/menu/online/chicken-puffs.webp"
   ],
   "menu-b-051": [
     "/menu/online/cottage-pie.webp"
   ],
-  "menu-b-064": [
-    "/menu/online/cottage-pie.webp"
-  ],
   "menu-b-052": [
     "/menu/online/mac-cheese.webp"
+  ],
+  "menu-b-053": [
+    "/menu/online/mini-veg-quiches.webp"
+  ],
+  "menu-b-054": [
+    "/menu/online/quiche-lorraine.webp"
   ],
   "menu-b-055": [
     "/menu/online/salad.webp"
@@ -213,9 +168,6 @@
     "/menu/online/prawns.webp"
   ],
   "menu-b-057": [
-    "/menu/online/salmon.webp"
-  ],
-  "menu-b-061": [
     "/menu/online/salmon.webp"
   ],
   "menu-b-058": [
@@ -227,17 +179,35 @@
   "menu-b-060": [
     "/menu/online/beef-steak.webp"
   ],
+  "menu-b-061": [
+    "/menu/online/fried-whole-fish.webp"
+  ],
   "menu-b-062": [
     "/menu/online/mixed-grill.webp"
   ],
   "menu-b-063": [
     "/menu/online/seafood-pasta.webp"
   ],
+  "menu-b-064": [
+    "/menu/online/shepherds-pie.webp"
+  ],
   "menu-b-065": [
     "/menu/online/beef-pie.webp"
   ],
   "menu-b-066": [
     "/menu/online/soup.webp"
+  ],
+  "menu-b-067": [
+    "/menu/online/chicken-puff-pockets.webp"
+  ],
+  "menu-b-068": [
+    "/menu/online/club-sandwich.webp"
+  ],
+  "menu-b-069": [
+    "/menu/online/slider-trio-fries.webp"
+  ],
+  "menu-b-070": [
+    "/menu/online/chicken-caesar-wrap.webp"
   ],
   "menu-b-071": [
     "/menu/online/pizza.webp"
@@ -249,7 +219,10 @@
     "/menu/online/charcuterie.webp"
   ],
   "menu-b-074": [
-    "/menu/online/chocolate-cake.webp"
+    "/menu/online/chocolate-mud-cake.webp"
+  ],
+  "menu-b-075": [
+    "/menu/online/cheesecake.webp"
   ],
   "menu-b-076": [
     "/menu/online/eclairs.webp"
@@ -257,14 +230,41 @@
   "menu-b-077": [
     "/menu/online/mousse.webp"
   ],
+  "menu-b-078": [
+    "/menu/online/assorted-cookies.webp"
+  ],
   "menu-b-079": [
     "/menu/online/chocolate.webp"
+  ],
+  "menu-b-080": [
+    "/menu/online/oatmeal-cookies-plate.webp"
+  ],
+  "menu-b-081": [
+    "/menu/online/black-coffee.webp"
   ],
   "menu-b-082": [
     "/menu/online/espresso.webp"
   ],
+  "menu-b-083": [
+    "/menu/online/americano-glass-cup.webp"
+  ],
+  "menu-b-084": [
+    "/menu/online/cappuccino-latte-art.webp"
+  ],
+  "menu-b-085": [
+    "/menu/online/latte-art-cup.webp"
+  ],
   "menu-b-086": [
     "/menu/online/matcha.webp"
+  ],
+  "menu-b-087": [
+    "/menu/online/mocha-latte-art.webp"
+  ],
+  "menu-b-088": [
+    "/menu/online/vanilla-iced-latte.webp"
+  ],
+  "menu-b-089": [
+    "/menu/online/iced-chocolate.webp"
   ],
   "menu-b-090": [
     "/menu/online/matcha-latte.webp"
@@ -279,10 +279,10 @@
     "/menu/online/chocolate-shake.webp"
   ],
   "menu-b-094": [
-    "/menu/online/chocolate-shake.webp"
+    "/menu/online/mint-chocolate-milkshake.webp"
   ],
   "menu-b-095": [
-    "/menu/online/chocolate-shake.webp"
+    "/menu/online/mango-milkshake.webp"
   ],
   "menu-b-096": [
     "/menu/online/frappe.webp"

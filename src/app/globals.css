@@ -186,6 +186,11 @@
 .o-kds-acct-employee { background: var(--o-preset-delivery-soft); }
 .o-receipt-sub { font-size: 12px; display: flex; justify-content: space-between; }
 
+/* Demo guide: the swimlane arrows flow gently (off for reduced motion). */
+.guide-flow { animation: guide-dash 1.2s linear infinite; }
+@keyframes guide-dash { to { stroke-dashoffset: -22; } }
+@media (prefers-reduced-motion: reduce) { .guide-flow { animation: none; } }
+
 /* Motion: anything animated in by script starts visible; scripts hide it only
    when they are about to animate it (see src/components/landing/motion.tsx). */
 @media (prefers-reduced-motion: reduce) {

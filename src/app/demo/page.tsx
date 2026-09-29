@@ -18,6 +18,7 @@ export default async function DemoHub() {
   // Part 2 of the demo: the real Odoo POS self-order link, when the presenter sets one
   const odooUrl = process.env.NEXT_PUBLIC_ODOO_SELF_ORDER_URL;
   const screens = [
+    { href: "/guide", title: "Demo guide", sub: "Swimlane flow · 10-minute script · rules" },
     { href: "/", title: "Customer — web & phone", sub: "Landing → sign in → order → pay → track" },
     { href: "/kds?outlet=ISD-CAF", title: "Kitchen display", sub: "ISD Cafeteria · bump, recall, reject" },
     { href: "/counter?outlet=ISD-CAF", title: "Counter", sub: "Accept pay-at-counter · QR + name collection" },

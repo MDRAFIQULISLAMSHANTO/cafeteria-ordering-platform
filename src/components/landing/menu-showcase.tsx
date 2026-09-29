@@ -73,7 +73,7 @@ export function MenuShowcase({ data, orderHref }: { data: LandingData; orderHref
           <motion.div layout className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
             <AnimatePresence mode="popLayout" initial={false}>
               {shown.map((it) => (
-                <motion.div key={it.id} layout initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.94 }} transition={{ duration: 0.25 }}>
+                <motion.div key={it.id} layout className="h-full" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.94 }} transition={{ duration: 0.25 }}>
                   <MenuCard
                     item={it}
                     onAdd={() => setInCart(handOff([{ id: it.id, name: it.name }]))}

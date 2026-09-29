@@ -50,7 +50,10 @@ export function Footer({ orderHref }: { orderHref: string }) {
         <p aria-hidden className="pointer-events-none mt-10 select-none font-display text-[clamp(3.5rem,13vw,11rem)] font-extrabold leading-[.8] tracking-[-.05em] text-sts-white/8">STS Café</p>
         <div className="mt-6 flex flex-wrap justify-between gap-3 border-t border-sts-white/15 pt-5 text-xs text-sts-white/60">
           <span>© STS Group · Prototype by Invento</span>
-          <Link href="/photo-credits" className="underline hover:text-sts-white">Food photo credits</Link>
+          <span className="flex gap-4">
+            <Link href="/guide" className="underline hover:text-sts-white">How it works — demo guide</Link>
+            <Link href="/photo-credits" className="underline hover:text-sts-white">Food photo credits</Link>
+          </span>
           <span>Working prototype — payment, SMS and HR list are sandbox</span>
         </div>
       </div>
