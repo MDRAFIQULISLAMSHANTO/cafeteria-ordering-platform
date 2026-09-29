@@ -1,22 +1,31 @@
 // Presenter access for the staff and demo screens (kitchen, counter, TV,
 // operations, demo hub, sandbox inbox) and their actions.
 //
-// - DEMO_KEY unset in development: everything is open, for local work.
-// - DEMO_KEY unset in production: closed (fail safe).
-// - DEMO_KEY set: open any staff link once with ?key=<DEMO_KEY>; that sets an
-//   httpOnly cookie holding a hash of the key, valid for 30 days.
+// Open by default (user decision, 29 Sep 2026: "I don't need any security
+// here"). Anyone with the link can use the staff screens, read the sandbox
+// SMS inbox (it shows login codes) and reset the demo data.
+//
+// To lock it again, set DEMO_LOCK=1 together with DEMO_KEY:
+// - open any staff link once with ?key=<DEMO_KEY>, or enter the key in the
+//   DEMO menu; that sets an httpOnly cookie holding a hash of the key (30 days).
+// - DEMO_LOCK=1 without DEMO_KEY keeps everything closed (fail safe).
 //
 // Customer screens are never gated here; they have their own OTP login.
 
 export const DEMO_COOKIE = "sts_demo";
 export const DEMO_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
 
+/** The presenter lock is opt-in: DEMO_LOCK=1 (or true/yes) turns it on. */
+export function demoLocked(): boolean {
+  return /^(1|true|yes)$/i.test(process.env.DEMO_LOCK?.trim() ?? "");
+}
+
 export function demoKey(): string | null {
-  return process.env.DEMO_KEY || null;
+  return demoLocked() ? process.env.DEMO_KEY || null : null;
 }
 
 export function openWithoutKey(): boolean {
-  return process.env.NODE_ENV !== "production";
+  return !demoLocked();
 }
 
 export async function demoToken(key: string): Promise<string> {
