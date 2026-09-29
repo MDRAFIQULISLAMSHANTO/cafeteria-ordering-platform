@@ -23,7 +23,14 @@ export function AvailabilityList({ outletId, items }: { outletId: string; items:
   const [pending, start] = useTransition();
   const toggle = (it: Item) =>
     start(async () => {
-      if (handle(await toggleAvailabilityAction(outletId, it.id), it.available ? `${it.name} marked sold out — hidden from customers` : `${it.name} back on the menu`)) router.refresh();
+      const r = await toggleAvailabilityAction(outletId, it.id);
+      const offered = r.ok ? (r.data as { offered: number }).offered : 0;
+      const msg = !it.available
+        ? `${it.name} back on the menu`
+        : offered
+          ? `${it.name} sold out — ${offered} customer${offered === 1 ? "" : "s"} asked to pick a substitute or refund`
+          : `${it.name} marked sold out — hidden from customers`;
+      if (handle(r, msg)) router.refresh();
     });
   return (
     <table className="w-full">

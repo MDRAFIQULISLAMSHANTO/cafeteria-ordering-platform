@@ -14,10 +14,10 @@ type Ticket = {
   id: string;
   minutes: number;
   late: boolean;
-  order: { id: string; tracking: string; kitchenState: string; accountType: string; paymentMode: string };
+  order: { id: string; tracking: string; kitchenState: string; accountType: string; paymentMode: string; channel: string; eventName: string | null; deliverTo: string | null };
   customer: { name: string; classGrade: string | null; section: string | null };
   slot: { label: string; startsAt: string };
-  lines: { id: string; name: string; qty: number }[];
+  lines: { id: string; name: string; qty: number; state: string }[];
 };
 type Board = { outlet: { name: string }; now: { ms: number }; tickets: Ticket[] };
 
@@ -100,13 +100,28 @@ export function KitchenDisplay({ outletId, outlets, personaId }: { outletId: str
                 <span className={`o-kds-preset o-kds-acct-${t.order.accountType}`}>{ACCOUNT_LABEL[t.order.accountType as AccountType]}</span>
                 <span className={`o-kds-timer${t.late ? " o-late" : ""}`}>◷ {t.minutes}`</span>
               </div>
-              <div className="px-3 pt-2 text-xs text-muted">{t.slot.label} · {time12(t.slot.startsAt)}{t.order.paymentMode === "counter" ? " · paid at counter" : ""}</div>
+              {t.order.channel === "bulk" ? (
+                <div className="mx-3 mt-2 rounded-md bg-info-bg px-2 py-1.5 text-xs text-info">
+                  <b>BULK · deliver {time12(t.slot.startsAt)}</b> to {t.order.deliverTo}
+                  {t.order.eventName && <span className="block opacity-80">{t.order.eventName}</span>}
+                </div>
+              ) : (
+                <div className="px-3 pt-2 text-xs text-muted">{t.slot.label} · {time12(t.slot.startsAt)}{t.order.paymentMode === "counter" ? " · paid at counter" : ""}</div>
+              )}
               <div className="o-kds-lines">
                 {t.lines.map((l) => (
-                  <div key={l.id} className="o-kds-line"><span className="o-kds-qty">{l.qty}x</span>{l.name}</div>
+                  <div key={l.id} className={`o-kds-line${l.state === "refunded" ? " line-through opacity-50" : ""}`}>
+                    <span className="o-kds-qty">{l.qty}x</span>
+                    <span>
+                      {l.name}
+                      {l.state === "waiting" && <small className="ml-1.5 rounded bg-warning-bg px-1.5 text-2xs font-semibold text-warning">HOLD · customer choosing</small>}
+                      {l.state === "substituted" && <small className="ml-1.5 rounded bg-info-bg px-1.5 text-2xs font-semibold text-info">SUBSTITUTE</small>}
+                      {l.state === "refunded" && <small className="ml-1.5 text-2xs font-semibold">refunded — don&apos;t make</small>}
+                    </span>
+                  </div>
                 ))}
               </div>
-              {t.order.kitchenState === "ready" && <div className="px-3 pb-3 text-xs text-muted">Waiting for collection at the counter</div>}
+              {t.order.kitchenState === "ready" && <div className="px-3 pb-3 text-xs text-muted">{t.order.channel === "bulk" ? "Waiting for delivery" : "Waiting for collection at the counter"}</div>}
               {canBump && (
                 <div className="flex gap-1.5 px-3 pb-3 *:flex-1" onClick={(e) => e.stopPropagation()}>
                   <button className="o-kds-btn o-strong" disabled={pending} onClick={() => act(() => bumpAction(t.order.id))}>

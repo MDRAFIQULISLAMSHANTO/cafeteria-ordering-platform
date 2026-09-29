@@ -8,12 +8,12 @@ import { money, vatLabel } from "@/lib/rules";
 import { formatDay, time12 } from "@/lib/time";
 import { currentCustomer } from "@/lib/session";
 
-function badge(state: string, kitchen: string): [string, keyof typeof stateBadge] {
+function badge(state: string, kitchen: string, bulk = false): [string, keyof typeof stateBadge] {
   if (state === "awaiting_payment") return ["Unpaid", "wait"];
   if (state === "awaiting_acceptance") return ["Awaiting counter", "wait"];
   if (state === "cancelled") return ["Cancelled", "bad"];
   if (state === "rejected") return ["Not accepted", "bad"];
-  if (state === "collected") return ["Collected", "done"];
+  if (state === "collected") return [bulk ? "Delivered" : "Collected", "done"];
   if (kitchen === "ready") return ["Ready", "ready"];
   if (kitchen === "not_released") return ["Scheduled", "paid"];
   return ["Preparing", "paid"];
@@ -34,20 +34,23 @@ export default async function MyOrders() {
           </div>
         )}
         {orders.map((o) => {
-          const [label, tone] = badge(o.order.state, o.order.kitchenState);
+          const [label, tone] = badge(o.order.state, o.order.kitchenState, o.order.channel === "bulk");
           return (
             <Link key={o.id} href={`/orders/${o.id}`} className="o-so-order block text-ink hover:no-underline hover:shadow-o-md">
               <div className="o-so-order-head">
-                <div>
+                <div className="min-w-0">
                   <div className="o-so-order-ref">{o.order.ref}</div>
-                  <div className="o-so-order-meta">#{o.order.tracking} · {formatDay(o.order.pickupDate, now.date)} · {o.slot.label} {time12(o.slot.startsAt)} · {o.outlet.name}</div>
+                  <div className="o-so-order-meta">
+                    #{o.order.tracking} · {formatDay(o.order.pickupDate, now.date)} · {o.order.channel === "bulk" ? `${o.order.eventName} · to ${o.order.deliverTo}` : `${o.slot.label} ${time12(o.slot.startsAt)}`} · {o.outlet.name}
+                  </div>
                 </div>
                 <span className="o-so-spacer" />
+                {o.actionNeeded && <StateBadge tone="wait">Choose a substitute</StateBadge>}
                 <StateBadge tone={tone}>{label}</StateBadge>
               </div>
               {o.lines.map((l) => (
                 <div key={l.id} className="o-so-line">
-                  <div><div className="o-so-line-name">{l.name}</div><div className="o-so-line-sub"><b>{l.qty}x</b> {money(l.unitPrice)}</div></div>
+                  <div><div className={`o-so-line-name ${l.state === "refunded" ? "text-muted line-through" : ""}`}>{l.name}</div><div className="o-so-line-sub"><b>{l.qty}x</b> {money(l.unitPrice)}</div></div>
                   <div className="o-so-line-amt">{money(l.lineTotal)}</div>
                 </div>
               ))}

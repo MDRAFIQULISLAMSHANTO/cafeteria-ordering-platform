@@ -11,5 +11,12 @@ export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string
   const detail = await orderDetail(await getDb(), id);
   if (!detail || detail.order.customerId !== cust.id) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const { order } = detail;
-  return NextResponse.json({ state: order.state, kitchenState: order.kitchenState, rejectReason: order.rejectReason, collectedAt: order.collectedAt });
+  return NextResponse.json({
+    state: order.state,
+    kitchenState: order.kitchenState,
+    total: order.total,
+    pending: detail.substitutions.filter((s) => s.status === "pending").length,
+    rejectReason: order.rejectReason,
+    collectedAt: order.collectedAt,
+  });
 }

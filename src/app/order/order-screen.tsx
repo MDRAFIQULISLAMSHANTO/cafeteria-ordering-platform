@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
-import { placeOrderAction } from "@/app/actions";
+import { useEffect, useEffectEvent, useMemo, useState, useTransition } from "react";
+import Link from "next/link";
+import { editOrderAction, placeOrderAction } from "@/app/actions";
 import { useLocalState } from "@/components/local-store";
 import { useResult, useToast } from "@/components/toast";
 import { PENDING, RULES, money, price } from "@/lib/rules";
@@ -14,6 +15,8 @@ type Product = {
 };
 type Slot = { id: string; label: string; startsAt: string; endsAt: string; capacity: number; remaining: number; open: boolean; reason: string | null; cutoffMs: number; cutoffRule: string };
 type DateOpt = { date: string; weekday: string; open: boolean; reason: string | null };
+/** An existing order opened for changes (until cut-off). */
+export type Editing = { id: string; tracking: string; slotId: string; lines: Record<string, number>; held: number; paid: boolean };
 export type MenuPayload = { now: { ms: number; date: string; time: string; offsetMinutes: number }; date: string; dates: DateOpt[]; menu: Product[]; slots: Slot[] };
 
 type Props = {
@@ -21,6 +24,7 @@ type Props = {
   customer: { id: string; name: string; accountType: "parent" | "student" | "employee"; discountEligible: boolean };
   outlet: { id: string; name: string; kind: string; menuAssignmentConfirmed: boolean };
   welcome?: string;
+  editing?: Editing;
 };
 
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -30,12 +34,12 @@ const EMPTY_CART: Record<string, number> = {};
 const TONES = ["bg-tag-1 text-tag-1-ink", "bg-tag-2 text-tag-2-ink", "bg-tag-3 text-tag-3-ink", "bg-tag-4 text-tag-4-ink", "bg-tag-5 text-tag-5-ink", "bg-tag-6 text-tag-6-ink"];
 const tone = (s: string) => (Array.from(s).reduce((a, c) => a + c.charCodeAt(0), 0) % 6) + 1;
 
-export function OrderScreen({ initial, customer, outlet, welcome }: Props) {
+export function OrderScreen({ initial, customer, outlet, welcome, editing }: Props) {
   const router = useRouter();
   const handle = useResult();
   const { show } = useToast();
   const [data, setData] = useState(initial);
-  const [slotId, setSlotId] = useState<string | null>(null);
+  const [slotId, setSlotId] = useState<string | null>(editing?.slotId ?? null);
   const [payMode, setPayMode] = useState<"online" | "counter">("online");
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Product | null>(null);
@@ -43,8 +47,13 @@ export function OrderScreen({ initial, customer, outlet, welcome }: Props) {
   const [drawer, setDrawer] = useState(false);
   const [activeCat, setActiveCat] = useState<string | null>(null);
   const [pending, start] = useTransition();
-  // the cart survives page changes on this device
-  const [cart, setCart] = useLocalState(`sts-cart-${customer.id}-${outlet.id}`, EMPTY_CART);
+  // the cart survives page changes on this device; an edit works on a draft of the order
+  const [stored, setStored] = useLocalState(`sts-cart-${customer.id}-${outlet.id}`, EMPTY_CART);
+  const [draft, setDraft] = useState<Record<string, number>>(editing?.lines ?? EMPTY_CART);
+  const cart = editing ? draft : stored;
+  const setCart = editing ? setDraft : setStored;
+  // the order's own slot stays selectable while editing, even if it now shows full
+  const selectable = (s: Slot) => s.open || (editing != null && s.id === editing.slotId && s.reason === "Full");
 
   useEffect(() => {
     if (welcome === "employee") show({ title: "Welcome! Your staff account was verified from the HR list.", tone: "info" });
@@ -56,15 +65,16 @@ export function OrderScreen({ initial, customer, outlet, welcome }: Props) {
     if (res.ok) {
       const next = (await res.json()) as MenuPayload;
       setData(next);
-      setSlotId((cur) => (next.slots.some((s) => s.id === cur && s.open) ? cur : null));
+      setSlotId((cur) => (next.slots.some((s) => s.id === cur && selectable(s)) ? cur : null));
     }
   };
 
   // keep slot availability fresh while the page is open
+  const poll = useEffectEvent(() => load(data.date));
   useEffect(() => {
-    const id = setInterval(() => load(data.date), 20_000);
+    const id = setInterval(() => poll(), 20_000);
     return () => clearInterval(id);
-  }, [data.date]);
+  }, []);
 
   const byId = useMemo(() => new Map(data.menu.map((p) => [p.id, p])), [data.menu]);
   const categories = useMemo(() => {
@@ -102,6 +112,13 @@ export function OrderScreen({ initial, customer, outlet, welcome }: Props) {
   const place = () =>
     start(async () => {
       if (!slot) return void show({ title: "Choose a pickup time first.", rule: "Every order needs a pickup slot", tone: "danger" });
+      if (editing) {
+        const r = await editOrderAction(editing.id, { slotId: slot.id, lines: valid.map((l) => ({ productId: l.id, qty: l.qty })) });
+        if (!handle(r, "Order updated") || !r.ok) return void (await load(data.date));
+        router.push((r.data as { next: string }).next);
+        router.refresh();
+        return;
+      }
       const r = await placeOrderAction({
         outletId: outlet.id,
         date: data.date,
@@ -156,19 +173,19 @@ export function OrderScreen({ initial, customer, outlet, welcome }: Props) {
               key={s.id}
               role="radio"
               aria-checked={s.id === slotId}
-              disabled={!s.open}
+              disabled={!selectable(s)}
               onClick={() => setSlotId(s.id)}
               className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left disabled:cursor-default disabled:opacity-50 ${s.id === slotId ? selected : "border-line bg-so-surface"}`}
             >
               <span>
                 <b className="block">{time12(s.startsAt)} · {s.label}</b>
                 <small className="text-muted">
-                  {s.open
+                  {selectable(s)
                     ? `Order by ${new Date(s.cutoffMs).toLocaleString("en-GB", { timeZone: "Asia/Dhaka", weekday: data.date === data.now.date ? undefined : "short", hour: "numeric", minute: "2-digit", hour12: true })}`
                     : s.reason}
                 </small>
               </span>
-              <span className="whitespace-nowrap text-xs text-muted">{s.open ? `${s.remaining} left` : ""}</span>
+              <span className="whitespace-nowrap text-xs text-muted">{s.open ? `${s.remaining} left` : editing?.slotId === s.id ? "your slot" : ""}</span>
             </button>
           ))}
         </div>
@@ -204,7 +221,17 @@ export function OrderScreen({ initial, customer, outlet, welcome }: Props) {
           <div className="flex justify-between text-muted"><span>{totals.vatRule}</span><span>{money(totals.vat)}</span></div>
           <div className="mt-1.5 flex justify-between text-xl font-bold"><span>Total</span><span className="text-so-price">{money(totals.total)}</span></div>
         </div>
-        {customer.accountType === "employee" ? (
+        {editing ? (
+          <div className="mt-2.5 rounded-lg bg-so-bg px-3 py-2 text-xs text-muted">
+            {editing.paid
+              ? totals.total > editing.held
+                ? <>Paid so far {money(editing.held)}. You&apos;ll pay the <b className="text-ink">{money(totals.total - editing.held)}</b> difference next.</>
+                : totals.total < editing.held
+                  ? <>Paid so far {money(editing.held)}. <b className="text-ink">{money(editing.held - totals.total)}</b> goes back to your original payment method (sandbox).</>
+                  : <>Paid {money(editing.held)} — no change to pay.</>
+              : "Payment stays as chosen when you placed the order."}
+          </div>
+        ) : customer.accountType === "employee" ? (
           <div className="mt-3 grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="Payment">
             {(["online", "counter"] as const).map((m) => (
               <button
@@ -222,7 +249,7 @@ export function OrderScreen({ initial, customer, outlet, welcome }: Props) {
           <div className="o-hint mt-2.5">Pay online with bKash, Nagad or card.</div>
         )}
         <button className="o-so-btn o-so-btn-primary mt-3 w-full disabled:cursor-default disabled:opacity-50" disabled={pending || valid.length === 0 || blocked.length > 0 || !slot} onClick={place}>
-          {pending ? "Placing order…" : !slot && valid.length > 0 ? "Choose a pickup time" : payMode === "counter" ? `Place order · ${money(totals.total)}` : `Checkout · ${money(totals.total)}`}
+          {pending ? (editing ? "Saving…" : "Placing order…") : !slot && valid.length > 0 ? "Choose a pickup time" : editing ? `Save changes · ${money(totals.total)}` : payMode === "counter" ? `Place order · ${money(totals.total)}` : `Checkout · ${money(totals.total)}`}
         </button>
       </div>
     </aside>
@@ -244,6 +271,16 @@ export function OrderScreen({ initial, customer, outlet, welcome }: Props) {
         </nav>
 
         <section>
+          {editing && (
+            <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-so-price/30 bg-so-surface px-4 py-3 shadow-o-sm">
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-so-bg text-lg" aria-hidden>✎</span>
+              <div className="min-w-0 flex-1">
+                <b className="block">Editing order {editing.tracking}</b>
+                <small className="text-muted">Change items or the pickup time until the cut-off. The kitchen sees the new version.</small>
+              </div>
+              <Link href={`/orders/${editing.id}`} className="o-btn o-btn-sm">Discard changes</Link>
+            </div>
+          )}
           <div className="mb-2 flex flex-wrap items-end justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold md:text-3xl">{formatDay(data.date, data.now.date)}</h1>

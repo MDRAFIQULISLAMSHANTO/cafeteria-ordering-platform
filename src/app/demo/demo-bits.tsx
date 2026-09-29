@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { resetDemoAction, shiftClockAction } from "@/app/actions";
+import { resetDemoAction, setSubstitutionTimeoutAction, shiftClockAction } from "@/app/actions";
 import { useLive } from "@/components/live";
 import { useResult } from "@/components/toast";
 
@@ -21,6 +21,19 @@ export function ClockControls() {
       <button className="o-btn" disabled={pending} onClick={() => shift(60)}>+1 hour</button>
       <button className="o-btn" disabled={pending} onClick={() => shift(24 * 60)}>+1 day</button>
       <button className="o-btn o-btn-link" disabled={pending} onClick={() => shift("reset")}>Back to real time</button>
+    </div>
+  );
+}
+
+export function SubstitutionTimer({ seconds }: { seconds: number }) {
+  const router = useRouter();
+  const handle = useResult();
+  const [pending, start] = useTransition();
+  const set = (s: 60 | 900) => start(async () => { if (handle(await setSubstitutionTimeoutAction(s), s === 60 ? "Substitution timer: 60 seconds" : "Substitution timer: 15 minutes")) router.refresh(); });
+  return (
+    <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Substitution timer">
+      <button role="radio" aria-checked={seconds === 900} className={`o-btn ${seconds === 900 ? "o-btn-primary" : ""}`} disabled={pending} onClick={() => set(900)}>15 minutes (STS rule)</button>
+      <button role="radio" aria-checked={seconds === 60} className={`o-btn ${seconds === 60 ? "o-btn-primary" : ""}`} disabled={pending} onClick={() => set(60)}>60 seconds (demo)</button>
     </div>
   );
 }

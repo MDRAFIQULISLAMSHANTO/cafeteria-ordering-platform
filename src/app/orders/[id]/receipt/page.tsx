@@ -65,6 +65,7 @@ export default async function Receipt({ params }: PageProps<"/orders/[id]/receip
         {/* lines before discount so they add up to the subtotal; the discount has its own row */}
         {lines.map((l) => {
           const unit = unitBeforeDiscount(order.accountType, l.unitPrice);
+          const gone = l.state === "refunded";
           return (
             <div key={l.id} className="o-receipt-line">
               <span>{l.qty}</span>
@@ -72,7 +73,7 @@ export default async function Receipt({ params }: PageProps<"/orders/[id]/receip
                 {l.name}
                 <small>{money(unit)} / unit{employee ? " excl. VAT" : ""}{l.state !== "ok" ? ` · ${l.state.replace("_", " ")}` : ""}</small>
               </span>
-              <span>{money(unit * l.qty)}</span>
+              <span>{money(gone ? 0 : unit * l.qty)}</span>
             </div>
           );
         })}

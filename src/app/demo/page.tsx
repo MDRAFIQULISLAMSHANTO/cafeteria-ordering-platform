@@ -1,23 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { eq } from "drizzle-orm";
 import { getDb } from "@/db/client";
+import * as t from "@/db/schema";
 import { ToastProvider } from "@/components/toast";
 import { TEST_PHONES } from "@/db/seed";
 import { demoNow, listOutlets } from "@/lib/orders";
 import { formatClock } from "@/lib/time";
-import { ClockControls, Inbox, ResetButton } from "./demo-bits";
+import { ClockControls, Inbox, ResetButton, SubstitutionTimer } from "./demo-bits";
 
 export const metadata: Metadata = { title: "Demo hub — STS Café prototype" };
 
 export default async function DemoHub() {
   const db = await getDb();
-  const [outlets, now] = await Promise.all([listOutlets(db), demoNow(db)]);
+  const [outlets, now, state] = await Promise.all([listOutlets(db), demoNow(db), db.select().from(t.demoState).where(eq(t.demoState.id, 1))]);
+  const subSeconds = state[0]?.substitutionTimeoutSeconds ?? 900;
+  // Part 2 of the demo: the real Odoo POS self-order link, when the presenter sets one
+  const odooUrl = process.env.NEXT_PUBLIC_ODOO_SELF_ORDER_URL;
   const screens = [
     { href: "/", title: "Customer — web & phone", sub: "Landing → sign in → order → pay → track" },
     { href: "/kds?outlet=ISD-CAF", title: "Kitchen display", sub: "ISD Cafeteria · bump, recall, reject" },
     { href: "/counter?outlet=ISD-CAF", title: "Counter", sub: "Accept pay-at-counter · QR + name collection" },
     { href: "/status?outlet=ISD-CAF", title: "Pickup TV", sub: "Preparing / Ready numbers" },
-    { href: "/admin?outlet=ISD-CAF", title: "Operations", sub: "Availability · today · production list" },
+    { href: "/admin?outlet=ISD-CAF", title: "Operations", sub: "Availability · production list · cost-centre invoices" },
+    { href: "/admin/hr", title: "HR staff list", sub: "Monthly import · leavers deactivated" },
     { href: "/kds?outlet=ISD-PL", title: "Kitchen · Parent Lounge", sub: "For the employee story" },
     { href: "/counter?outlet=ISD-PL", title: "Counter · Parent Lounge", sub: "Accept Farhana's order" },
   ];
@@ -42,6 +48,35 @@ export default async function DemoHub() {
                   </Link>
                 ))}
               </div>
+            </section>
+
+            {odooUrl && (
+              <section className="mb-4 rounded-lg border-2 border-accent/40 bg-surface p-4">
+                <h2 className="mb-1 text-base font-semibold">Part 2 · Real Odoo POS (production back office)</h2>
+                <p className="mb-3 text-muted">The same journey in a live Odoo POS self-ordering screen, with Odoo&apos;s own kitchen display. Not connected to this prototype&apos;s data yet — the API link follows STS approval (Odoo.sh or on-premise).</p>
+                <a className="o-btn o-btn-primary" href={odooUrl} target="_blank" rel="noreferrer">Open Odoo self-ordering ↗</a>
+              </section>
+            )}
+
+            <section className="mb-4 rounded-lg border border-line bg-surface p-4">
+              <h2 className="mb-2 text-base font-semibold">Walkthrough · STS rules (C8)</h2>
+              <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-sm">
+                <li><b>Parent</b> orders lunch, pays bKash → kitchen → pickup TV → counter scans QR + checks name.</li>
+                <li><b>Student</b> pre-orders for a later day → it waits in the production list and joins the kitchen that morning (use the demo clock).</li>
+                <li><b>Parent</b> edits the order before cut-off — adds an item (pays the difference) or removes one (refund).</li>
+                <li>In <b>Operations</b>, switch an ordered item off → the customer gets a substitute-or-refund choice with a countdown; no answer refunds it.</li>
+                <li><b>Employee — Farhana</b> at the Parent Lounge: 20% off, VAT 0%, pays at the counter; counter accepts. Receipt shows discount and VAT 0%.</li>
+                <li><b>Employee — Sabbir</b> at the Cafeteria: VAT 0%, discount line explains “Parent Lounge only”.</li>
+                <li><b>Coordinator — Tanvir</b> books a bulk order: refused under 24 h notice, accepted after; kitchen marks Ready, counter marks Delivered; Operations shows the monthly cost-centre invoice.</li>
+                <li><b>Profile</b>: a parent changes campus; an employee sees HR-owned details. The bell shows order updates.</li>
+                <li><b>HR staff list</b>: import the sample October list → a leaver&apos;s number (01700000006) can no longer sign in.</li>
+              </ol>
+            </section>
+
+            <section className="mb-4 rounded-lg border border-line bg-surface p-4">
+              <h2 className="mb-2 flex items-center justify-between gap-2 text-base font-semibold">Substitution timer <span className="o-hint">C8: 15 minutes, then automatic refund</span></h2>
+              <p className="mb-3 text-muted">Shorten it for a live demo so the automatic refund happens while you watch.</p>
+              <SubstitutionTimer seconds={subSeconds} />
             </section>
 
             <section className="mb-4 rounded-lg border border-line bg-surface p-4">
@@ -75,7 +110,7 @@ export default async function DemoHub() {
 
             <section className="mb-4 rounded-lg border border-line bg-surface p-4">
               <h2 className="mb-2 flex items-center justify-between gap-2 text-base font-semibold">Reset</h2>
-              <p className="mb-3 text-muted">Wipes all orders and restores the {outlets.length} outlets, both menus, slots, HR list and the four demo customers.</p>
+              <p className="mb-3 text-muted">Wipes all orders and restores the {outlets.length} outlets, both menus, slots, HR list and the {TEST_PHONES.length} demo customers.</p>
               <ResetButton />
             </section>
           </div>

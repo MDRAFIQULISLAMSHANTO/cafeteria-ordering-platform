@@ -55,6 +55,7 @@ export const config = {
     "/counter",
     "/status",
     "/admin",
+    "/admin/:path*",
     "/api/live/kitchen",
     "/api/live/counter",
     "/api/live/status",

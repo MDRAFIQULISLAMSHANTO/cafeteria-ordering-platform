@@ -14,13 +14,22 @@ import {
   cancelByCustomer,
   collect,
   demoNow,
+  editOrder,
   findForCollection,
+  importHrList,
+  markDelivered,
+  offerSubstitutions,
   paySandbox,
+  placeBulkOrder,
   placeOrder,
   recall,
   rejectOrder,
+  resolveSubstitution,
+  type BulkInput,
+  type EditInput,
   type PlaceInput,
 } from "@/lib/orders";
+import { HR_SAMPLE_CSV } from "@/db/data/hr-sync-sample";
 import { DEMO_COOKIE, DEMO_COOKIE_MAX_AGE, demoKey, demoToken, hasDemoAccess, openWithoutKey, sameToken } from "@/lib/demo-access";
 import { isPersonaId, type PersonaId } from "@/lib/demo-personas";
 import { clearPendingPhone, currentCustomer, endSession, getPendingPhone, setPendingPhone, startSession } from "@/lib/session";
@@ -139,6 +148,17 @@ export async function logoutAction() {
   redirect("/");
 }
 
+export async function updateClassAction(classGrade: string, section: string) {
+  return run(async () => {
+    const c = await requireCustomer();
+    if (c.accountType !== "student") throw new RuleError("Only students have a class and section.", "Students register with class and section");
+    const g = classGrade.trim();
+    const sec = section.trim();
+    if (!g || !sec || g.length > 4 || sec.length > 4) throw new RuleError("Enter a class and a section, e.g. 8 and B.", "Students register with class and section");
+    await (await getDb()).update(t.customer).set({ classGrade: g, section: sec }).where(eq(t.customer.id, c.id));
+  });
+}
+
 export async function changeOutletAction(outletId: string) {
   return run(async () => {
     const c = await requireCustomer();
@@ -157,6 +177,28 @@ export async function placeOrderAction(input: PlaceInput) {
     const c = await requireCustomer();
     const id = await placeOrder(await getDb(), c, input);
     return { orderId: id, next: input.paymentMode === "online" ? `/pay/${id}` : `/orders/${id}` };
+  });
+}
+
+export async function editOrderAction(orderId: string, input: EditInput) {
+  return run(async () => {
+    const c = await requireCustomer();
+    return editOrder(await getDb(), c, orderId, input);
+  });
+}
+
+export async function resolveSubstitutionAction(substitutionId: string, choice: string) {
+  return run(async () => {
+    const c = await requireCustomer();
+    await resolveSubstitution(await getDb(), c, substitutionId, choice);
+  });
+}
+
+export async function placeBulkOrderAction(input: BulkInput) {
+  return run(async () => {
+    const c = await requireCustomer();
+    const id = await placeBulkOrder(await getDb(), c, input);
+    return { orderId: id, next: `/orders/${id}` };
   });
 }
 
@@ -200,9 +242,13 @@ export async function lookupAction(outletId: string, code: string) {
       via: r.via,
       order: { id: r.order.id, tracking: r.order.tracking, state: r.order.state, kitchenState: r.order.kitchenState, total: r.order.total, collectedAt: r.order.collectedAt ? new Date(r.order.collectedAt).toISOString() : null, pickupDate: r.order.pickupDate },
       customer: { name: r.customer.name, accountType: r.customer.accountType, classGrade: r.customer.classGrade, section: r.customer.section, phoneTail: r.customer.phone.slice(-3) },
-      lines: r.lines.map((l) => ({ name: l.name, qty: l.qty })),
+      lines: r.lines.filter((l) => l.state !== "refunded").map((l) => ({ name: l.name, qty: l.qty })),
     };
   });
+}
+
+export async function deliverAction(orderId: string) {
+  return run(async () => { await requireDemoAccess(); return markDelivered(await getDb(), orderId); });
 }
 
 export async function collectAction(orderId: string, via: "qr" | "lookup", nameConfirmed: boolean) {
@@ -216,9 +262,14 @@ export async function toggleAvailabilityAction(outletId: string, productId: stri
     const now = await demoNow(db);
     const where = and(eq(t.unavailability.outletId, outletId), eq(t.unavailability.productId, productId), eq(t.unavailability.date, now.date));
     const existing = (await db.select().from(t.unavailability).where(where))[0];
-    if (existing) await db.delete(t.unavailability).where(where);
-    else await db.insert(t.unavailability).values({ outletId, productId, date: now.date, reason: "Sold out" });
-    return { available: Boolean(existing) };
+    if (existing) {
+      await db.delete(t.unavailability).where(where);
+      return { available: true, offered: 0 };
+    }
+    await db.insert(t.unavailability).values({ outletId, productId, date: now.date, reason: "Sold out" });
+    // customers who already ordered it today choose a substitute or a refund
+    const offered = await offerSubstitutions(db, outletId, productId);
+    return { available: false, offered };
   });
 }
 
@@ -226,6 +277,22 @@ export async function toggleAvailabilityAction(outletId: string, productId: stri
 
 export async function resetDemoAction() {
   return run(async () => { await requireDemoAccess(); return resetDemo(await getDb()); });
+}
+
+export async function importHrAction(csv: string | null, source: string) {
+  return run(async () => {
+    await requireDemoAccess();
+    return importHrList(await getDb(), csv ?? HR_SAMPLE_CSV, csv ? source.slice(0, 120) : "Sample list (October)");
+  });
+}
+
+export async function setSubstitutionTimeoutAction(seconds: 60 | 900) {
+  return run(async () => {
+    await requireDemoAccess();
+    if (seconds !== 60 && seconds !== 900) throw new RuleError("Choose 60 seconds or 15 minutes.", "Substitution timeout");
+    await (await getDb()).update(t.demoState).set({ substitutionTimeoutSeconds: seconds }).where(eq(t.demoState.id, 1));
+    return seconds;
+  });
 }
 
 export async function shiftClockAction(minutes: number | "reset") {

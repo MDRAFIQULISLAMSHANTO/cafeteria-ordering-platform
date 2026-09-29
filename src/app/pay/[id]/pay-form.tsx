@@ -16,7 +16,7 @@ const METHODS = [
   { id: "card", label: "Card", hint: "Visa · Mastercard · Amex", mark: "▭" },
 ] as const;
 
-export function PayForm({ orderId, total, tracking, ref_, failedBefore }: { orderId: string; total: number; tracking: string; ref_: string; failedBefore: boolean }) {
+export function PayForm({ orderId, total, topUp, tracking, ref_, failedBefore }: { orderId: string; total: number; topUp: boolean; tracking: string; ref_: string; failedBefore: boolean }) {
   const router = useRouter();
   const [method, setMethod] = useState<(typeof METHODS)[number]["id"]>("bkash");
   const [error, setError] = useState<string | null>(failedBefore ? "The last payment attempt failed. You can try again." : null);
@@ -38,7 +38,7 @@ export function PayForm({ orderId, total, tracking, ref_, failedBefore }: { orde
         <span className="kicker">Secure checkout</span>
         <span className="pill-sandbox">SANDBOX · no money moves</span>
       </div>
-      <div className="text-muted">Order {tracking} · {ref_}</div>
+      <div className="text-muted">Order {tracking} · {ref_}{topUp ? " · difference after your changes" : ""}</div>
       <div className="mb-4 mt-1 text-4xl font-bold tabular-nums text-so-price">{money(total)}</div>
       {error && <FormError msg={error} />}
       <div className="mb-4 grid gap-2" role="radiogroup" aria-label="Payment method">

@@ -6,7 +6,7 @@ import * as t from "@/db/schema";
 import { ActorSwitcher } from "@/components/demo/actor-switcher";
 import { ToastProvider } from "@/components/toast";
 import { currentCustomer } from "@/lib/session";
-import { demoNow, listOutlets, menuFor } from "@/lib/orders";
+import { costCentreInvoices, demoNow, listOutlets, menuFor } from "@/lib/orders";
 import { ACCOUNT_LABEL, money, type AccountType } from "@/lib/rules";
 import { time12 } from "@/lib/time";
 import { AvailabilityList, AdminOutletSelect } from "./admin-bits";
@@ -24,6 +24,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const outlet = outlets.find((o) => o.id === q) ?? outlets.find((o) => o.id === "ISD-CAF")!;
   const now = await demoNow(db);
   const menu = await menuFor(db, outlet.id, now.date);
+  const invoices = await costCentreInvoices(db);
   const orders = await db
     .select({ order: t.foodOrder, customer: t.customer, slot: t.pickupSlot })
     .from(t.foodOrder)
@@ -53,8 +54,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       <div className="min-h-screen bg-page text-ink">
         <div className="flex h-(--o-h-navbar) items-center gap-4 border-b border-line bg-navbar px-4">
           <Link href="/demo">☰</Link>
-          <b className="text-sm">STS Café · Operations</b>
+          <b className="hidden text-sm sm:inline">STS Café · Operations</b>
           <AdminOutletSelect outlets={outlets.map((o) => ({ id: o.id, name: o.name }))} value={outlet.id} />
+          <Link href="/admin/hr" className="o-btn o-btn-sm hidden sm:inline-flex">HR staff list</Link>
           <span className="o-hint ml-auto hidden md:inline">Demo clock {now.date} {now.time}</span>
           <ActorSwitcher tone="staff" staffScreen="admin" personaId={(await currentCustomer())?.id ?? null} outletId={outlet.id} staffUnlocked />
         </div>
@@ -73,7 +75,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   {today.length === 0 && <tr><td colSpan={6} className="border-b border-line px-3 py-1.5 o-hint">No orders for today yet.</td></tr>}
                   {today.map(({ order, customer, slot }) => (
                     <tr key={order.id}>
-                      <td className="border-b border-line px-3 py-1.5"><b>{order.tracking}</b></td>
+                      <td className="border-b border-line px-3 py-1.5"><b>{order.tracking}</b>{order.channel === "bulk" && <span className="o-hint"> bulk</span>}</td>
                       <td className="border-b border-line px-3 py-1.5">{customer.name} <span className="o-hint">{ACCOUNT_LABEL[customer.accountType as AccountType]}</span></td>
                       <td className="border-b border-line px-3 py-1.5">{time12(slot.startsAt)}</td>
                       <td className="border-b border-line px-3 py-1.5">{STATE_LABEL[order.state]}{order.rejectReason ? ` — ${order.rejectReason}` : ""}</td>
@@ -83,6 +85,32 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                   ))}
                 </tbody>
               </table>
+            </section>
+
+            <section className="rounded-md border border-line bg-surface">
+              <h2 className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3 text-base font-semibold">Cost-centre invoices · monthly <span className="o-hint">coordinator bulk orders, all outlets</span></h2>
+              {invoices.length === 0 && <p className="px-4 py-3 o-hint">No bulk orders yet. Coordinators book them from “Bulk order”.</p>}
+              {invoices.map((g) => (
+                <details key={`${g.month}${g.costCentre}`} className="border-b border-line px-4 py-2.5 last:border-b-0">
+                  <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2">
+                    <span><b>{g.costCentre}</b> <span className="o-hint">· {new Date(`${g.month}-01T12:00:00+06:00`).toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "Asia/Dhaka" })} · {g.orders.length} order{g.orders.length === 1 ? "" : "s"}</span></span>
+                    <b className="tabular-nums">{money(g.total)}</b>
+                  </summary>
+                  <table className="mt-2 w-full text-sm">
+                    <tbody>
+                      {g.orders.map((o) => (
+                        <tr key={`${o.date}${o.tracking}`}>
+                          <td className="py-1 pr-2 tabular-nums">{o.date}</td>
+                          <td className="py-1 pr-2">{o.tracking} · {o.event} <span className="o-hint">by {o.by}</span></td>
+                          <td className="py-1 pr-2 o-hint">{o.delivered ? "delivered" : "booked"}</td>
+                          <td className="py-1 text-right tabular-nums">{money(o.total)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p className="mt-1 text-2xs text-muted">Invoice raised monthly to the cost centre; VAT-free (employee account). Invoice numbering pending STS Finance.</p>
+                </details>
+              ))}
             </section>
 
             <section className="rounded-md border border-line bg-surface">

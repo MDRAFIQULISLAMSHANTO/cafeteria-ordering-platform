@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
-import { acceptAction, collectAction, lookupAction, rejectAction } from "@/app/actions";
+import { acceptAction, collectAction, deliverAction, lookupAction, rejectAction } from "@/app/actions";
 import { ActorSwitcher } from "@/components/demo/actor-switcher";
 import { useLive } from "@/components/live";
 import { Clock, OutletSelect, ThemeToggle, type OutletOpt } from "@/components/staff";
@@ -16,10 +16,10 @@ const qItem = "grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-lg bord
 
 type Row = {
   id: string;
-  order: { id: string; tracking: string; total: number; pickupDate: string; kitchenState: string; accountType: string; collectedAt: string | null; collectedBy: string | null };
+  order: { id: string; tracking: string; total: number; pickupDate: string; kitchenState: string; accountType: string; collectedAt: string | null; collectedBy: string | null; channel: string; deliverTo: string | null; eventName: string | null };
   customer: { name: string; employeeId: string | null; costCentre: string | null };
   slot: { label: string; startsAt: string };
-  lines: { id: string; name: string; qty: number }[];
+  lines: { id: string; name: string; qty: number; state: string }[];
 };
 type Board = { now: { ms: number; date: string }; awaiting: Row[]; ready: Row[]; collected: Row[] };
 type Found = {
@@ -64,6 +64,14 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
       }
       await refresh();
     });
+
+  const deliver = (row: Row) =>
+    start(async () => {
+      if (handle(await deliverAction(row.order.id))) show({ title: `${row.order.tracking} delivered to ${row.order.deliverTo}`, tone: "info" });
+      await refresh();
+    });
+
+  const items = (r: Row) => r.lines.filter((l) => l.state !== "refunded").map((l) => `${l.qty}× ${l.name}`).join(", ");
 
   const accept = (row: Row, method: "cash" | "card_terminal") =>
     start(async () => {
@@ -150,7 +158,7 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
                   <div>
                     <b>{r.customer.name}</b>
                     <small>{r.slot.label} {time12(r.slot.startsAt)}{r.order.pickupDate !== data.now.date ? ` · ${r.order.pickupDate}` : ""} · {money(r.order.total)} · {r.customer.employeeId}</small>
-                    <small>{r.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</small>
+                    <small>{items(r)}</small>
                   </div>
                   <div className="flex flex-wrap justify-end gap-1.5">
                     <button className="staff-btn-primary" disabled={pending} onClick={() => accept(r, "cash")}>Cash</button>
@@ -166,13 +174,21 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
             <h2 className={cardTitle}>Ready for pickup <span className="o-kds-count o-kds-count-done">{data?.ready.length ?? 0}</span></h2>
             <div className="flex flex-col gap-2">
               {data?.ready.length === 0 && <div className="o-hint">No orders waiting on the shelf.</div>}
-              {data?.ready.map((r) => (
-                <button key={r.id} className={`${qItem} text-left`} onClick={() => lookup(r.order.tracking)}>
-                  <span className="min-w-16 text-2xl font-bold">{r.order.tracking}</span>
-                  <div><b>{r.customer.name}</b><small>{r.lines.map((l) => `${l.qty}× ${l.name}`).join(", ")}</small></div>
-                  <span className="o-hint">Open ›</span>
-                </button>
-              ))}
+              {data?.ready.map((r) =>
+                r.order.channel === "bulk" ? (
+                  <div key={r.id} className={qItem}>
+                    <span className="min-w-16 text-2xl font-bold">{r.order.tracking}</span>
+                    <div><b>Bulk · {r.order.deliverTo}</b><small>{r.order.eventName} · {r.customer.name}</small><small>{items(r)}</small></div>
+                    <button className="staff-btn-primary" disabled={pending} onClick={() => deliver(r)}>Mark delivered</button>
+                  </div>
+                ) : (
+                  <button key={r.id} className={`${qItem} text-left`} onClick={() => lookup(r.order.tracking)}>
+                    <span className="min-w-16 text-2xl font-bold">{r.order.tracking}</span>
+                    <div><b>{r.customer.name}</b><small>{items(r)}</small></div>
+                    <span className="o-hint">Open ›</span>
+                  </button>
+                ),
+              )}
             </div>
           </section>
 
@@ -183,8 +199,8 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
               {data?.collected.map((r) => (
                 <div key={r.id} className={`${qItem} opacity-75`}>
                   <span className="min-w-16 text-2xl font-bold">{r.order.tracking}</span>
-                  <div><b>{r.customer.name}</b><small>by {r.order.collectedBy === "qr" ? "QR" : "order number"} · {r.order.collectedAt ? new Date(r.order.collectedAt).toLocaleTimeString("en-GB", { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit" }) : ""}</small></div>
-                  <StateBadge tone="done">Collected</StateBadge>
+                  <div><b>{r.customer.name}</b><small>{r.order.collectedBy === "delivery" ? `delivered to ${r.order.deliverTo}` : `by ${r.order.collectedBy === "qr" ? "QR" : "order number"}`} · {r.order.collectedAt ? new Date(r.order.collectedAt).toLocaleTimeString("en-GB", { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit" }) : ""}</small></div>
+                  <StateBadge tone="done">{r.order.collectedBy === "delivery" ? "Delivered" : "Collected"}</StateBadge>
                 </div>
               ))}
             </div>

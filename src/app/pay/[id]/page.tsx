@@ -14,7 +14,14 @@ export default async function PayPage({ params }: PageProps<"/pay/[id]">) {
   if (d.order.state !== "awaiting_payment") redirect(`/orders/${id}`);
   return (
     <CustomerShell customer={cust} outlet={d.outlet} active="none">
-      <PayForm orderId={id} total={d.order.total} tracking={d.order.tracking} ref_={d.order.ref} failedBefore={d.payments.some((p) => p.status === "failed")} />
+      <PayForm
+        orderId={id}
+        total={d.order.total - d.netPaid}
+        topUp={d.netPaid > 0}
+        tracking={d.order.tracking}
+        ref_={d.order.ref}
+        failedBefore={d.payments.some((p) => p.status === "failed")}
+      />
     </CustomerShell>
   );
 }
