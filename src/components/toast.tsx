@@ -19,7 +19,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastCtx.Provider value={{ show }}>
       {children}
-      <div className="fixed bottom-24 left-4 z-90 flex max-w-[min(420px,calc(100vw-32px))] flex-col gap-2 cart:bottom-4" aria-live="polite">
+      {/* bottom-right: the demo guide button lives bottom-left */}
+      <div className="fixed bottom-24 right-4 z-90 flex max-w-[min(420px,calc(100vw-32px))] flex-col items-end gap-2 cart:bottom-4" aria-live="polite">
         {items.map((t) => (
           <div key={t.id} className={`o-toast static${t.tone === "danger" ? " o-toast-danger" : ""}`}>
             <div className="o-toast-title">{t.title}</div>

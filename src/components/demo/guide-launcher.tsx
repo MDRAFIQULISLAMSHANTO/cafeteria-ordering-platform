@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { DEMO_LOGIN, FLOW, LANES, STORIES } from "@/app/guide/flow-data";
 
-// The demo guide as a floating button in the bottom corner (like a chat
+// The demo guide as a floating button in the bottom-left corner (like a chat
 // widget). Opens a panel with the flow in ten steps and the demo script;
 // the full guide with the swimlane diagram is one click away at /guide.
 
@@ -50,7 +50,7 @@ export function GuideLauncher() {
   // closed: z-36, above the phone "View order" bar (z-30) but under the cart drawer (z-40) and dialogs (z-50).
   // open: above everything, including the landing header (z-50).
   return (
-    <div className={`fixed right-4 flex flex-col items-end gap-2.5 print:hidden sm:right-5 ${open ? "z-[70]" : "z-[36]"} ${lift}`}>
+    <div className={`fixed left-4 flex flex-col items-start gap-2.5 print:hidden sm:left-5 ${open ? "z-[70]" : "z-[36]"} ${lift}`}>
       <AnimatePresence>
         {open && (
           <motion.div
@@ -62,7 +62,7 @@ export function GuideLauncher() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.97 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            style={{ transformOrigin: "bottom right" }}
+            style={{ transformOrigin: "bottom left" }}
             className="flex max-h-[min(470px,calc(100dvh-7.5rem))] w-[min(320px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-sts-hairline bg-sts-white text-sts-ink shadow-sts-float"
           >
             <div className="bg-sts-purple px-4 pb-3 pt-3 text-sts-white">
