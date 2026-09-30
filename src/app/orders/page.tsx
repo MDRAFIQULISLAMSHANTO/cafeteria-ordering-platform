@@ -18,7 +18,7 @@ function badge(state: string, kitchen: string, bulk = false): [string, keyof typ
   if (kitchen === "ready") return ["Ready", "ready"];
   if (kitchen === "not_released") return ["Scheduled", "paid"];
   if (kitchen === "preparing") return ["Preparing", "paid"];
-  return ["In the kitchen queue", "paid"];
+  return ["Order placed", "paid"];
 }
 
 export default async function MyOrders() {

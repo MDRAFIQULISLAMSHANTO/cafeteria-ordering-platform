@@ -55,6 +55,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/or
   else if (order.kitchenState === "ready") { heading = bulk ? "Ready — going out soon" : "Ready for pickup!"; sub = bulk ? `It will be sent to ${order.deliverTo} shortly.` : `Show this QR code at the ${outlet.name} counter.`; }
   else if (order.kitchenState === "out_for_delivery") { heading = "Out for delivery"; sub = `On its way to ${order.deliverTo}.`; }
   else if (order.kitchenState === "preparing") { heading = "Being prepared now"; }
+  else if (order.state === "confirmed" && order.kitchenState === "to_cook") { heading = "Order placed in the kitchen"; }
   else if (order.state === "collected") { heading = bulk ? "Delivered" : "Collected — enjoy!"; }
   else if (order.state === "cancelled") { heading = "Order cancelled"; icon = "✕"; iconBg = "bg-danger"; sub = "Any payment has been refunded to the original method (sandbox)."; }
   else if (order.state === "rejected") { heading = "Order not accepted"; icon = "✕"; iconBg = "bg-danger"; sub = `Reason: ${order.rejectReason}. Any payment has been refunded (sandbox).`; }

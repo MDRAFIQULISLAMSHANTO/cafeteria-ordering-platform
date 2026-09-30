@@ -51,8 +51,8 @@ export const STORIES: Story[] = [
     steps: [
       { do: `Sign in with ${DEMO_LOGIN}, code 123456.`, see: "No password — mobile number and a one-time code.", open: { href: "/login", label: "Sign in" } },
       { do: "Add a lunch item and pick today's Lunch slot.", see: "Each slot shows its order-by time; full or closed slots can't be picked. VAT 5% is shown as included." },
-      { do: "Checkout → pay with bKash.", see: "Order number (e.g. S1), a collection QR code and a stage tracker: Placed → Paid → Preparing → Ready → Collected, each with its time. Payment is a sandbox." },
-      { do: "DEMO ▾ → Kitchen. Tap Start, then Ready.", see: "The ticket arrives on its own; the kitchen moves it To cook → Preparing → Ready.", open: { href: "/kds?outlet=ISD-CAF", label: "Kitchen" } },
+      { do: "Checkout → pay with bKash.", see: "Order number (e.g. S1), a collection QR code and a stage tracker: Ordered → Paid → Order placed → Preparing → Ready → Collected, each with its time. Payment is a sandbox." },
+      { do: "DEMO ▾ → Kitchen. Tap Start, then Ready.", see: "The ticket arrives on its own (customer sees Order placed). Start → Preparing, Ready → Ready.", open: { href: "/kds?outlet=ISD-CAF", label: "Kitchen" } },
       { do: "DEMO ▾ → Pickup TV.", see: "The number moves to Ready — please collect.", open: { href: "/status?outlet=ISD-CAF", label: "Pickup TV" } },
       { do: "DEMO ▾ → Counter. Scan QR (camera) or type the number, tick the name check, hand over.", see: "Collection needs the QR or number plus the customer's name. The customer's tracker turns to Collected.", open: { href: "/counter?outlet=ISD-CAF", label: "Counter" } },
     ],
@@ -86,7 +86,7 @@ export const STORIES: Story[] = [
     steps: [
       { do: "DEMO ▾ → Coordinator → Bulk order.", see: "Needs 24 hours' notice; times sooner than that are blocked. Delivered to a room, no payment now." },
       { do: "Demo hub → +1 day. Kitchen → Start → Ready.", see: "On its day the order reaches the kitchen with the room to deliver to." },
-      { do: "Counter → Send out → Delivery complete.", see: "The coordinator's tracker shows Booked → In the kitchen → Ready → Out for delivery → Delivered." },
+      { do: "Counter → Send out → Delivery complete.", see: "The coordinator's tracker shows Booked → Order placed → Preparing → Ready → Out for delivery → Delivered." },
       { do: "Operations → Cost-centre invoices.", see: "Bulk orders are billed to the cost centre on a monthly invoice." },
     ],
   },
