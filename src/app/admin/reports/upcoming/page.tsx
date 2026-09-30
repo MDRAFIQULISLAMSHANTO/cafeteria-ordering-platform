@@ -4,7 +4,7 @@ import { getDb } from "@/db/client";
 import { ActorSwitcher } from "@/components/demo/actor-switcher";
 import { OpsNav } from "@/components/ops/ops-nav";
 import { ToastProvider } from "@/components/toast";
-import { ACCOUNT_LABEL, STATE_LABEL, niceDate } from "@/lib/report-meta";
+import { ACCOUNT_LABEL, STATE_LABEL, formatMeasure, niceDate } from "@/lib/report-meta";
 import { reportContext, upcomingOrders } from "@/lib/reports";
 import { money } from "@/lib/rules";
 import { currentCustomer } from "@/lib/session";
@@ -63,7 +63,7 @@ export default async function UpcomingPage({ searchParams }: PageProps<"/admin/r
           <section aria-label="Key figures" className="o-kpis">
             <div className="o-kpi"><div className="o-kpi-label">Open orders</div><div className="o-kpi-value">{u.orders.length.toLocaleString("en-IN")}</div><div className="o-kpi-delta">{dates.length} pickup day{dates.length === 1 ? "" : "s"}</div></div>
             <div className="o-kpi o-kpi-stock"><div className="o-kpi-label">Items to prepare</div><div className="o-kpi-value">{items.toLocaleString("en-IN")}</div><div className="o-kpi-delta">confirmed orders</div></div>
-            <div className="o-kpi o-kpi-money"><div className="o-kpi-label">Order value</div><div className="o-kpi-value">{money(value)}</div><div className="o-kpi-delta">paid or accepted, plus waiting</div></div>
+            <div className="o-kpi o-kpi-money"><div className="o-kpi-label">Order value</div><div className="o-kpi-value">{formatMeasure("money", value)}</div><div className="o-kpi-delta">paid or accepted, plus waiting</div></div>
             <div className="o-kpi o-kpi-best"><div className="o-kpi-label">Waiting</div><div className="o-kpi-value">{waiting}</div><div className="o-kpi-delta">{waiting ? <span className="o-down">unpaid or awaiting counter</span> : "none"}</div></div>
           </section>
 
