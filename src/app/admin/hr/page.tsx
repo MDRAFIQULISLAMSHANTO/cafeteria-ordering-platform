@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { asc, desc } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import * as t from "@/db/schema";
+import { OpsNav } from "@/components/ops/ops-nav";
 import { ToastProvider } from "@/components/toast";
 import { HrImport } from "./hr-import";
 
-export const metadata: Metadata = { title: "HR staff list — STS Café" };
+export const metadata: Metadata = { title: "HR staff list — S Cafe" };
 
 // C8 §8: employees are verified against the HR staff list, refreshed monthly.
 // Leavers are deactivated; outlet, cost centre and discount come from here.
@@ -26,10 +26,12 @@ export default async function HrPage() {
   return (
     <ToastProvider>
       <div className="min-h-screen bg-page text-ink">
-        <div className="flex h-(--o-h-navbar) items-center gap-3 border-b border-line bg-navbar px-4">
-          <Link href="/admin">← Operations</Link>
-          <b className="text-sm">HR staff list</b>
-          <span className="pill-sandbox ml-auto">sample list · fictional people</span>
+        <OpsNav right={<span className="pill-sandbox">sample list · fictional people</span>} />
+        <div className="o-cp">
+          <div className="o-cp-titlewrap">
+            <div className="o-breadcrumb">Operations</div>
+            <h1 className="m-0 text-lg font-semibold leading-tight">HR staff list</h1>
+          </div>
         </div>
         <div className="mx-auto grid max-w-[1240px] items-start gap-4 p-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
           <section className="overflow-hidden rounded-md border border-line bg-surface">

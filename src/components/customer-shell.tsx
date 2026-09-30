@@ -35,9 +35,8 @@ export async function CustomerShell({ customer, outlet, active, theme, children 
       <div className={`flex min-h-dvh flex-col bg-so-bg text-ink ${theme === "sts" ? "sts-theme" : ""}`}>
         <header className="sticky top-0 z-20 border-b border-line bg-so-surface/95 backdrop-blur supports-[backdrop-filter]:bg-so-surface/85">
           <div className="mx-auto flex min-h-15 max-w-[1440px] flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 sm:px-4 md:flex-nowrap md:gap-4 md:px-5">
-            <Link href="/" className="flex flex-none items-center gap-2 text-lg font-bold text-ink hover:no-underline" aria-label="STS Café home">
-              <Image src="/branding/sts-group-logo.png" alt="STS Group" width={84} height={36} className="h-8 w-auto sm:h-9" />
-              <span className="hidden sm:inline">Café</span>
+            <Link href="/" className="flex flex-none items-center gap-2 text-lg font-bold text-ink hover:no-underline" aria-label="S Cafe home">
+              <Image src="/branding/scafe-logo.png" alt="S Cafe" width={140} height={72} className="h-9 w-auto sm:h-10" />
             </Link>
             <div className="flex min-w-0 flex-col border-l border-line pl-3 leading-tight md:pl-4">
               <small className="truncate text-2xs uppercase tracking-wider text-muted">{outlet.campus}</small>

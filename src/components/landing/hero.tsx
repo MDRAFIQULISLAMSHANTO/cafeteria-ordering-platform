@@ -12,7 +12,7 @@ export function Hero({ data, visitorName, orderHref, lite }: { data: LandingData
         <div className="text-center lg:text-left">
           <p data-hero-in className="inline-flex items-center gap-2 rounded-full bg-sts-white px-3 py-1.5 text-2xs font-bold uppercase tracking-[.14em] text-sts-purple shadow-[0_0_0_1px_var(--sts-hairline)] sm:text-xs">
             <span aria-hidden className="h-2 w-2 rounded-full bg-sts-orange" />
-            {visitorName ? `Welcome back, ${visitorName.split(" ")[0]}` : "STS Group campus cafeterias"}
+            {visitorName ? `Welcome back, ${visitorName.split(" ")[0]}` : "S Cafe · STS Group campuses"}
           </p>
           <h1 id="hero-title" className="mt-3 font-display text-[clamp(2.2rem,5.2vw+1.2svh,5.2rem)] font-extrabold leading-[.98] tracking-[-.035em] text-sts-purple sm:mt-5">
             Order ahead.

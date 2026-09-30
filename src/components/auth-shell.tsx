@@ -11,7 +11,7 @@ export function AuthShell({ children, signup = false }: { children: ReactNode; s
     <div className={styles.page}>
       <aside className={styles.story} aria-hidden>
         <Link href="/" className={styles.logo} tabIndex={-1}>
-          <Image src="/branding/sts-group-logo.png" alt="" width={112} height={48} priority />
+          <Image src="/branding/scafe-logo.png" alt="" width={112} height={58} priority />
         </Link>
         <div className={styles.stage}>
           <div className={styles.orbit} />
@@ -35,7 +35,7 @@ export function AuthShell({ children, signup = false }: { children: ReactNode; s
 
       <section className={styles.formArea} aria-label={signup ? "Create your cafeteria account" : "Sign in to your cafeteria account"}>
         <header className={styles.header}>
-          <Link href="/" aria-label="STS Group home" className={styles.mobileLogo}><Image src="/branding/sts-group-logo.png" alt="STS Group" width={84} height={36} priority /></Link>
+          <Link href="/" aria-label="S Cafe home" className={styles.mobileLogo}><Image src="/branding/scafe-logo.png" alt="S Cafe" width={82} height={42} priority /></Link>
           <Link href="/" className={styles.back}>← Home</Link>
         </header>
         <div className={styles.card}>
@@ -44,7 +44,7 @@ export function AuthShell({ children, signup = false }: { children: ReactNode; s
           </div>
           <div className={styles.form}>{children}</div>
         </div>
-        <p className={styles.footer}>STS Group · Your campus. Your cafeteria.</p>
+        <p className={styles.footer}>S Cafe · STS Group campus cafeterias</p>
       </section>
     </div>
   );

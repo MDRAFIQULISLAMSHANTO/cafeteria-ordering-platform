@@ -5,7 +5,7 @@ import { listOutlets } from "@/lib/orders";
 import { currentCustomer } from "@/lib/session";
 import { CounterScreen } from "./counter-screen";
 
-export const metadata: Metadata = { title: "Counter — STS Café" };
+export const metadata: Metadata = { title: "Counter — S Cafe" };
 
 export default async function CounterPage({ searchParams }: PageProps<"/counter">) {
   const outlets = await listOutlets(await getDb());

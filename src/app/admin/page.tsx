@@ -4,6 +4,7 @@ import { and, asc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import * as t from "@/db/schema";
 import { ActorSwitcher } from "@/components/demo/actor-switcher";
+import { OpsNav } from "@/components/ops/ops-nav";
 import { ToastProvider } from "@/components/toast";
 import { currentCustomer } from "@/lib/session";
 import { costCentreInvoices, demoNow, listOutlets, menuFor } from "@/lib/orders";
@@ -11,7 +12,7 @@ import { ACCOUNT_LABEL, money, type AccountType } from "@/lib/rules";
 import { time12 } from "@/lib/time";
 import { AvailabilityList, AdminOutletSelect } from "./admin-bits";
 
-export const metadata: Metadata = { title: "Operations — STS Café" };
+export const metadata: Metadata = { title: "Operations — S Cafe" };
 
 const STATE_LABEL: Record<string, string> = {
   awaiting_payment: "Unpaid", awaiting_acceptance: "Awaiting acceptance", confirmed: "Confirmed", collected: "Collected", cancelled: "Cancelled", rejected: "Rejected",
@@ -52,13 +53,19 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   return (
     <ToastProvider>
       <div className="min-h-screen bg-page text-ink">
-        <div className="flex h-(--o-h-navbar) items-center gap-4 border-b border-line bg-navbar px-4">
-          <Link href="/demo">☰</Link>
-          <b className="hidden text-sm sm:inline">STS Café · Operations</b>
-          <AdminOutletSelect outlets={outlets.map((o) => ({ id: o.id, name: o.name }))} value={outlet.id} />
-          <Link href="/admin/hr" className="o-btn o-btn-sm hidden sm:inline-flex">HR staff list</Link>
-          <span className="o-hint ml-auto hidden md:inline">Demo clock {now.date} {now.time}</span>
-          <ActorSwitcher tone="staff" staffScreen="admin" personaId={(await currentCustomer())?.id ?? null} outletId={outlet.id} staffUnlocked />
+        <OpsNav right={<><span className="o-hint hidden md:inline">Demo clock {now.date} {now.time}</span><ActorSwitcher tone="staff" staffScreen="admin" personaId={(await currentCustomer())?.id ?? null} outletId={outlet.id} staffUnlocked /></>} />
+        <div className="o-cp flex-wrap !gap-y-2">
+          <div className="o-cp-left">
+            <div className="o-cp-titlewrap">
+              <div className="o-breadcrumb">Operations</div>
+              <h1 className="m-0 text-lg font-semibold leading-tight">Overview</h1>
+            </div>
+            <AdminOutletSelect outlets={outlets.map((o) => ({ id: o.id, name: o.name }))} value={outlet.id} />
+          </div>
+          <div className="o-cp-right flex-wrap text-sm">
+            <Link href={`/admin/reports/daily?o=${outlet.id}`}>Today&apos;s sales report</Link>
+            <Link href={`/admin/reports/upcoming?o=${outlet.id}`}>Upcoming orders</Link>
+          </div>
         </div>
         <div className="grid items-start gap-4 p-3 sm:p-4 lg:grid-cols-2 [&>*]:min-w-0">
           <section className="min-w-0 overflow-x-auto rounded-md border border-line bg-surface">

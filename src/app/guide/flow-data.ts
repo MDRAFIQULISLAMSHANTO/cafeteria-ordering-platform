@@ -3,7 +3,7 @@
 
 export const LANES = [
   { id: "customer", label: "Customer", sub: "Parent · Student · Employee" },
-  { id: "app", label: "STS ordering app", sub: "Web and phone" },
+  { id: "app", label: "S Cafe ordering app", sub: "Web and phone" },
   { id: "payment", label: "Payment", sub: "bKash · Nagad · Card" },
   { id: "kitchen", label: "Kitchen", sub: "Kitchen display" },
   { id: "counter", label: "Counter & Pickup TV", sub: "Outlet staff" },

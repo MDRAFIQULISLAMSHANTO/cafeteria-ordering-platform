@@ -33,6 +33,7 @@ import {
   type PlaceInput,
 } from "@/lib/orders";
 import { HR_SAMPLE_CSV } from "@/db/data/hr-sync-sample";
+import { clearSampleHistory, loadSampleHistory } from "@/lib/sample-history";
 import { DEMO_COOKIE, DEMO_COOKIE_MAX_AGE, demoKey, demoToken, hasDemoAccess, openWithoutKey, sameToken } from "@/lib/demo-access";
 import { isPersonaId, type PersonaId } from "@/lib/demo-personas";
 import { clearPendingPhone, currentCustomer, endSession, getPendingPhone, setPendingPhone, startSession } from "@/lib/session";
@@ -318,5 +319,20 @@ export async function shiftClockAction(minutes: number | "reset") {
     const next = minutes === "reset" ? 0 : (cur?.clockOffsetMinutes ?? 0) + minutes;
     await db.update(t.demoState).set({ clockOffsetMinutes: next }).where(eq(t.demoState.id, 1));
     return next;
+  });
+}
+
+/** Demo only: two months of sample sales (refs "SIM/…") so the reports have something to show. */
+export async function loadSampleHistoryAction() {
+  return run(async () => {
+    await requireDemoAccess();
+    return loadSampleHistory(await getDb(), 60);
+  });
+}
+
+export async function clearSampleHistoryAction() {
+  return run(async () => {
+    await requireDemoAccess();
+    return clearSampleHistory(await getDb());
   });
 }

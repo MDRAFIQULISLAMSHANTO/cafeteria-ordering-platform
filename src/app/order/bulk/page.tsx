@@ -7,7 +7,7 @@ import { currentCustomer } from "@/lib/session";
 import { at } from "@/lib/time";
 import { BulkForm } from "./bulk-form";
 
-export const metadata: Metadata = { title: "Bulk order — STS Café" };
+export const metadata: Metadata = { title: "Bulk order — S Cafe" };
 
 // C8 §7: authorised coordinators book meeting/event food with 24–48 hours'
 // notice, delivered to a room and billed to their cost centre monthly.

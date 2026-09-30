@@ -6,6 +6,7 @@ import { removePhotoAction, toggleAvailabilityAction, uploadPhotoAction } from "
 import { FoodArt } from "@/components/food/food-art";
 import { useResult, useToast } from "@/components/toast";
 import { foodLook } from "@/lib/food-kind";
+import { isCutout } from "@/lib/food-photos";
 import { money } from "@/lib/rules";
 
 /** Resize in the browser (longest side 900 px) and encode as WebP, or JPEG where WebP isn't supported. */
@@ -85,7 +86,7 @@ export function AvailabilityList({ outletId, items }: { outletId: string; items:
                     <span className="grid h-11 w-11 flex-none place-items-center overflow-hidden rounded-lg bg-surface-2">
                       {it.photos
                         ? // eslint-disable-next-line @next/next/no-img-element -- small thumbnail, uploaded or bundled
-                          <img src={it.photos[0]} alt="" className="h-full w-full object-cover" />
+                          <img src={it.photos[0]} alt="" className={`h-full w-full ${isCutout(it.photos[0]) ? "object-contain p-0.5" : "object-cover"}`} />
                         : <FoodArt kind={foodLook(it.name, it.category).kind} tint={foodLook(it.name, it.category).tint} steam={false} className="h-10 w-10" />}
                     </span>
                     <span className="flex flex-col gap-0.5 text-xs">

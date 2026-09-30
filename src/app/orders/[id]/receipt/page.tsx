@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import QRCode from "qrcode";
@@ -39,7 +40,7 @@ export default async function Receipt({ params }: PageProps<"/orders/[id]/receip
         <PrintButton />
       </div>
       <div className="o-receipt shadow-o-md print:shadow-none">
-        <div className="o-receipt-logo">STS Café</div>
+        <div className="o-receipt-logo"><Image src="/branding/scafe-logo.png" alt="S Cafe" width={93} height={48} className="mx-auto" /></div>
         <div className="o-receipt-center">
           {outlet.name}
           <br />

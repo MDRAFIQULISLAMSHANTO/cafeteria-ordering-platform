@@ -136,8 +136,12 @@ export function GuideLauncher() {
             </div>
 
             <div className="flex gap-2 border-t border-sts-hairline bg-sts-cream-2 px-3 py-2.5">
+              <Link href="/" prefetch={false} onClick={() => setOpen(false)} aria-label="Back to home" title="Back to home" className="flex items-center justify-center gap-1 rounded-lg px-3 py-2 text-xs font-bold text-sts-purple shadow-[0_0_0_1.5px_var(--sts-hairline)] hover:no-underline">
+                <svg aria-hidden viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5 10 3.5l7 6M5 8v8.5h10V8" /></svg>
+                Home
+              </Link>
               <Link href="/guide" prefetch={false} target="_blank" className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-sts-purple px-3 py-2 text-xs font-bold text-sts-white hover:no-underline">
-                Full guide & swimlane <span aria-hidden>↗</span>
+                Full guide <span aria-hidden>↗</span>
               </Link>
               <Link href="/demo" prefetch={false} target="_blank" className="flex items-center justify-center rounded-lg px-3 py-2 text-xs font-bold text-sts-purple shadow-[0_0_0_1.5px_var(--sts-hairline)] hover:no-underline">
                 Demo hub

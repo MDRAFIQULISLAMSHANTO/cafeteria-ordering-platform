@@ -26,7 +26,7 @@ export async function requestOtp(db: Db, rawPhone: string) {
     .insert(t.otp)
     .values({ phone, code, expiresAt, attempts: 0 })
     .onConflictDoUpdate({ target: t.otp.phone, set: { code, expiresAt, attempts: 0 } });
-  await db.insert(t.notification).values({ id: randomUUID(), phone, channel: "sms", text: `STS Café: your login code is ${code}. It expires in 5 minutes.` });
+  await db.insert(t.notification).values({ id: randomUUID(), phone, channel: "sms", text: `S Cafe: your login code is ${code}. It expires in 5 minutes.` });
   return phone;
 }
 

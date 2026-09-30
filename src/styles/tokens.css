@@ -123,6 +123,10 @@
   /* a single-series chart is one blue: line, marker and a soft fill under it */
   --o-chart-line: #5CA0DC; --o-chart-fill: rgba(146, 196, 235, .55);
   --o-chart-grid: #ECEEF0; --o-chart-axis: #8A9096;
+  /* reporting series (validated palette: CVD- and contrast-checked in fixed
+     order, 29 Sep 2026). The pastel --o-chart-* stay for small accents. */
+  --rpt-1: #2a78d6; --rpt-2: #eb6834; --rpt-3: #1baf7a; --rpt-4: #eda100;
+  --rpt-5: #e87ba4; --rpt-6: #008300; --rpt-7: #4a3aa7; --rpt-8: #e34948;
 
   /* ---- dashboard KPI tiles: a tinted fill, never a border --------------- */
   --o-kpi-1: #E8F0FB;   /* counts — pale blue                                */
@@ -294,6 +298,8 @@
 
   --o-chart-line: #6FB1E6; --o-chart-fill: rgba(96, 150, 200, .38);
   --o-chart-grid: #2A2D31; --o-chart-axis: #8A9096;
+  --rpt-1: #3987e5; --rpt-2: #d95926; --rpt-3: #199e70; --rpt-4: #c98500;
+  --rpt-5: #d55181; --rpt-6: #008300; --rpt-7: #9085e9; --rpt-8: #e66767;
   --o-kpi-1: #16232F; --o-kpi-2: #2B2318; --o-kpi-3: #2E1D1F; --o-kpi-4: #16281F;
   --o-kpi-ink: #E8EAED;
   --o-rankbar-warm: #33291F; --o-rankbar-cool: #1B2E24;
@@ -351,6 +357,8 @@
     --o-neutral: #C3C6CA; --o-neutral-bg: #303337;
     --o-date-today: #E0A458; --o-date-overdue: #F0837C;
     --o-grid: #2C2E31;
+      --rpt-1: #3987e5; --rpt-2: #d95926; --rpt-3: #199e70; --rpt-4: #c98500;
+    --rpt-5: #d55181; --rpt-6: #008300; --rpt-7: #9085e9; --rpt-8: #e66767;
     --o-home-bg: radial-gradient(120% 90% at 20% 0%, #10343C 0%, #0C2229 45%, #07161B 100%);
     --o-home-tile: #1C1E21;
     --o-kds-bg: #40434B; --o-kds-bar: #2A2B2F; --o-kds-card: #3A3C43; --o-kds-card-head: #DCDCDC;

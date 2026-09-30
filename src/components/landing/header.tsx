@@ -25,8 +25,8 @@ export function LandingHeader({ signedIn, orderHref }: { signedIn: boolean; orde
   return (
     <header className={`sticky top-0 z-50 transition-[background-color,box-shadow] duration-300 ${scrolled || open ? "bg-sts-white/90 shadow-[0_1px_0_var(--sts-hairline)] backdrop-blur-xl" : "bg-transparent"}`}>
       <div className="mx-auto flex h-16 max-w-[1240px] items-center gap-3 px-4 sm:px-6 md:h-18">
-        <Link href="/" aria-label="STS Group cafeteria home" className="flex-none">
-          <Image src="/branding/sts-group-logo.png" alt="STS Group" width={104} height={45} priority className="h-9 w-auto md:h-11" />
+        <Link href="/" aria-label="S Cafe home" className="flex-none">
+          <Image src="/branding/scafe-logo.png" alt="S Cafe" width={140} height={72} priority className="h-10 w-auto md:h-12" />
         </Link>
         <nav aria-label="Sections" className="ml-6 hidden items-center gap-1 lg:flex">
           {NAV.map((n) => (

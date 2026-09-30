@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useState, type ReactNode } from "react";
 import type { FoodLook } from "@/lib/food-kind";
+import { isCutout } from "@/lib/food-photos";
 import { money } from "@/lib/rules";
 import { FoodArt } from "./food-art";
 
@@ -35,7 +36,11 @@ export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact 
   const title = "line-clamp-2 text-sm font-bold leading-snug text-sts-ink md:text-[15px]";
   const Art = (
     <div className="relative grid aspect-[5/4] place-items-center overflow-hidden rounded-t-[1.35rem] bg-[radial-gradient(circle_at_50%_60%,var(--sts-orange-soft)_0%,var(--sts-cream-2)_70%)]">
-      {photos.length ? (
+      {photos.length === 1 && isCutout(photos[0]) ? (
+        <motion.div whileHover={reduce ? undefined : { rotate: -4, scale: 1.05 }} transition={{ type: "spring", stiffness: 260, damping: 16 }} className="absolute inset-[7%]">
+          <Image src={photos[0]} alt={item.name} fill sizes="(max-width: 640px) 45vw, (max-width: 1100px) 30vw, 300px" className="object-contain drop-shadow-[0_12px_12px_var(--sts-drop)]" />
+        </motion.div>
+      ) : photos.length ? (
         <div className={`absolute inset-0 grid bg-sts-white ${photos.length > 1 ? "grid-cols-2 gap-px" : ""}`}>
           {photos.map((src) => (
             <div key={src} className="relative overflow-hidden">

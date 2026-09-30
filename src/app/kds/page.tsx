@@ -5,7 +5,7 @@ import { listOutlets } from "@/lib/orders";
 import { currentCustomer } from "@/lib/session";
 import { KitchenDisplay } from "./kitchen-display";
 
-export const metadata: Metadata = { title: "Kitchen Display — STS Café" };
+export const metadata: Metadata = { title: "Kitchen Display — S Cafe" };
 
 export default async function KdsPage({ searchParams }: PageProps<"/kds">) {
   const outlets = await listOutlets(await getDb());

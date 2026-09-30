@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { StatusBoard } from "./status-board";
 
-export const metadata: Metadata = { title: "Order status — STS Café" };
+export const metadata: Metadata = { title: "Order status — S Cafe" };
 
 export default async function StatusPage({ searchParams }: PageProps<"/status">) {
   const q = (await searchParams).outlet;

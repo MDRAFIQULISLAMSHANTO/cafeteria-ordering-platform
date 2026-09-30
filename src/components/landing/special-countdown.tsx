@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FoodArt } from "@/components/food/food-art";
+import { isCutout } from "@/lib/food-photos";
 import type { LandingData } from "@/lib/landing-data";
 import { money } from "@/lib/rules";
 
@@ -66,7 +67,11 @@ export function SpecialCountdown({ data, orderHref }: { data: LandingData; order
         </div>
         <div className="relative mx-auto mt-8 w-[min(70vw,300px)] md:mt-0">
           <div aria-hidden className="absolute inset-[8%] rounded-full bg-sts-white/35" />
-          {sp?.photos?.length ? (
+          {sp?.photos?.length && isCutout(sp.photos[0]) ? (
+            <div className="relative aspect-square w-full animate-float motion-safe-only">
+              <Image src={sp.photos[0]} alt={sp.name} fill sizes="300px" className="object-contain drop-shadow-[0_24px_24px_var(--sts-drop)]" />
+            </div>
+          ) : sp?.photos?.length ? (
             <div className="relative aspect-square w-full overflow-hidden rounded-full border-[6px] border-sts-white shadow-sts-float">
               <Image src={sp.photos[0]} alt={sp.name} fill sizes="300px" className="object-cover" />
             </div>

@@ -2,6 +2,7 @@ import "server-only";
 import { getDb } from "@/db/client";
 import { cardLine } from "./card-lines";
 import { foodLook, type FoodLook } from "./food-kind";
+import { isCutout } from "./food-photos";
 import { demoNow, firstOrderableDate, listOutlets, menuFor, slotsFor } from "./orders";
 import { PENDING } from "./rules";
 import { formatDay, time12 } from "./time";
@@ -40,8 +41,8 @@ export async function landingData(outletId?: string) {
   const special = items.find((i) => i.special) ?? null;
   const game = items
     .filter((i) => !(i.look.kind === "cold" && i.price > 200))
-    .map((i) => ({ ...i, group: trayGroup(i) }))
-    .filter((i): i is LandingItem & { group: TrayGroup } => i.group != null && !menu.find((m) => m.id === i.id)?.flags?.length);
+    .map((i) => ({ ...i, group: trayGroup(i), cutout: i.photos?.find(isCutout) ?? null, photo: i.photos?.[0] ?? null }))
+    .filter((i): i is LandingItem & { group: TrayGroup; cutout: string | null; photo: string | null } => i.group != null && !menu.find((m) => m.id === i.id)?.flags?.length);
 
   return {
     guest: !outletId,

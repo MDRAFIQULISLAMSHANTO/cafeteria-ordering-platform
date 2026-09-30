@@ -7,7 +7,7 @@ import { ACCOUNT_LABEL, RULES, type AccountType } from "@/lib/rules";
 import { currentCustomer } from "@/lib/session";
 import { CampusForm, ClassForm } from "./profile-forms";
 
-export const metadata: Metadata = { title: "Your profile — STS Café" };
+export const metadata: Metadata = { title: "Your profile — S Cafe" };
 
 const row = "flex items-center justify-between gap-4 border-b border-line py-2.5 text-sm last:border-b-0";
 

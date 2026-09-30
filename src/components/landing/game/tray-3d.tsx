@@ -1,21 +1,75 @@
 "use client";
 
-import { ContactShadows, PerformanceMonitor, RoundedBox } from "@react-three/drei";
+import { Billboard, ContactShadows, PerformanceMonitor, RoundedBox, useTexture } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
-import type * as THREE from "three";
+import { Suspense, useEffect, useMemo, useRef } from "react";
+import * as THREE from "three";
 import { Food3D } from "./food-3d";
 import type { Group, Tray } from "./tray-logic";
 
 // WebGL lunch tray, built from primitives (no downloaded models or HDRs).
-// The food is modelled from primitives too (./food-3d), in the same colours
-// as the drawn plates on the page.
+// Every dish shows its real photo, turned to face the camera: S Cafe's own
+// cut-outs stand whole, other photos sit on a round plate. Only a dish with
+// no photo falls back to the primitive model (./food-3d).
 // Loaded lazily; renders on demand, not every frame.
 
 const WELLS: Record<Group, [number, number]> = { main: [-0.98, -0.62], side: [0.98, -0.62], drink: [-0.98, 0.66], treat: [0.98, 0.66] };
 
 function token(name: string) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#ffffff";
+}
+
+/** S Cafe's cut-out as a photo card. Unlit, so the photo keeps its own colours. */
+/** Photo textures keep their own colours; a plate photo is cropped to its centre square. */
+function prepare(t: THREE.Texture | THREE.Texture[], square: boolean) {
+  const tex = Array.isArray(t) ? t[0] : t;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  if (square) {
+    const img = tex.image as { width: number; height: number } | undefined;
+    const a = img?.width && img.height ? img.width / img.height : 1;
+    tex.repeat.set(a > 1 ? 1 / a : 1, a > 1 ? 1 : a);
+    tex.offset.set(a > 1 ? (1 - 1 / a) / 2 : 0, a > 1 ? 0 : (1 - a) / 2);
+  }
+  tex.needsUpdate = true;
+}
+
+function Cutout({ src }: { src: string }) {
+  const tex = useTexture(src, (t) => prepare(t, false));
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => invalidate(), [tex, invalidate]);
+  const img = tex.image as { width: number; height: number } | undefined;
+  const aspect = img?.width && img.height ? img.width / img.height : 1;
+  const h = aspect >= 1 ? 1.25 / aspect : 1.25;
+  return (
+    <Billboard position={[0, h / 2 + 0.04, 0]}>
+      <mesh>
+        <planeGeometry args={[h * aspect, h]} />
+        <meshBasicMaterial map={tex} transparent alphaTest={0.04} toneMapped={false} side={THREE.DoubleSide} />
+      </mesh>
+    </Billboard>
+  );
+}
+
+/** Any other real photo, cropped square onto a round plate. */
+function PhotoPlate({ src }: { src: string }) {
+  // centre square crop, so the photo is not squashed onto the disc
+  const tex = useTexture(src, (t) => prepare(t, true));
+  const invalidate = useThree((s) => s.invalidate);
+  const plate = useMemo(() => token("--sts-white"), []);
+  useEffect(() => invalidate(), [tex, invalidate]);
+  return (
+    <Billboard position={[0, 0.62, 0]}>
+      <mesh position={[0, 0, -0.01]}>
+        <circleGeometry args={[0.6, 48]} />
+        <meshBasicMaterial color={plate} toneMapped={false} />
+      </mesh>
+      <mesh>
+        <circleGeometry args={[0.52, 48]} />
+        <meshBasicMaterial map={tex} toneMapped={false} />
+      </mesh>
+    </Billboard>
+  );
 }
 
 function Food({ item, at, group }: { item: NonNullable<Tray[Group]>; at: [number, number]; group: Group }) {
@@ -35,7 +89,13 @@ function Food({ item, at, group }: { item: NonNullable<Tray[Group]>; at: [number
   });
   return (
     <group ref={ref} position={[at[0], 2.2, at[1]]}>
-      <group scale={1.3}><Food3D look={item.look} group={group} /></group>
+      {item.cutout || item.photo ? (
+        <Suspense fallback={<group scale={1.3}><Food3D look={item.look} group={group} /></group>}>
+          {item.cutout ? <Cutout src={item.cutout} /> : <PhotoPlate src={item.photo!} />}
+        </Suspense>
+      ) : (
+        <group scale={1.3}><Food3D look={item.look} group={group} /></group>
+      )}
     </group>
   );
 }

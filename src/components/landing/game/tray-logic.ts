@@ -12,7 +12,8 @@ export const GROUPS: { id: Group; label: string; hint: string }[] = [
   { id: "treat", label: "Treat", hint: "Something sweet" },
 ];
 
-export type GameItem = { id: string; name: string; price: number; look: FoodLook; group: Group };
+// photo: a real photo of the dish; cutout: S Cafe's own transparent photo, when there is one
+export type GameItem = { id: string; name: string; price: number; look: FoodLook; group: Group; cutout?: string | null; photo?: string | null };
 export type Hand = Record<Group, GameItem[]>;
 export type Tray = Partial<Record<Group, GameItem>>;
 
@@ -34,7 +35,7 @@ export function seedFrom(text: string) {
   return h >>> 0;
 }
 
-/** Three distinct items per compartment (fewer if the menu has fewer). */
+/** Three distinct items per compartment (fewer if the menu has fewer): S Cafe's own photos first, then other real photos. */
 export function deal(pool: GameItem[], seed: number): Hand {
   const r = rng(seed);
   const hand = {} as Hand;
@@ -44,6 +45,8 @@ export function deal(pool: GameItem[], seed: number): Hand {
       const j = Math.floor(r() * (i + 1));
       [items[i], items[j]] = [items[j], items[i]];
     }
+    const rank = (x: GameItem) => (x.cutout ? 2 : x.photo ? 1 : 0);
+    items.sort((a, b) => rank(b) - rank(a)); // stable: the shuffle order is kept within each rank
     hand[g.id] = items.slice(0, 3);
   }
   return hand;

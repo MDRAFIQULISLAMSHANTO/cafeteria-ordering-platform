@@ -10,8 +10,8 @@ const display = Bricolage_Grotesque({ variable: "--font-display-face", subsets: 
 const bengali = Noto_Sans_Bengali({ variable: "--font-bengali", subsets: ["bengali"], weight: ["400", "700"] });
 
 export const metadata: Metadata = {
-  title: "STS Group — Online Cafeteria Ordering",
-  description: "Order ahead from STS Group cafeterias. Working prototype: payment, SMS and HR list are sandbox.",
+  title: "S Cafe — Online Cafeteria Ordering",
+  description: "Order ahead from S Cafe at STS Group campuses. Working prototype: payment, SMS and HR list are sandbox.",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Cafeteria Ordering", statusBarStyle: "default" },
 };

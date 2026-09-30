@@ -2,18 +2,32 @@
 
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { FoodArt } from "@/components/food/food-art";
 import type { LandingData } from "@/lib/landing-data";
 import { money } from "@/lib/rules";
 import { handOff } from "@/lib/tray-handoff";
-import { GROUPS, budgetFor, deal, filled, seedFrom, stars, total, type Group, type Hand, type Tray } from "./tray-logic";
+import { GROUPS, budgetFor, deal, filled, seedFrom, stars, total, type GameItem, type Group, type Hand, type Tray } from "./tray-logic";
 import { useCan3D } from "./use-can-3d";
 
 const Tray3D = dynamic(() => import("./tray-3d"), { ssr: false, loading: () => <div className="grid h-full place-items-center text-sm text-muted">Loading 3D tray…</div> });
 
 const BELL_SECONDS = 60;
+
+/** The dish's real photo: S Cafe's cut-out whole, other photos as a round plate; the drawing only if there is no photo. */
+function Dish({ it, className }: { it: GameItem; className: string }) {
+  if (it.cutout) return <Image src={it.cutout} alt="" width={240} height={240} sizes="(max-width: 640px) 30vw, 240px" className={`${className} object-contain`} />;
+  if (it.photo) {
+    return (
+      <span className={`${className} relative block aspect-square scale-[.88] overflow-hidden rounded-full bg-sts-white ring-4 ring-sts-white shadow-[0_0_0_5px_var(--tray-base),0_8px_14px_var(--sts-drop)]`}>
+        <Image src={it.photo} alt="" fill sizes="(max-width: 640px) 30vw, 240px" className="object-cover" />
+      </span>
+    );
+  }
+  return <FoodArt kind={it.look.kind} tint={it.look.tint} steam={false} className={className} />;
+}
 
 function TrayFlat({ tray }: { tray: Tray }) {
   return (
@@ -26,7 +40,7 @@ function TrayFlat({ tray }: { tray: Tray }) {
               {!it && <span className="text-xs font-semibold uppercase tracking-wider text-sts-purple/40">{g.label}</span>}
               {it && (
                 <motion.div layoutId={`art-${it.id}`} className="h-[88%]" transition={{ type: "spring", stiffness: 260, damping: 22 }}>
-                  <FoodArt kind={it.look.kind} tint={it.look.tint} steam={false} className="h-full w-auto drop-shadow-[0_8px_8px_var(--sts-drop)]" />
+                  <Dish it={it} className="h-full w-auto drop-shadow-[0_8px_8px_var(--sts-drop)]" />
                 </motion.div>
               )}
             </div>
@@ -220,7 +234,7 @@ export function BalancedTray({ data, orderHref }: { data: LandingData; orderHref
                           <span className="grid aspect-square w-[78%] place-items-center">
                             {!on ? (
                               <motion.span layoutId={`art-${it.id}`} className="block h-full w-full">
-                                <FoodArt kind={it.look.kind} tint={it.look.tint} steam={false} className="h-full w-full" />
+                                <Dish it={it} className="h-full w-full drop-shadow-[0_6px_6px_var(--sts-drop)]" />
                               </motion.span>
                             ) : (
                               <span aria-hidden className="grid h-full w-full place-items-center rounded-full border-2 border-dashed border-sts-orange/60 text-2xl text-sts-orange">✓</span>

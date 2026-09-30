@@ -5,7 +5,7 @@ import { PrintButton } from "./print-button";
 import { DEMO_LOGIN, FLOW, STORIES } from "./flow-data";
 import { Swimlane } from "./swimlane";
 
-export const metadata: Metadata = { title: "Demo guide — STS Group online ordering" };
+export const metadata: Metadata = { title: "Demo guide — S Cafe online ordering" };
 
 // A plain-language guide for STS: how one order flows, and a 10-minute
 // script to show every rule from STS's own answers (C8) in the prototype.
@@ -39,7 +39,7 @@ export default function GuidePage() {
     <div className="min-h-dvh bg-sts-cream-2 text-sts-ink">
       <header className="sticky top-0 z-40 border-b border-sts-hairline bg-sts-white/90 backdrop-blur print:static">
         <div className="mx-auto flex h-16 max-w-[1240px] items-center gap-3 px-4 sm:px-6">
-          <Link href="/" aria-label="STS Group home"><Image src="/branding/sts-group-logo.png" alt="STS Group" width={96} height={41} className="h-9 w-auto" /></Link>
+          <Link href="/" aria-label="S Cafe home"><Image src="/branding/scafe-logo.png" alt="S Cafe" width={140} height={72} className="h-10 w-auto" /></Link>
           <b className="hidden font-display text-lg text-sts-purple sm:inline">Demo guide</b>
           <nav aria-label="Guide sections" className="ml-auto hidden items-center gap-1 text-sm font-semibold md:flex">
             <a href="#flow" className="rounded-full px-3 py-1.5 text-sts-purple hover:bg-sts-purple-soft hover:no-underline">The flow</a>
@@ -48,6 +48,9 @@ export default function GuidePage() {
             <a href="#rules" className="rounded-full px-3 py-1.5 text-sts-purple hover:bg-sts-purple-soft hover:no-underline">Rules</a>
           </nav>
           <div className="ml-auto flex items-center gap-2 md:ml-2 print:hidden">
+            <Link href="/" className={`${btn} text-sts-purple shadow-[0_0_0_1.5px_var(--sts-hairline)] hover:no-underline`}>
+              <span aria-hidden>←</span> <span className="sm:hidden">Home</span><span className="hidden sm:inline">Back to home</span>
+            </Link>
             <PrintButton />
             <Link href="/login" className={`${btn} bg-sts-action text-sts-ink shadow-[var(--sts-action-shadow)]`}>Start the demo →</Link>
           </div>
@@ -58,7 +61,7 @@ export default function GuidePage() {
         {/* summary */}
         <section className="grid gap-6 py-10 md:grid-cols-[1.2fr_1fr] md:items-center md:py-14">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[.16em] text-sts-orange-text">STS Group · online cafeteria ordering</p>
+            <p className="text-xs font-bold uppercase tracking-[.16em] text-sts-orange-text">S Cafe · STS Group online cafeteria ordering</p>
             <h1 className="mt-2 font-display text-[clamp(2.1rem,3.5vw+.6rem,3.6rem)] font-extrabold leading-[1.02] tracking-[-.03em] text-sts-purple">How an order works — from phone to pickup</h1>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-sts-ink/80">
               Parents, students and staff order from their own campus cafeteria on the web or phone, pay in the app and pick a break-time slot.
@@ -91,7 +94,7 @@ export default function GuidePage() {
               <li key={s.n} className="flex gap-3 rounded-2xl bg-sts-white p-4 shadow-[0_0_0_1px_var(--sts-hairline)]">
                 <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-sts-orange font-display text-sm font-bold">{s.n}</span>
                 <span>
-                  <b className="block text-sm text-sts-purple">{{ customer: "Customer", app: "STS app", payment: "Payment", kitchen: "Kitchen", counter: "Counter & TV", ops: "Operations" }[s.lane]}</b>
+                  <b className="block text-sm text-sts-purple">{{ customer: "Customer", app: "S Cafe app", payment: "Payment", kitchen: "Kitchen", counter: "Counter & TV", ops: "Operations" }[s.lane]}</b>
                   <span className="text-sm text-sts-ink/85">{s.text}</span>
                 </span>
               </li>

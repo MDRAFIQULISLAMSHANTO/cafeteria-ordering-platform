@@ -1,19 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { eq } from "drizzle-orm";
+import { eq, like, sql } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import * as t from "@/db/schema";
 import { ToastProvider } from "@/components/toast";
 import { TEST_PHONES } from "@/db/seed";
 import { demoNow, listOutlets } from "@/lib/orders";
 import { formatClock } from "@/lib/time";
+import { SampleHistoryButton } from "@/app/admin/reports/sample-history";
 import { ClockControls, Inbox, ResetButton, SubstitutionTimer } from "./demo-bits";
 
-export const metadata: Metadata = { title: "Demo hub — STS Café prototype" };
+export const metadata: Metadata = { title: "Demo hub — S Cafe prototype" };
 
 export default async function DemoHub() {
   const db = await getDb();
-  const [outlets, now, state] = await Promise.all([listOutlets(db), demoNow(db), db.select().from(t.demoState).where(eq(t.demoState.id, 1))]);
+  const [outlets, now, state, [sim]] = await Promise.all([
+    listOutlets(db),
+    demoNow(db),
+    db.select().from(t.demoState).where(eq(t.demoState.id, 1)),
+    db.select({ n: sql<number>`count(*)::int` }).from(t.foodOrder).where(like(t.foodOrder.ref, "SIM/%")),
+  ]);
+  const sampleOrders = Number(sim?.n ?? 0);
   const subSeconds = state[0]?.substitutionTimeoutSeconds ?? 900;
   // Part 2 of the demo: the real Odoo POS self-order link, when the presenter sets one
   const odooUrl = process.env.NEXT_PUBLIC_ODOO_SELF_ORDER_URL;
@@ -24,6 +31,9 @@ export default async function DemoHub() {
     { href: "/counter?outlet=ISD-CAF", title: "Counter", sub: "Accept pay-at-counter · QR + name collection" },
     { href: "/status?outlet=ISD-CAF", title: "Pickup TV", sub: "Preparing / Ready numbers" },
     { href: "/admin?outlet=ISD-CAF", title: "Operations", sub: "Availability · production list · cost-centre invoices" },
+    { href: "/admin/reports", title: "Sales Analysis", sub: "Odoo-style pivot, graph, list · sales and profit" },
+    { href: "/admin/reports/daily", title: "Daily Sales Report", sub: "One day, printable · payments, VAT, refunds" },
+    { href: "/admin/reports/upcoming", title: "Upcoming Orders", sub: "Pre-orders by day · production quantities" },
     { href: "/admin/hr", title: "HR staff list", sub: "Monthly import · leavers deactivated" },
     { href: "/kds?outlet=ISD-PL", title: "Kitchen · Parent Lounge", sub: "For the employee story" },
     { href: "/counter?outlet=ISD-PL", title: "Counter · Parent Lounge", sub: "Accept Farhana's order" },
@@ -32,7 +42,7 @@ export default async function DemoHub() {
     <ToastProvider>
       <div className="min-h-screen bg-page text-ink">
         <div className="flex h-(--o-h-navbar) items-center gap-4 border-b border-line bg-navbar px-4">
-          <b className="text-sm">STS Café · Demo hub</b>
+          <b className="text-sm">S Cafe · Demo hub</b>
           <span className="pill-sandbox hidden sm:inline-flex">PROTOTYPE — payment, SMS and HR list are sandbox</span>
           <span className="pill-sandbox sm:hidden">SANDBOX</span>
           <span className="o-hint ml-auto hidden md:inline">Production system: Odoo</span>
@@ -72,6 +82,7 @@ export default async function DemoHub() {
                 <li><b>Coordinator — Tanvir</b> books a bulk order: refused under 24 h notice, accepted after; kitchen marks Ready, counter marks Delivered; Operations shows the monthly cost-centre invoice.</li>
                 <li><b>Profile</b>: a parent changes campus; an employee sees HR-owned details. The bell shows order updates.</li>
                 <li><b>HR staff list</b>: import the sample October list → a leaver&apos;s number (01700000006) can no longer sign in.</li>
+                <li><b>Reports</b> (Operations → Reporting): Sales Analysis by product, day, pickup time or outlet with profit; the daily sales report; upcoming orders and what to prepare.</li>
               </ol>
             </section>
 
@@ -108,6 +119,15 @@ export default async function DemoHub() {
               <h2 className="mb-2 flex items-center justify-between gap-2 text-base font-semibold">Demo clock <span className="o-hint tabular-nums">{formatClock(now.ms)}{now.offsetMinutes ? ` (shifted ${Math.round(now.offsetMinutes / 60)}h)` : " (real time)"}</span></h2>
               <p className="mb-3 text-muted">Move time to show cut-offs, late tickets and pre-orders joining the kitchen on their day.</p>
               <ClockControls />
+            </section>
+
+            <section className="mb-4 rounded-lg border border-line bg-surface p-4">
+              <h2 className="mb-2 flex items-center justify-between gap-2 text-base font-semibold">Sample sales history <span className="o-hint tabular-nums">{sampleOrders ? `${sampleOrders.toLocaleString("en-IN")} sample orders loaded` : "none loaded"}</span></h2>
+              <p className="mb-3 text-muted">Two months of past sales and a few days of pre-orders across all outlets (orders “SIM/…”, inactive sample customers), so the reports have something to show. Removing it deletes exactly these and nothing else. Today is left to live demo orders.</p>
+              <div className="flex flex-wrap gap-2">
+                <SampleHistoryButton mode="load" className={sampleOrders ? "o-btn" : "o-btn o-btn-primary"} />
+                {sampleOrders > 0 && <SampleHistoryButton mode="clear" className="o-btn" />}
+              </div>
             </section>
 
             <section className="mb-4 rounded-lg border border-line bg-surface p-4">

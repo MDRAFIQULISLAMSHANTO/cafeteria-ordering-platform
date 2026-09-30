@@ -36,7 +36,7 @@ export function NotificationBell({ who }: { who: string }) {
     if (!messages.length || permission !== "granted") return;
     const last = read(pushedKey(who));
     const fresh = messages.filter((m) => new Date(m.createdAt).getTime() > last);
-    if (last > 0) for (const m of fresh.slice(0, 3).reverse()) new Notification("STS Café", { body: m.text.replace(/^STS:\s*/, ""), tag: m.id });
+    if (last > 0) for (const m of fresh.slice(0, 3).reverse()) new Notification("S Cafe", { body: m.text.replace(/^STS:\s*/, ""), tag: m.id });
     write(pushedKey(who), new Date(messages[0].createdAt).getTime());
   }, [messages, permission, who]);
 
