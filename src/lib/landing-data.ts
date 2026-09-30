@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/db/client";
+import { cardLine } from "./card-lines";
 import { foodLook, type FoodLook } from "./food-kind";
 import { demoNow, firstOrderableDate, listOutlets, menuFor, slotsFor } from "./orders";
 import { PENDING } from "./rules";
@@ -32,7 +33,7 @@ export async function landingData(outletId?: string) {
 
   const items: LandingItem[] = menu
     .filter((p) => p.available && p.price != null && p.unit === "each")
-    .map((p) => ({ id: p.id, name: p.name, section: p.category, price: p.price!, description: p.description, look: foodLook(p.name, p.category), special: Boolean(p.weekday), photos: p.photos }));
+    .map((p) => ({ id: p.id, name: p.name, section: p.category, price: p.price!, description: cardLine(p), look: foodLook(p.name, p.category), special: Boolean(p.weekday), photos: p.photos }));
 
   const sections = [...new Set(items.map((i) => i.section))].map((name) => ({ name, count: items.filter((i) => i.section === name).length, look: items.find((i) => i.section === name)!.look }));
   const next = slots.find((s) => s.open) ?? null;

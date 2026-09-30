@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { FLOW, LANES, STAGES, SUPPORT, type Card, type Lane } from "./flow-data";
+import { FLOW, LANES, STAGES, SUPPORT, type Lane } from "./flow-data";
 
 // Swimlane diagram of one order, from sign-in to collection. Lanes are who
 // (or what) acts; columns are the stages. Numbered cards are the main flow

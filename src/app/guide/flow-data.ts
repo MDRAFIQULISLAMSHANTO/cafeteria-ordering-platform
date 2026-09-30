@@ -37,3 +37,61 @@ export const SUPPORT: Card[] = [
   { lane: "ops", stage: 3, text: "Production list for pre-orders and bulk events" },
   { lane: "ops", stage: 5, text: "Daily sales, monthly cost-centre invoices, monthly HR staff list" },
 ];
+
+// The 10-minute demo script, shown on /guide and in the floating guide panel.
+export const DEMO_LOGIN = "01700000001";
+
+export type Step = { do: string; see: string; open?: { href: string; label: string } };
+export type Story = { n: number; title: string; who: string; minutes: string; steps: Step[] };
+
+export const STORIES: Story[] = [
+  {
+    n: 1, title: "A parent orders lunch", who: "Parent — Nusrat", minutes: "3 min",
+    steps: [
+      { do: `Sign in with ${DEMO_LOGIN}, code 123456.`, see: "No password — mobile number and a one-time code.", open: { href: "/login", label: "Sign in" } },
+      { do: "Add a lunch item and pick today's Lunch slot.", see: "Each slot shows its order-by time; full or closed slots can't be picked. VAT 5% is shown as included." },
+      { do: "Checkout → pay with bKash.", see: "Order number (e.g. S1) and a collection QR code. Payment is a sandbox — no money moves." },
+      { do: "DEMO ▾ → Kitchen. Tap Start, then Ready.", see: "The ticket arrives on its own; the kitchen moves it To cook → Preparing → Ready.", open: { href: "/kds?outlet=ISD-CAF", label: "Kitchen" } },
+      { do: "DEMO ▾ → Pickup TV.", see: "The number moves to Ready — please collect.", open: { href: "/status?outlet=ISD-CAF", label: "Pickup TV" } },
+      { do: "DEMO ▾ → Counter. Type the number, tick the name check, hand over.", see: "Collection needs the QR or number plus the customer's name.", open: { href: "/counter?outlet=ISD-CAF", label: "Counter" } },
+    ],
+  },
+  {
+    n: 2, title: "A student pre-orders for tomorrow", who: "Student — Arif (8B)", minutes: "1 min",
+    steps: [
+      { do: "DEMO ▾ → Student. Pick tomorrow, a slot, and pay.", see: "Class and section print on the ticket and receipt." },
+      { do: "Open Operations.", see: "The order waits in the production list — it joins the kitchen on its day.", open: { href: "/admin?outlet=ISD-CAF", label: "Operations" } },
+    ],
+  },
+  {
+    n: 3, title: "An employee at the Parent Lounge", who: "Employee — Farhana", minutes: "2 min",
+    steps: [
+      { do: "DEMO ▾ → Employee — Farhana. Add an item.", see: "20% staff discount (Parent Lounge only) and VAT 0% — employees are VAT-free." },
+      { do: "Choose Pay at counter and place the order.", see: "It waits for the counter — it doesn't reach the kitchen yet." },
+      { do: "DEMO ▾ → Counter → Card.", see: "Accepted and sent to the kitchen. The receipt shows the discount line and VAT 0%." },
+      { do: "Optional: DEMO ▾ → Employee — Sabbir (Cafeteria).", see: "VAT 0% too, but the discount line explains it's Parent Lounge only." },
+    ],
+  },
+  {
+    n: 4, title: "Changes and a sold-out item", who: "Parent — Nusrat", minutes: "2 min",
+    steps: [
+      { do: "Open the order → Edit order → add an item → Save.", see: "Pay only the difference. Removing an item refunds the difference instead. Edits close at the cut-off or once cooking starts." },
+      { do: "On the demo hub, set the substitution timer to 60 seconds.", see: "STS's rule is 15 minutes; 60 s is just for the demo.", open: { href: "/demo", label: "Demo hub" } },
+      { do: "Operations → switch that item off (sold out).", see: "The customer is offered up to three similar items or a refund, with a countdown. No answer = automatic refund." },
+    ],
+  },
+  {
+    n: 5, title: "A coordinator books a meeting", who: "Coordinator — Tanvir", minutes: "1 min",
+    steps: [
+      { do: "DEMO ▾ → Coordinator → Bulk order.", see: "Needs 24 hours' notice; times sooner than that are blocked. Delivered to a room, no payment now." },
+      { do: "Operations → Cost-centre invoices.", see: "Bulk orders are billed to the cost centre on a monthly invoice." },
+    ],
+  },
+  {
+    n: 6, title: "The back office", who: "Operations", minutes: "1 min",
+    steps: [
+      { do: "Operations → HR staff list → Import sample list.", see: "Joiners added, a leaver deactivated — their number can no longer sign in.", open: { href: "/admin/hr", label: "HR list" } },
+      { do: "Operations → Menu → Upload a photo on any item.", see: "The outlet's own photo replaces the sample photo straight away." },
+    ],
+  },
+];

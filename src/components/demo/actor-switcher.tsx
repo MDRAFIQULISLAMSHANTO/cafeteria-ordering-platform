@@ -194,9 +194,6 @@ export function ActorSwitcher({ personaId, staffScreen, outletId, staffUnlocked,
             </form>
           )}
           {error && !asking && <p role="alert" className="mx-1 mt-1.5 rounded-md bg-danger-bg px-2.5 py-1.5 text-xs text-danger">{error}</p>}
-          <a href="/guide" target="_blank" className="mx-1 mt-2 flex items-center justify-between rounded-lg px-2.5 py-2 text-xs font-semibold text-sts-purple hover:bg-surface-2 hover:no-underline">
-            Demo guide — flow and script <span aria-hidden>↗</span>
-          </a>
         </div>
       )}
     </div>

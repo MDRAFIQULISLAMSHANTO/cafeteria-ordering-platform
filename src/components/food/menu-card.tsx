@@ -32,7 +32,7 @@ export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact 
   };
   const photos = item.photos?.slice(0, 2) ?? [];
   // names wrap to at most two lines and always take two, so every card is the same height
-  const title = "line-clamp-2 min-h-[2lh] text-sm font-bold leading-snug text-sts-ink md:text-[15px]";
+  const title = "line-clamp-2 text-sm font-bold leading-snug text-sts-ink md:text-[15px]";
   const Art = (
     <div className="relative grid aspect-[5/4] place-items-center overflow-hidden rounded-t-[1.35rem] bg-[radial-gradient(circle_at_50%_60%,var(--sts-orange-soft)_0%,var(--sts-cream-2)_70%)]">
       {photos.length ? (
@@ -58,16 +58,16 @@ export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact 
       className={`group flex h-full flex-col overflow-hidden rounded-[1.4rem] bg-sts-white text-left shadow-[0_0_0_1px_var(--sts-hairline)] transition-shadow hover:shadow-sts-card ${disabled ? "opacity-60" : ""}`}
     >
       {onOpen ? <button type="button" onClick={onOpen} aria-label={`Details for ${item.name}`} className="block w-full">{Art}</button> : Art}
-      <div className={`flex flex-1 flex-col gap-1 ${compact ? "px-3 pb-3 pt-2.5" : "px-4 pb-4 pt-3"}`}>
+      <div className={`flex flex-1 flex-col gap-1 ${compact ? "px-3 pb-2.5 pt-2.5" : "px-4 pb-3 pt-3"}`}>
         {onOpen ? (
           <button type="button" onClick={onOpen} className="p-0 text-left"><h3 className={title} title={item.name}>{item.name}</h3></button>
         ) : (
           <h3 className={title} title={item.name}>{item.name}</h3>
         )}
-        {/* every card keeps room for two lines of description, so cards line up */}
-        {!compact && <p className="line-clamp-2 min-h-[2lh] text-xs leading-snug text-muted">{item.description}</p>}
+        {/* every item has a short line (see lib/card-lines), so cards line up without blank space */}
+        {item.description && <p className={`text-xs leading-snug text-muted ${compact ? "line-clamp-1" : "line-clamp-2"}`}>{item.description}</p>}
         {note}
-        <div className="mt-auto flex items-center justify-between pt-2">
+        <div className="mt-auto flex items-center justify-between pt-1.5">
           <span className="font-display text-lg font-bold tabular-nums text-sts-purple">
             {item.price != null ? money(item.price) : "—"}
             {item.unit && item.unit !== "each" && <small className="font-sans text-xs font-normal text-muted"> / {item.unit}</small>}

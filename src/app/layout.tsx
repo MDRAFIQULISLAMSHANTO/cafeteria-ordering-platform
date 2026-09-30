@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
+import { GuideLauncher } from "@/components/demo/guide-launcher";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 // Display face for the public pages' headlines (STS landing, sign-in, menu).
@@ -27,7 +28,10 @@ export const dynamic = "force-dynamic";
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" data-theme="light" className={`${inter.variable} ${bengali.variable} ${display.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <GuideLauncher />
+      </body>
     </html>
   );
 }

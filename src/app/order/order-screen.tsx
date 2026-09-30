@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useEffectEvent, useMemo, useState, useTransition } from "react";
 import { FoodArt } from "@/components/food/food-art";
 import { MenuCard } from "@/components/food/menu-card";
+import { cardLine } from "@/lib/card-lines";
 import { foodLook } from "@/lib/food-kind";
 import { takeHandoff } from "@/lib/tray-handoff";
 import Image from "next/image";
@@ -101,7 +102,7 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
   const categories = useMemo(() => {
     const out: { name: string; items: Product[] }[] = [];
     for (const p of data.menu) {
-      if (query && !`${p.name} ${p.description ?? ""}`.toLowerCase().includes(query.toLowerCase())) continue;
+      if (query && !`${p.name} ${cardLine(p) ?? ""}`.toLowerCase().includes(query.toLowerCase())) continue;
       let c = out.find((x) => x.name === p.category);
       if (!c) out.push((c = { name: p.category, items: [] }));
       c.items.push(p);
@@ -336,7 +337,7 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
                   <MenuCard
                     key={p.id}
                     compact
-                    item={{ id: p.id, name: p.name, price: p.price, description: p.comboItems ? `Combo: ${p.comboItems.join(" + ")}` : p.description, look: foodLook(p.name, p.category), unit: p.unit, photos: p.photos }}
+                    item={{ id: p.id, name: p.name, price: p.price, description: cardLine(p), look: foodLook(p.name, p.category), unit: p.unit, photos: p.photos }}
                     disabled={!p.available}
                     onAdd={() => add(p)}
                     onOpen={() => { setOpen(p); setPanelQty(1); }}
@@ -389,7 +390,7 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
               ) : null}
             </div>
             <div className="flex flex-col gap-3 overflow-y-auto p-5">
-              {open.description && <p className="text-muted">{open.description}</p>}
+              {cardLine(open) && !open.comboItems && <p className="text-muted">{cardLine(open)}</p>}
               {open.comboItems && <div className="flex flex-wrap gap-1.5">{open.comboItems.map((c) => <span key={c} className="rounded-full bg-so-bg px-3 py-1 text-xs">{c}</span>)}</div>}
               {open.weekday && <p><b>Day special</b> — available on this day only.</p>}
               {open.flags && (
