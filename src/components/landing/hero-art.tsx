@@ -11,7 +11,7 @@ const STATUS = [
 ];
 
 /**
- * The hero illustration, drawn in code: a lunch tray seen from above that
+ * The hero video sits in the original card, which
  * tilts toward the pointer, with the order's journey playing beside it.
  */
 export function HeroArt({ next, lite }: { next: { label: string; time: string } | null; lite: boolean }) {
@@ -56,16 +56,19 @@ export function HeroArt({ next, lite }: { next: { label: string; time: string } 
         style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
         className="absolute bottom-[17%] left-[9%] right-[13%] top-[11%] rounded-[22%] bg-[linear-gradient(145deg,var(--sts-purple)_0%,var(--sts-purple-deep)_100%)] p-[5%] shadow-sts-float"
       >
-        <div className="grid h-full w-full grid-cols-2 grid-rows-[minmax(0,1.25fr)_minmax(0,1fr)] gap-[5%] rounded-[18%] bg-sts-cream p-[5%] [transform-style:preserve-3d]">
-          <div className="relative col-span-2 min-h-0 rounded-[16%] bg-sts-white [transform-style:preserve-3d]">
-            <FoodArt kind="burger" className="absolute left-1/2 top-1/2 h-[136%] w-auto -translate-x-1/2 -translate-y-1/2 [transform:translateZ(38px)] drop-shadow-[0_14px_14px_var(--sts-drop)]" />
-          </div>
-          <div className="grid min-h-0 place-items-center rounded-[22%] bg-sts-white [transform-style:preserve-3d]">
-            <FoodArt kind="fries" plate={false} className="h-[104%] w-auto [transform:translateZ(28px)] drop-shadow-[0_10px_10px_var(--sts-drop)]" />
-          </div>
-          <div className="grid min-h-0 place-items-center rounded-[22%] bg-sts-white [transform-style:preserve-3d]">
-            <FoodArt kind="cold" tint="lemon" plate={false} className="h-[106%] w-auto [transform:translateZ(28px)] drop-shadow-[0_10px_10px_var(--sts-drop)]" />
-          </div>
+        <div className="h-full w-full overflow-hidden rounded-[18%] bg-sts-white">
+          <video
+            key={lite ? "still" : "playing"}
+            src="/videos/hero-food.mp4"
+            poster="/videos/hero-food-poster.jpg"
+            autoPlay={!lite}
+            loop
+            muted
+            playsInline
+            preload={lite ? "none" : "auto"}
+            aria-label="S Cafe food animation"
+            className="h-full w-full object-cover"
+          />
         </div>
       </motion.div>
 
