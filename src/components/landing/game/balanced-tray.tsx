@@ -18,34 +18,46 @@ const BELL_SECONDS = 60;
 
 /** The dish's real photo: S Cafe's cut-out whole, other photos as a round plate; the drawing only if there is no photo. */
 function Dish({ it, className }: { it: GameItem; className: string }) {
-  if (it.cutout) return <Image src={it.cutout} alt="" width={240} height={240} sizes="(max-width: 640px) 30vw, 240px" className={`${className} object-contain`} />;
+  if (it.cutout) return <Image src={it.cutout} alt="" width={240} height={240} sizes="(max-width: 640px) 30vw, 240px" className={`${className} min-h-0 object-contain object-bottom`} />;
   if (it.photo) {
     return (
-      <span className={`${className} relative block aspect-square scale-[.88] overflow-hidden rounded-full bg-sts-white ring-4 ring-sts-white shadow-[0_0_0_5px_var(--tray-base),0_8px_14px_var(--sts-drop)]`}>
-        <Image src={it.photo} alt="" fill sizes="(max-width: 640px) 30vw, 240px" className="object-cover" />
+      <span className={`${className} grid place-items-center`}>
+        <span className="relative block aspect-square h-full max-h-full max-w-full scale-[.88] overflow-hidden rounded-full bg-sts-white ring-4 ring-sts-white shadow-[0_0_0_5px_var(--tray-base),0_8px_14px_var(--sts-drop)]">
+          <Image src={it.photo} alt="" fill sizes="(max-width: 640px) 30vw, 240px" className="object-cover" />
+        </span>
       </span>
     );
   }
   return <FoodArt kind={it.look.kind} tint={it.look.tint} steam={false} className={className} />;
 }
 
+/** The tray drawn in CSS 3D: tilted back in perspective, each dish standing up in its well with a shadow. */
 function TrayFlat({ tray }: { tray: Tray }) {
   return (
-    <div className="mx-auto aspect-[4/3] w-full max-w-[520px] rounded-[2rem] bg-[linear-gradient(145deg,var(--sts-purple)_0%,var(--sts-purple-deep)_100%)] p-[3.5%] shadow-sts-float">
-      <div className="grid h-full grid-cols-2 grid-rows-2 gap-[3.5%] rounded-[1.6rem] bg-sts-cream p-[3.5%]">
-        {GROUPS.map((g) => {
-          const it = tray[g.id];
-          return (
-            <div key={g.id} className="relative grid place-items-center overflow-hidden rounded-[1.2rem] bg-sts-white">
-              {!it && <span className="text-xs font-semibold uppercase tracking-wider text-sts-purple/40">{g.label}</span>}
-              {it && (
-                <motion.div layoutId={`art-${it.id}`} className="h-[88%]" transition={{ type: "spring", stiffness: 260, damping: 22 }}>
-                  <Dish it={it} className="h-full w-auto drop-shadow-[0_8px_8px_var(--sts-drop)]" />
-                </motion.div>
-              )}
-            </div>
-          );
-        })}
+    <div className="mx-auto w-full max-w-[520px] pb-[4%] pt-[10%] [perspective:1100px]">
+      <div className="aspect-[4/3] w-full rounded-[2rem] bg-[linear-gradient(145deg,var(--sts-purple)_0%,var(--sts-purple-deep)_100%)] p-[3.5%] shadow-sts-float [transform-style:preserve-3d] [transform:rotateX(32deg)]">
+        <div className="grid h-full grid-cols-2 grid-rows-2 gap-[3.5%] rounded-[1.6rem] bg-sts-cream p-[3.5%] [transform-style:preserve-3d]">
+          {GROUPS.map((g) => {
+            const it = tray[g.id];
+            return (
+              <div key={g.id} className="relative grid place-items-center rounded-[1.2rem] bg-sts-white [transform-style:preserve-3d]">
+                {!it && <span className="text-xs font-semibold uppercase tracking-wider text-sts-purple/40">{g.label}</span>}
+                {it && (
+                  <>
+                    <span aria-hidden className="absolute bottom-[14%] left-1/2 h-[16%] w-[62%] -translate-x-1/2 rounded-[50%] bg-[var(--sts-drop)] blur-[6px]" />
+                    <motion.div
+                      layoutId={`art-${it.id}`}
+                      className="absolute inset-x-[6%] bottom-[14%] top-[-38%] grid place-items-end justify-items-center [transform-origin:50%_100%] [transform:rotateX(-32deg)]"
+                      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+                    >
+                      <Dish it={it} className="h-full max-h-full w-full drop-shadow-[0_10px_10px_var(--sts-drop)]" />
+                    </motion.div>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
