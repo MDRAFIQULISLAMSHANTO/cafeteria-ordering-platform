@@ -156,19 +156,17 @@ export function GuideLauncher() {
         onClick={() => setOpen((o) => !o)}
         whileHover={reduce ? undefined : { y: -2 }}
         whileTap={reduce ? undefined : { scale: 0.94 }}
-        className="group relative flex h-12 items-center gap-2 rounded-full bg-sts-purple pl-1.5 pr-1.5 text-sts-white shadow-sts-float sm:pr-4"
+        title={open ? "Close demo guide" : "Demo guide"}
+        className="relative grid h-11 w-11 place-items-center rounded-full bg-sts-orange text-sts-ink shadow-sts-float ring-2 ring-sts-white"
       >
         {!open && !reduce && <span aria-hidden className="absolute inset-0 -z-10 animate-ping rounded-full bg-sts-orange/40 [animation-duration:2.4s] [animation-iteration-count:3]" />}
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-sts-orange text-sts-ink">
-          {open ? (
-            <svg aria-hidden viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 5l10 10M15 5L5 15" /></svg>
-          ) : (
-            <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" /><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5A2.5 2.5 0 0 1 4 20.5z" /><path d="M8 7.5h8M8 11h6" />
-            </svg>
-          )}
-        </span>
-        <span className="hidden text-sm font-bold sm:inline">{open ? "Close" : "Demo guide"}</span>
+        {open ? (
+          <svg aria-hidden viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 5l10 10M15 5L5 15" /></svg>
+        ) : (
+          <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" /><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5A2.5 2.5 0 0 1 4 20.5z" /><path d="M8 7.5h8M8 11h6" />
+          </svg>
+        )}
       </motion.button>
     </div>
   );
