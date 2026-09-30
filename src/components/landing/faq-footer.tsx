@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 // Answers follow STS's own replies to the online-ordering questionnaire (C8).
@@ -42,7 +41,7 @@ export function Footer({ orderHref }: { orderHref: string }) {
       <div className="mx-auto max-w-[1240px] px-4 pb-8 pt-14 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <span className="inline-block rounded-xl bg-sts-white px-3 py-2 leading-none"><Image src="/branding/scafe-logo.png" alt="S Cafe" width={120} height={62} /></span>
+            <span className="font-display text-3xl font-extrabold tracking-[-.02em] text-sts-white">S Cafe</span>
             <p className="mt-4 max-w-sm text-sts-white/70">S Cafe online ordering for STS Group campus cafeterias — order ahead, pick up on time.</p>
           </div>
           <Link href={orderHref} className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-sts-action px-6 font-bold text-sts-ink hover:no-underline">Start an order <span aria-hidden>→</span></Link>
