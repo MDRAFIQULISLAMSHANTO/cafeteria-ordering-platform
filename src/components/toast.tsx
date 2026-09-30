@@ -22,7 +22,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {/* bottom-right: the demo guide button lives bottom-left */}
       <div className="fixed bottom-24 right-4 z-90 flex max-w-[min(420px,calc(100vw-32px))] flex-col items-end gap-2 cart:bottom-4" aria-live="polite">
         {items.map((t) => (
-          <div key={t.id} className={`o-toast static${t.tone === "danger" ? " o-toast-danger" : ""}`}>
+          <div key={t.id} style={{ position: "static" }} className={`o-toast${t.tone === "danger" ? " o-toast-danger" : ""}`}>
             <div className="o-toast-title">{t.title}</div>
             {t.rule && <div className="o-hint">Rule: {t.rule}</div>}
           </div>

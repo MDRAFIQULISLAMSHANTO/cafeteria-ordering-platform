@@ -49,6 +49,8 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
   const [panelQty, setPanelQty] = useState(1);
   const [drawer, setDrawer] = useState(false);
   const [activeCat, setActiveCat] = useState<string | null>(null);
+  // height of the sticky site header, so the category bar and order panel sit just below it
+  const [stick, setStick] = useState(60);
   const [pending, start] = useTransition();
   // the cart survives page changes on this device; an edit works on a draft of the order
   const [stored, setStored] = useLocalState(`sts-cart-${customer.id}-${outlet.id}`, EMPTY_CART);
@@ -97,6 +99,42 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
     const id = setInterval(() => poll(), 20_000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    const header = document.querySelector("header");
+    if (!header) return;
+    const measure = () => setStick(Math.round(header.getBoundingClientRect().height));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(header);
+    return () => ro.disconnect();
+  }, []);
+
+  // highlight the category being read: the last section whose heading has
+  // passed under the sticky category bar
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const line = stick + 70;
+        const els = [...document.querySelectorAll<HTMLElement>("[data-cat]")];
+        let current = els[0]?.dataset.cat ?? null;
+        for (const el of els) if (el.getBoundingClientRect().top <= line) current = el.dataset.cat ?? current;
+        // at the very bottom, the last section wins
+        if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) current = els.at(-1)?.dataset.cat ?? current;
+        setActiveCat(current);
+      });
+    };
+    onScroll();
+    addEventListener("scroll", onScroll, { passive: true });
+    return () => { removeEventListener("scroll", onScroll); cancelAnimationFrame(raf); };
+  }, [stick, data.menu, query]);
+
+  const goTo = (name: string) => {
+    setActiveCat(name);
+    document.getElementById(slug(name))?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  };
 
   const byId = useMemo(() => new Map(data.menu.map((p) => [p.id, p])), [data.menu]);
   const categories = useMemo(() => {
@@ -156,95 +194,122 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
       router.push((r.data as { next: string }).next);
     });
 
-  const blockTitle = "mb-2 mt-4 flex justify-between gap-2 text-2xs font-semibold uppercase tracking-wider text-muted";
-  const selected = "border-primary bg-so-bg";
+  const section = "text-2xs font-bold uppercase tracking-[.12em] text-muted";
+  const openSlots = data.slots.filter((s) => selectable(s));
+  const closedSlots = data.slots.length - openSlots.length;
+  const cutoffText = (s: Slot) =>
+    new Date(s.cutoffMs).toLocaleString("en-GB", { timeZone: "Asia/Dhaka", weekday: data.date === data.now.date ? undefined : "short", hour: "numeric", minute: "2-digit", hour12: true }).replace(" am", " AM").replace(" pm", " PM");
 
   const cartPanel = (
     <aside
       aria-label="Your order"
-      className={`fixed inset-x-0 bottom-0 z-40 flex max-h-[86vh] flex-col rounded-t-2xl bg-so-surface shadow-o-md transition-transform duration-200 cart:sticky cart:top-21 cart:z-auto cart:max-h-[calc(100vh-108px)] cart:translate-y-0 cart:rounded-2xl ${drawer ? "translate-y-0" : "translate-y-[105%]"}`}
+      style={{ ["--stick" as string]: `${stick + 16}px` }}
+      className={`fixed inset-x-0 bottom-0 z-40 flex max-h-[88dvh] flex-col overflow-hidden rounded-t-3xl bg-so-surface shadow-o-pop transition-transform duration-200 cart:sticky cart:top-(--stick) cart:z-auto cart:max-h-[calc(100dvh-var(--stick)-16px)] cart:translate-y-0 cart:rounded-3xl cart:shadow-[0_0_0_1px_var(--sts-hairline)] ${drawer ? "translate-y-0" : "translate-y-[105%]"}`}
     >
-      <div className="flex items-baseline justify-between px-4 pb-2 pt-4">
-        <h2 className="text-lg font-bold">Your order</h2>
-        {drawer ? <button className="o-btn o-btn-sm" onClick={() => setDrawer(false)}>Close</button> : <span className="text-muted tabular-nums">{count} item{count === 1 ? "" : "s"}</span>}
-      </div>
-      <div className="flex-1 overflow-y-auto px-4">
-        <div className={blockTitle}><span>Pickup day</span><span>up to {RULES.maxDaysAhead} days ahead</span></div>
-        <div className="flex gap-1.5 overflow-x-auto pb-1" role="radiogroup" aria-label="Pickup day">
-          {data.dates.map((d) => (
-            <button
-              key={d.date}
-              role="radio"
-              aria-checked={d.date === data.date}
-              disabled={!d.open}
-              title={d.reason ?? undefined}
-              onClick={() => load(d.date)}
-              className={`min-w-15 flex-none rounded-lg border px-2 py-1.5 text-center leading-tight disabled:cursor-default disabled:opacity-40 ${d.date === data.date ? `${selected} text-so-price` : "border-line bg-so-surface"}`}
-            >
-              <small className="block text-2xs uppercase text-muted">{d.date === data.now.date ? "Today" : d.weekday}</small>
-              <b className="text-lg">{Number(d.date.slice(8))}</b>
-            </button>
-          ))}
-        </div>
-
-        <div className={blockTitle}><span>Pickup time · {formatDay(data.date, data.now.date)}</span><span className="pill-pending" title={PENDING.slots}>sample slots</span></div>
-        <div className="grid gap-1.5" role="radiogroup" aria-label="Pickup time">
-          {data.slots.length === 0 && <div className="o-hint">No pickup slots on this day.</div>}
-          {data.slots.map((s) => (
-            <button
-              key={s.id}
-              role="radio"
-              aria-checked={s.id === slotId}
-              disabled={!selectable(s)}
-              onClick={() => setSlotId(s.id)}
-              className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left disabled:cursor-default disabled:opacity-50 ${s.id === slotId ? selected : "border-line bg-so-surface"}`}
-            >
-              <span>
-                <b className="block">{time12(s.startsAt)} · {s.label}</b>
-                <small className="text-muted">
-                  {selectable(s)
-                    ? `Order by ${new Date(s.cutoffMs).toLocaleString("en-GB", { timeZone: "Asia/Dhaka", weekday: data.date === data.now.date ? undefined : "short", hour: "numeric", minute: "2-digit", hour12: true })}`
-                    : s.reason}
-                </small>
-              </span>
-              <span className="whitespace-nowrap text-xs text-muted">{s.open ? `${s.remaining} left` : editing?.slotId === s.id ? "your slot" : ""}</span>
-            </button>
-          ))}
-        </div>
-        {slot && <div className="o-hint mt-1.5">{slot.cutoffRule}. <span className="pill-pending" title={PENDING.cutoffs}>pending</span></div>}
-
-        <div className={blockTitle}><span>Items</span></div>
-        {lines.length === 0 ? (
-          <div className="py-6 text-center text-muted">Your cart is empty.<br />Tap <b>+</b> on anything you fancy.</div>
+      <div className="flex items-center justify-between px-5 pb-3 pt-4">
+        <h2 className="font-display text-xl font-bold text-sts-accent">Your order</h2>
+        {drawer ? (
+          <button className="rounded-full px-3 py-1 text-sm font-semibold text-muted hover:bg-surface-3" onClick={() => setDrawer(false)}>Close</button>
         ) : (
-          <div className="flex flex-col gap-3 pb-3">
-            {lines.map((l) => (
-              <div className="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-1" key={l.id}>
-                <div>
-                  <div className="text-sm font-semibold">{l.p?.name ?? "Unavailable item"}</div>
-                  {!l.p?.available && <div className="text-xs text-danger">{l.p?.reason ?? "Not on this day's menu"} — remove to continue</div>}
-                </div>
-                <div className="text-right font-bold tabular-nums">{l.p?.price != null ? money(l.p.price * l.qty) : "—"}</div>
-                <div className="so-step justify-self-start">
-                  <button aria-label="Less" onClick={() => setQty(l.id, l.qty - 1)}>−</button>
-                  <span>{l.qty}</span>
-                  <button aria-label="More" onClick={() => setQty(l.id, l.qty + 1)} disabled={!l.p?.available}>+</button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <span className="rounded-full bg-so-bg px-2.5 py-0.5 text-xs font-semibold tabular-nums text-muted">{count} item{count === 1 ? "" : "s"}</span>
         )}
       </div>
-      <div className="border-t border-line px-4 pb-4 pt-3">
-        <div className="flex flex-col gap-0.5 text-sm tabular-nums">
-          <div className="flex justify-between"><span className="text-muted">Items</span><span>{money(totals.subtotal)}</span></div>
-          {totals.discount > 0 && <div className="flex justify-between text-success"><span>{totals.discountRule}</span><span>−{money(totals.discount)}</span></div>}
-          {totals.discountNote && <div className="flex justify-between text-muted"><span>{totals.discountNote}</span><span>৳0</span></div>}
-          <div className="flex justify-between text-muted"><span>{totals.vatRule}</span><span>{money(totals.vat)}</span></div>
-          <div className="mt-1.5 flex justify-between text-xl font-bold"><span>Total</span><span className="text-so-price">{money(totals.total)}</span></div>
+
+      <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-5 pb-3">
+        {/* when */}
+        <div className="flex items-baseline justify-between">
+          <h3 className={section}>Pickup day</h3>
+          <span className="text-2xs text-muted">up to {RULES.maxDaysAhead} days ahead</span>
         </div>
+        <div className="mt-2 grid grid-cols-4 gap-1.5" role="radiogroup" aria-label="Pickup day">
+          {data.dates.map((d) => {
+            const on = d.date === data.date;
+            return (
+              <button
+                key={d.date}
+                role="radio"
+                aria-checked={on}
+                disabled={!d.open}
+                title={d.reason ?? undefined}
+                onClick={() => load(d.date)}
+                className={`rounded-xl py-1.5 text-center leading-tight transition-colors disabled:cursor-default disabled:opacity-35 ${on ? "bg-sts-accent text-sts-accent-ink" : "bg-so-bg text-ink hover:bg-surface-3"}`}
+              >
+                <small className={`block text-2xs font-semibold uppercase ${on ? "opacity-85" : "text-muted"}`}>{d.date === data.now.date ? "Today" : d.weekday}</small>
+                <b className="text-base">{Number(d.date.slice(8))}</b>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 flex items-baseline justify-between">
+          <h3 className={section}>Pickup time</h3>
+          <span className="text-2xs text-muted" title={PENDING.slots}>sample times</span>
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="Pickup time">
+          {openSlots.map((s) => {
+            const on = s.id === slotId;
+            return (
+              <button
+                key={s.id}
+                role="radio"
+                aria-checked={on}
+                onClick={() => setSlotId(s.id)}
+                className={`rounded-xl border px-3 py-2 text-left transition-colors ${on ? "border-sts-accent bg-sts-purple-soft" : "border-line bg-so-surface hover:border-sts-accent/40"}`}
+              >
+                <b className={`block text-sm ${on ? "text-sts-accent" : "text-ink"}`}>{time12(s.startsAt)}</b>
+                <small className="block text-2xs text-muted">{s.label !== "Pickup" && <>{s.label} · </>}order by {cutoffText(s)}</small>
+              </button>
+            );
+          })}
+        </div>
+        {openSlots.length === 0 && (
+          <p className="mt-1 rounded-xl bg-so-bg px-3 py-3 text-center text-sm text-muted">
+            {data.slots.length ? "No more pickup times this day — pick another day." : "No pickup on this day."}
+          </p>
+        )}
+        {openSlots.length > 0 && closedSlots > 0 && <p className="mt-1.5 text-2xs text-muted">{closedSlots} earlier time{closedSlots === 1 ? "" : "s"} already closed.</p>}
+        {slot && <p className="mt-1.5 text-2xs text-muted" title={PENDING.cutoffs}>{slot.cutoffRule} (to be confirmed).</p>}
+
+        {/* what */}
+        <h3 className={`${section} mt-5`}>Items</h3>
+        {lines.length === 0 ? (
+          <div className="mt-2 flex flex-col items-center gap-1 rounded-2xl border border-dashed border-line py-6 text-center">
+            <FoodArt kind="burger" steam={false} className="h-12 w-12 opacity-60" />
+            <p className="text-sm text-muted">Your order is empty.<br />Tap <b className="text-ink">+</b> on any item.</p>
+          </div>
+        ) : (
+          <ul className="mt-2 flex flex-col divide-y divide-line">
+            {lines.map((l) => (
+              <li key={l.id} className="flex items-center gap-3 py-2.5">
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-semibold">{l.p?.name ?? "Unavailable item"}</div>
+                  {!l.p?.available ? (
+                    <div className="text-xs text-danger">{l.p?.reason ?? "Not on this day's menu"} — remove to continue</div>
+                  ) : (
+                    <div className="text-xs tabular-nums text-muted">{l.p?.price != null ? money(l.p.price * l.qty) : "—"}</div>
+                  )}
+                </div>
+                <div className="flex items-center rounded-full bg-so-bg">
+                  <button aria-label="Less" className="grid h-8 w-8 place-items-center rounded-full text-lg hover:bg-surface-3" onClick={() => setQty(l.id, l.qty - 1)}>−</button>
+                  <span className="min-w-5 text-center text-sm font-bold tabular-nums">{l.qty}</span>
+                  <button aria-label="More" className="grid h-8 w-8 place-items-center rounded-full text-lg hover:bg-surface-3 disabled:opacity-40" onClick={() => setQty(l.id, l.qty + 1)} disabled={!l.p?.available}>+</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="border-t border-line bg-so-surface px-5 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pt-3 cart:pb-4">
+        <dl className="flex flex-col gap-0.5 text-sm tabular-nums">
+          <div className="flex justify-between"><dt className="text-muted">Items</dt><dd>{money(totals.subtotal)}</dd></div>
+          {totals.discount > 0 && <div className="flex justify-between text-success"><dt>{totals.discountRule}</dt><dd>−{money(totals.discount)}</dd></div>}
+          {totals.discountNote && <div className="flex justify-between text-muted"><dt className="truncate pr-2">{totals.discountNote}</dt><dd>৳0</dd></div>}
+          <div className="flex justify-between text-muted"><dt>{totals.vatRule}</dt><dd>{money(totals.vat)}</dd></div>
+          <div className="mt-1 flex items-baseline justify-between"><dt className="font-bold">Total</dt><dd className="font-display text-2xl font-extrabold text-sts-accent">{money(totals.total)}</dd></div>
+        </dl>
         {editing ? (
-          <div className="mt-2.5 rounded-lg bg-so-bg px-3 py-2 text-xs text-muted">
+          <div className="mt-2.5 rounded-xl bg-so-bg px-3 py-2 text-xs text-muted">
             {editing.paid
               ? totals.total > editing.held
                 ? <>Paid so far {money(editing.held)}. You&apos;ll pay the <b className="text-ink">{money(totals.total - editing.held)}</b> difference next.</>
@@ -254,21 +319,21 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
               : "Payment stays as chosen when you placed the order."}
           </div>
         ) : customer.accountType === "employee" ? (
-          <div className="mt-3 grid grid-cols-2 gap-1.5" role="radiogroup" aria-label="Payment">
+          <div className="mt-3 grid grid-cols-2 rounded-full bg-so-bg p-1" role="radiogroup" aria-label="Payment">
             {(["online", "counter"] as const).map((m) => (
               <button
                 key={m}
                 role="radio"
                 aria-checked={payMode === m}
                 onClick={() => setPayMode(m)}
-                className={`rounded-lg border p-2 text-xs font-semibold ${payMode === m ? `${selected} text-so-price` : "border-line"}`}
+                className={`rounded-full py-1.5 text-xs font-semibold transition-colors ${payMode === m ? "bg-so-surface text-sts-accent shadow-sm" : "text-muted"}`}
               >
                 {m === "online" ? "Pay online" : "Pay at counter"}
               </button>
             ))}
           </div>
         ) : (
-          <div className="o-hint mt-2.5">Pay online with bKash, Nagad or card.</div>
+          <p className="mt-2 text-xs text-muted">Pay online with bKash, Nagad or card.</p>
         )}
         <button className="o-so-btn o-so-btn-primary mt-3 w-full disabled:cursor-default disabled:opacity-50" disabled={pending || valid.length === 0 || blocked.length > 0 || !slot} onClick={place}>
           {pending ? (editing ? "Saving…" : "Placing order…") : !slot && valid.length > 0 ? "Choose a pickup time" : editing ? `Save changes · ${money(totals.total)}` : payMode === "counter" ? `Place order · ${money(totals.total)}` : `Checkout · ${money(totals.total)}`}
@@ -277,21 +342,9 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
     </aside>
   );
 
-  const catLink = (active: boolean) =>
-    active ? "bg-so-price text-primary-ink" : "text-ink hover:bg-so-surface";
-
   return (
     <>
-      <div className="mx-auto grid max-w-[1440px] grid-cols-[minmax(0,1fr)] items-start gap-4 p-4 pb-24 *:min-w-0 md:grid-cols-[190px_minmax(0,1fr)] md:gap-5 md:p-5 md:pb-24 cart:grid-cols-[220px_minmax(0,1fr)_380px] cart:pb-5">
-        <nav className="sticky top-21 hidden flex-col gap-0.5 md:flex" aria-label="Categories">
-          <h2 className="mb-2 ml-3 text-2xs uppercase tracking-wider text-muted">Menu</h2>
-          {categories.map((c) => (
-            <a key={c.name} href={`#${slug(c.name)}`} onClick={() => setActiveCat(c.name)} className={`flex justify-between rounded-lg px-3 py-2 font-medium hover:no-underline ${catLink(activeCat === c.name)}`}>
-              {c.name} <span className="text-xs opacity-60">{c.items.length}</span>
-            </a>
-          ))}
-        </nav>
-
+      <div className="mx-auto grid max-w-[1380px] grid-cols-[minmax(0,1fr)] items-start gap-6 px-4 pb-28 pt-5 *:min-w-0 sm:px-5 cart:grid-cols-[minmax(0,1fr)_360px] cart:pb-8">
         <section>
           {editing && (
             <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-so-price/30 bg-so-surface px-4 py-3 shadow-o-sm">
@@ -303,36 +356,60 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
               <Link href={`/orders/${editing.id}`} className="o-btn o-btn-sm">Discard changes</Link>
             </div>
           )}
-          <div className="mb-2 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="font-display text-3xl font-extrabold tracking-[-.02em] text-sts-accent md:text-4xl">{formatDay(data.date, data.now.date)}</h1>
-              <p className="mt-1 text-muted">
-                {outlet.name} menu{" "}
-                {!outlet.menuAssignmentConfirmed && <span className="pill-pending" title={PENDING.menu}>sample menu assignment</span>}{" "}
-                <span className="pill-pending" title={PENDING.vat}>prices incl. VAT · pending</span>
-              </p>
+
+          {/* title + search */}
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-[.14em] text-sts-orange-text">{outlet.name} · menu</p>
+              <h1 className="mt-1 font-display text-3xl font-extrabold tracking-[-.02em] text-sts-accent">{formatDay(data.date, data.now.date)}</h1>
             </div>
-            <input
-              className="h-11 w-full rounded-full border border-line bg-so-surface px-4 text-sm text-ink md:w-auto md:min-w-65"
-              type="search"
-              placeholder="Search the menu"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Search the menu"
-            />
+            <label className="relative w-full sm:w-72">
+              <span className="sr-only">Search the menu</span>
+              <svg aria-hidden viewBox="0 0 20 20" className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="9" cy="9" r="5.5" /><path d="M13.5 13.5L17 17" /></svg>
+              <input
+                className="h-11 w-full rounded-full border border-line bg-so-surface pl-10 pr-4 text-sm text-ink focus:border-sts-accent focus:outline-none focus:ring-3 focus:ring-focus"
+                type="search"
+                placeholder="Search the menu"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Search the menu"
+              />
+            </label>
           </div>
-          <nav className="scrollbar-none sticky top-0 z-15 flex gap-1 overflow-x-auto bg-so-bg py-1.5 md:hidden" aria-label="Categories">
-            {categories.map((c) => (
-              <a key={c.name} href={`#${slug(c.name)}`} onClick={() => setActiveCat(c.name)} className={`flex-none rounded-full px-3 py-1.5 text-xs font-medium hover:no-underline ${activeCat === c.name ? "bg-so-price text-primary-ink" : "bg-so-surface text-ink"}`}>
-                {c.name}
-              </a>
-            ))}
+          <p className="mt-2 text-xs text-muted" title={`${PENDING.menu}. ${PENDING.vat}.`}>
+            {!outlet.menuAssignmentConfirmed && "Sample menu for this outlet · "}Prices include VAT for parents and students (to be confirmed by STS).
+          </p>
+
+          {/* categories: sticky, follows the scroll */}
+          <nav
+            aria-label="Menu sections"
+            style={{ top: stick }}
+            className="scrollbar-none sticky z-15 -mx-4 mt-3 flex gap-1.5 overflow-x-auto bg-so-bg/95 px-4 py-2.5 backdrop-blur sm:-mx-5 sm:px-5"
+          >
+            {categories.map((c) => {
+              const on = activeCat === c.name;
+              return (
+                <button
+                  key={c.name}
+                  type="button"
+                  aria-current={on ? "true" : undefined}
+                  onClick={() => goTo(c.name)}
+                  className={`flex flex-none items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors ${on ? "bg-sts-accent text-sts-accent-ink" : "bg-so-surface text-ink shadow-[0_0_0_1px_var(--sts-hairline)] hover:bg-surface-3"}`}
+                >
+                  {c.name}
+                  <span className={`text-2xs tabular-nums ${on ? "opacity-80" : "text-muted"}`}>{c.items.length}</span>
+                </button>
+              );
+            })}
           </nav>
-          {categories.length === 0 && <div className="o-empty">Nothing matches “{query}”.</div>}
+
+          {categories.length === 0 && <div className="o-empty mt-6">Nothing matches “{query}”.</div>}
           {categories.map((c) => (
-            <div key={c.name} id={slug(c.name)} className="scroll-mt-21">
-              <h2 className="mb-3 mt-7 flex items-baseline gap-2 font-display text-2xl font-bold text-sts-accent">{c.name} <small className="text-xs font-normal text-muted">{c.items.length} item{c.items.length === 1 ? "" : "s"}</small></h2>
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-[repeat(auto-fill,minmax(190px,1fr))] md:gap-4">
+            <div key={c.name} id={slug(c.name)} data-cat={c.name} className="pt-4" style={{ scrollMarginTop: stick + 56 }}>
+              <h2 className="mb-3 flex items-baseline gap-2 font-display text-xl font-bold text-sts-accent">
+                {c.name} <small className="font-sans text-xs font-medium text-muted">{c.items.length} item{c.items.length === 1 ? "" : "s"}</small>
+              </h2>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
                 {c.items.map((p) => (
                   <MenuCard
                     key={p.id}
