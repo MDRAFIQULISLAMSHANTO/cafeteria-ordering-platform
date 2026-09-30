@@ -41,8 +41,8 @@ export function Footer({ orderHref }: { orderHref: string }) {
       <div className="mx-auto max-w-[1240px] px-4 pb-8 pt-14 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <span className="font-display text-3xl font-extrabold tracking-[-.02em] text-sts-white">S Cafe</span>
-            <p className="mt-4 max-w-sm text-sts-white/70">S Cafe online ordering for STS Group campus cafeterias — order ahead, pick up on time.</p>
+            
+            <p className="mt-4 max-w-sm text-sts-white/70">Online ordering for STS Group campus cafeterias — order ahead, pick up on time.</p>
           </div>
           <Link href={orderHref} className="inline-flex min-h-12 items-center gap-2 rounded-2xl bg-sts-action px-6 font-bold text-sts-ink hover:no-underline">Start an order <span aria-hidden>→</span></Link>
         </div>
