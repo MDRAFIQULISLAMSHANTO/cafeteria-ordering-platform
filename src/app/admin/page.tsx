@@ -79,7 +79,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                       <td className="border-b border-line px-3 py-1.5">{customer.name} <span className="o-hint">{ACCOUNT_LABEL[customer.accountType as AccountType]}</span></td>
                       <td className="border-b border-line px-3 py-1.5">{time12(slot.startsAt)}</td>
                       <td className="border-b border-line px-3 py-1.5">{STATE_LABEL[order.state]}{order.rejectReason ? ` — ${order.rejectReason}` : ""}</td>
-                      <td className="border-b border-line px-3 py-1.5">{order.kitchenState.replace("_", " ")}</td>
+                      <td className="border-b border-line px-3 py-1.5">{order.kitchenState.replaceAll("_", " ")}</td>
                       <td className="border-b border-line px-3 py-1.5 text-right tabular-nums">{money(order.total)}</td>
                     </tr>
                   ))}

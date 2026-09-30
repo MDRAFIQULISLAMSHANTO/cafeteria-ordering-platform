@@ -14,6 +14,7 @@ import {
   cancelByCustomer,
   collect,
   demoNow,
+  dispatchForDelivery,
   editOrder,
   findForCollection,
   importHrList,
@@ -242,11 +243,15 @@ export async function lookupAction(outletId: string, code: string) {
     const r = await findForCollection(await getDb(), outletId, code);
     return {
       via: r.via,
-      order: { id: r.order.id, tracking: r.order.tracking, state: r.order.state, kitchenState: r.order.kitchenState, total: r.order.total, collectedAt: r.order.collectedAt ? new Date(r.order.collectedAt).toISOString() : null, pickupDate: r.order.pickupDate },
+      order: { id: r.order.id, tracking: r.order.tracking, state: r.order.state, kitchenState: r.order.kitchenState, total: r.order.total, collectedAt: r.order.collectedAt ? new Date(r.order.collectedAt).toISOString() : null, pickupDate: r.order.pickupDate, channel: r.order.channel, deliverTo: r.order.deliverTo, eventName: r.order.eventName },
       customer: { name: r.customer.name, accountType: r.customer.accountType, classGrade: r.customer.classGrade, section: r.customer.section, phoneTail: r.customer.phone.slice(-3) },
       lines: r.lines.filter((l) => l.state !== "refunded").map((l) => ({ name: l.name, qty: l.qty })),
     };
   });
+}
+
+export async function dispatchAction(orderId: string) {
+  return run(async () => { await requireDemoAccess(); return dispatchForDelivery(await getDb(), orderId); });
 }
 
 export async function deliverAction(orderId: string) {

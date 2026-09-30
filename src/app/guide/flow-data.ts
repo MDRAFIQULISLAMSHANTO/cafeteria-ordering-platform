@@ -25,14 +25,15 @@ export const FLOW: Card[] = [
   { n: 7, lane: "kitchen", stage: 3, text: "Today's orders appear at once; pre-orders join on their day. To cook → Preparing → Ready" },
   { n: 8, lane: "counter", stage: 4, text: "The pickup TV shows the order number under Ready" },
   { n: 9, lane: "customer", stage: 4, text: "Gets an SMS and an in-app notification: your order is ready" },
-  { n: 10, lane: "counter", stage: 5, text: "Scans the QR code, checks the customer's name and hands the food over" },
+  { n: 10, lane: "counter", stage: 5, text: "Scans the QR code with the camera, checks the customer's name and hands the food over" },
 ];
 
 export const SUPPORT: Card[] = [
   { lane: "customer", stage: 2, text: "Can edit or cancel until the cut-off" },
   { lane: "payment", stage: 5, text: "Refunds go back to the same method (cancel, reject, sold-out)" },
   { lane: "customer", stage: 3, text: "If an item sells out: pick a substitute or a refund within 15 minutes" },
-  { lane: "counter", stage: 2, text: "Accepts staff pay-at-counter orders; delivers bulk orders to rooms" },
+  { lane: "counter", stage: 2, text: "Accepts staff pay-at-counter orders" },
+  { lane: "counter", stage: 4, text: "Bulk orders: Send out for delivery → Delivery complete" },
   { lane: "ops", stage: 1, text: "Switches sold-out items off and adds menu photos" },
   { lane: "ops", stage: 3, text: "Production list for pre-orders and bulk events" },
   { lane: "ops", stage: 5, text: "Daily sales, monthly cost-centre invoices, monthly HR staff list" },
@@ -50,10 +51,10 @@ export const STORIES: Story[] = [
     steps: [
       { do: `Sign in with ${DEMO_LOGIN}, code 123456.`, see: "No password — mobile number and a one-time code.", open: { href: "/login", label: "Sign in" } },
       { do: "Add a lunch item and pick today's Lunch slot.", see: "Each slot shows its order-by time; full or closed slots can't be picked. VAT 5% is shown as included." },
-      { do: "Checkout → pay with bKash.", see: "Order number (e.g. S1) and a collection QR code. Payment is a sandbox — no money moves." },
+      { do: "Checkout → pay with bKash.", see: "Order number (e.g. S1), a collection QR code and a stage tracker: Placed → Paid → Preparing → Ready → Collected, each with its time. Payment is a sandbox." },
       { do: "DEMO ▾ → Kitchen. Tap Start, then Ready.", see: "The ticket arrives on its own; the kitchen moves it To cook → Preparing → Ready.", open: { href: "/kds?outlet=ISD-CAF", label: "Kitchen" } },
       { do: "DEMO ▾ → Pickup TV.", see: "The number moves to Ready — please collect.", open: { href: "/status?outlet=ISD-CAF", label: "Pickup TV" } },
-      { do: "DEMO ▾ → Counter. Type the number, tick the name check, hand over.", see: "Collection needs the QR or number plus the customer's name.", open: { href: "/counter?outlet=ISD-CAF", label: "Counter" } },
+      { do: "DEMO ▾ → Counter. Scan QR (camera) or type the number, tick the name check, hand over.", see: "Collection needs the QR or number plus the customer's name. The customer's tracker turns to Collected.", open: { href: "/counter?outlet=ISD-CAF", label: "Counter" } },
     ],
   },
   {
@@ -81,9 +82,11 @@ export const STORIES: Story[] = [
     ],
   },
   {
-    n: 5, title: "A coordinator books a meeting", who: "Coordinator — Tanvir", minutes: "1 min",
+    n: 5, title: "A coordinator books a meeting", who: "Coordinator — Tanvir", minutes: "2 min",
     steps: [
       { do: "DEMO ▾ → Coordinator → Bulk order.", see: "Needs 24 hours' notice; times sooner than that are blocked. Delivered to a room, no payment now." },
+      { do: "Demo hub → +1 day. Kitchen → Start → Ready.", see: "On its day the order reaches the kitchen with the room to deliver to." },
+      { do: "Counter → Send out → Delivery complete.", see: "The coordinator's tracker shows Booked → In the kitchen → Ready → Out for delivery → Delivered." },
       { do: "Operations → Cost-centre invoices.", see: "Bulk orders are billed to the cost centre on a monthly invoice." },
     ],
   },

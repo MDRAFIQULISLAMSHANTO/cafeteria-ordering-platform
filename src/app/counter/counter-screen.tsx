@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
-import { acceptAction, collectAction, deliverAction, lookupAction, rejectAction } from "@/app/actions";
+import { acceptAction, collectAction, deliverAction, dispatchAction, lookupAction, rejectAction } from "@/app/actions";
 import { ActorSwitcher } from "@/components/demo/actor-switcher";
 import { useLive } from "@/components/live";
 import { Clock, OutletSelect, ThemeToggle, type OutletOpt } from "@/components/staff";
@@ -10,6 +10,7 @@ import { useResult, useToast } from "@/components/toast";
 import { StateBadge } from "@/components/ui";
 import { ACCOUNT_LABEL, money, type AccountType } from "@/lib/rules";
 import { time12 } from "@/lib/time";
+import { QrCamera } from "./qr-camera";
 
 const cardTitle = "mb-3 flex items-center justify-between text-lg font-bold";
 const qItem = "grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-lg border border-line bg-surface p-3 [&_small]:block [&_small]:text-muted";
@@ -21,10 +22,10 @@ type Row = {
   slot: { label: string; startsAt: string };
   lines: { id: string; name: string; qty: number; state: string }[];
 };
-type Board = { now: { ms: number; date: string }; awaiting: Row[]; ready: Row[]; collected: Row[] };
+type Board = { now: { ms: number; date: string }; awaiting: Row[]; ready: Row[]; outForDelivery: Row[]; collected: Row[] };
 type Found = {
   via: "qr" | "lookup";
-  order: { id: string; tracking: string; state: string; kitchenState: string; total: number; collectedAt: string | null; pickupDate: string };
+  order: { id: string; tracking: string; state: string; kitchenState: string; total: number; collectedAt: string | null; pickupDate: string; channel: string; deliverTo: string | null; eventName: string | null };
   customer: { name: string; accountType: string; classGrade: string | null; section: string | null; phoneTail: string };
   lines: { name: string; qty: number }[];
 };
@@ -40,6 +41,7 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
   const [rejecting, setRejecting] = useState<Row | null>(null);
   const [reason, setReason] = useState("");
   const [pending, start] = useTransition();
+  const [camera, setCamera] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   const lookup = (value: string) =>
@@ -65,11 +67,18 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
       await refresh();
     });
 
-  const deliver = (row: Row) =>
+  // bulk orders: Ready → Out for delivery → Delivered
+  const dispatch = (id: string, tracking: string, to: string | null) =>
     start(async () => {
-      if (handle(await deliverAction(row.order.id))) show({ title: `${row.order.tracking} delivered to ${row.order.deliverTo}`, tone: "info" });
+      if (handle(await dispatchAction(id))) { show({ title: `${tracking} sent out for delivery to ${to}`, tone: "info" }); setFound(null); }
       await refresh();
     });
+  const deliver = (id: string, tracking: string, to: string | null) =>
+    start(async () => {
+      if (handle(await deliverAction(id))) { setDone(`${tracking} delivered to ${to}.`); setFound(null); }
+      await refresh();
+    });
+  const scanned = (value: string) => { setCamera(false); lookup(value); };
 
   const items = (r: Row) => r.lines.filter((l) => l.state !== "refunded").map((l) => `${l.qty}× ${l.name}`).join(", ");
 
@@ -94,7 +103,7 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
       <div className="grid items-start gap-4 p-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <section className="staff-card">
           <h2 className={cardTitle}>Scan QR or enter order number</h2>
-          <form onSubmit={(e) => { e.preventDefault(); lookup(code); }}>
+          <form onSubmit={(e) => { e.preventDefault(); lookup(code); }} className="flex gap-2">
             <input
               ref={input}
               className="h-15 w-full rounded-lg border-2 border-line-strong bg-surface px-4 text-2xl text-ink focus:border-accent focus:outline-none focus:ring-3 focus:ring-focus"
@@ -104,8 +113,15 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
               autoFocus
               aria-label="QR code or order number"
             />
+            <button type="button" className="staff-btn-primary h-15 flex-none px-4" onClick={() => setCamera((c) => !c)} aria-pressed={camera}>
+              <span className="flex items-center gap-2">
+                <svg aria-hidden viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3" /><rect x="8" y="8" width="8" height="8" rx="1" /></svg>
+                <span className="hidden sm:inline">{camera ? "Close" : "Scan QR"}</span>
+              </span>
+            </button>
           </form>
-          <p className="o-hint mt-1.5">A USB or handheld scanner types the code and presses Enter. Order-number lookup is the fallback — both need the name check.</p>
+          {camera && <QrCamera onCode={scanned} onClose={() => setCamera(false)} />}
+          <p className="o-hint mt-1.5">Scan with the camera, or a USB/handheld scanner that types the code and presses Enter. The order number is the fallback — all need the name check.</p>
 
           {done && <div className="mt-4 rounded-lg bg-success-bg p-3 font-semibold text-success">✓ {done}</div>}
 
@@ -125,11 +141,24 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
                   </div>
                 </div>
                 <div>{found.lines.map((l, i) => <div key={i}><b>{l.qty}x</b> {l.name}</div>)}</div>
-                {found.order.state === "collected" ? (
+                {found.order.channel === "bulk" ? (
+                  <div className="flex flex-col gap-2 rounded-lg bg-info-bg p-3 text-info">
+                    <span><b>Bulk order</b> · {found.order.eventName} · deliver to <b>{found.order.deliverTo}</b></span>
+                    {found.order.state === "collected" ? (
+                      <span className="font-semibold">Already delivered.</span>
+                    ) : found.order.kitchenState === "ready" ? (
+                      <button className="staff-btn-primary" disabled={pending} onClick={() => dispatch(found.order.id, found.order.tracking, found.order.deliverTo)}>Send out for delivery</button>
+                    ) : found.order.kitchenState === "out_for_delivery" ? (
+                      <button className="staff-btn-primary" disabled={pending} onClick={() => deliver(found.order.id, found.order.tracking, found.order.deliverTo)}>Delivery complete</button>
+                    ) : (
+                      <span>Not ready yet — kitchen status: <b>{found.order.kitchenState.replaceAll("_", " ")}</b></span>
+                    )}
+                  </div>
+                ) : found.order.state === "collected" ? (
                   <div className="rounded-md bg-danger-bg px-3 py-2 text-sm text-danger">Already collected. An order is handed over once.</div>
                 ) : found.order.kitchenState !== "ready" ? (
                   <div className="rounded-md bg-warning-bg px-3 py-2 text-sm text-warning">
-                    Not ready yet — kitchen status: <b>{found.order.kitchenState.replace("_", " ")}</b>
+                    Not ready yet — kitchen status: <b>{found.order.kitchenState.replaceAll("_", " ")}</b>
                     {found.order.state !== "confirmed" && <> · order status: <b>{found.order.state.replaceAll("_", " ")}</b></>}
                   </div>
                 ) : (
@@ -179,7 +208,7 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
                   <div key={r.id} className={qItem}>
                     <span className="min-w-16 text-2xl font-bold">{r.order.tracking}</span>
                     <div><b>Bulk · {r.order.deliverTo}</b><small>{r.order.eventName} · {r.customer.name}</small><small>{items(r)}</small></div>
-                    <button className="staff-btn-primary" disabled={pending} onClick={() => deliver(r)}>Mark delivered</button>
+                    <button className="staff-btn-primary" disabled={pending} onClick={() => dispatch(r.order.id, r.order.tracking, r.order.deliverTo)}>Send out</button>
                   </div>
                 ) : (
                   <button key={r.id} className={`${qItem} text-left`} onClick={() => lookup(r.order.tracking)}>
@@ -191,6 +220,21 @@ export function CounterScreen({ outletId, outlets, personaId }: { outletId: stri
               )}
             </div>
           </section>
+
+          {(data?.outForDelivery.length ?? 0) > 0 && (
+            <section className="staff-card">
+              <h2 className={cardTitle}>Out for delivery <span className="o-kds-count o-kds-count-ready">{data?.outForDelivery.length}</span></h2>
+              <div className="flex flex-col gap-2">
+                {data?.outForDelivery.map((r) => (
+                  <div key={r.id} className={qItem}>
+                    <span className="min-w-16 text-2xl font-bold">{r.order.tracking}</span>
+                    <div><b>To {r.order.deliverTo}</b><small>{r.order.eventName} · {r.customer.name}</small><small>{items(r)}</small></div>
+                    <button className="staff-btn-primary" disabled={pending} onClick={() => deliver(r.order.id, r.order.tracking, r.order.deliverTo)}>Delivery complete</button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className="staff-card">
             <h2 className={cardTitle}>Collected today</h2>

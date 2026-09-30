@@ -240,6 +240,7 @@ export async function placeOrder(db: Db, cust: Customer, input: PlaceInput) {
       vatRule: pr.vatRule,
       discountRule: pr.discountRule,
       qrToken: randomBytes(12).toString("base64url"),
+      createdAt: new Date(now.ms),
     });
     await tx.insert(t.orderLine).values(
       priced.map(({ p, qty }, i) => ({ id: randomUUID(), orderId: id, productId: p.id, name: p.name, qty, unitPrice: p.price!, lineTotal: pr.lineTotals[i] })),
@@ -261,7 +262,7 @@ async function confirmAndRelease(tx: Tx, order: typeof t.foodOrder.$inferSelect,
   const releaseNow = order.pickupDate <= now.date;
   await tx
     .update(t.foodOrder)
-    .set({ state: "confirmed", kitchenState: releaseNow ? "to_cook" : "not_released", releasedAt: releaseNow ? new Date(now.ms) : null })
+    .set({ state: "confirmed", kitchenState: releaseNow ? "to_cook" : "not_released", releasedAt: releaseNow ? new Date(now.ms) : null, paidAt: new Date(now.ms) })
     .where(eq(t.foodOrder.id, order.id));
 }
 
@@ -360,11 +361,17 @@ export async function bump(db: Db, orderId: string) {
     const order = await loadOrder(tx, orderId);
     const next = NEXT_STAGE[order.kitchenState];
     if (order.state !== "confirmed" || !next) throw new RuleError("This ticket can't move forward here.", "To cook → Preparing → Ready; collection completes it");
-    await tx.update(t.foodOrder).set({ kitchenState: next, readyAt: next === "ready" ? new Date(now.ms) : order.readyAt }).where(eq(t.foodOrder.id, orderId));
+    await tx
+      .update(t.foodOrder)
+      .set({ kitchenState: next, startedAt: next === "preparing" ? new Date(now.ms) : order.startedAt, readyAt: next === "ready" ? new Date(now.ms) : order.readyAt })
+      .where(eq(t.foodOrder.id, orderId));
     if (next === "ready") {
       const cust = (await tx.select().from(t.customer).where(eq(t.customer.id, order.customerId)))[0];
       const outlet = (await tx.select().from(t.outlet).where(eq(t.outlet.id, order.outletId)))[0];
-      await notify(tx, cust.phone, `STS: Order ${order.tracking} is ready at ${outlet.name}. Show your QR code at the counter.`, orderId);
+      const text = order.channel === "bulk"
+        ? `STS: Bulk order ${order.tracking} is ready and will be sent to ${order.deliverTo} shortly.`
+        : `STS: Order ${order.tracking} is ready at ${outlet.name}. Show your QR code at the counter.`;
+      await notify(tx, cust.phone, text, orderId);
     }
     await audit(tx, "kitchen", "bump", orderId, order.outletId, { from: order.kitchenState, to: next });
   });
@@ -381,7 +388,10 @@ export async function recall(db: Db, outletId: string) {
   const detail = last.detail as { from: string; to: string };
   const order = await loadOrder(db, last.orderId);
   if (order.kitchenState !== detail.to || order.state !== "confirmed") throw new RuleError("That ticket has moved on since.", "Recall undoes the last kitchen move");
-  await db.update(t.foodOrder).set({ kitchenState: detail.from, readyAt: detail.from === "ready" ? order.readyAt : null }).where(eq(t.foodOrder.id, order.id));
+  await db
+    .update(t.foodOrder)
+    .set({ kitchenState: detail.from, readyAt: detail.from === "ready" ? order.readyAt : null, startedAt: detail.from === "to_cook" ? null : order.startedAt })
+    .where(eq(t.foodOrder.id, order.id));
   await db.update(t.auditLog).set({ action: "bump_recalled" }).where(eq(t.auditLog.id, last.id));
   await audit(db, "kitchen", "recall", order.id, outletId, detail);
 }
@@ -466,6 +476,7 @@ export async function counterBoard(db: Db, outletId: string) {
     now,
     awaiting: all.filter((r) => r.order.state === "awaiting_acceptance"),
     ready: all.filter((r) => r.order.state === "confirmed" && r.order.kitchenState === "ready"),
+    outForDelivery: all.filter((r) => r.order.state === "confirmed" && r.order.kitchenState === "out_for_delivery"),
     collected: all.filter((r) => r.order.state === "collected" && r.order.pickupDate === now.date).slice(-10).reverse(),
   };
 }
@@ -843,6 +854,7 @@ export async function placeBulkOrder(db: Db, cust: Customer, input: BulkInput) {
       deliverTo,
       costCentre: cust.costCentre,
       notes: input.notes?.trim() || null,
+      createdAt: new Date(now.ms),
     });
     await tx.insert(t.orderLine).values(
       priced.map(({ p, qty }, i) => ({ id: randomUUID(), orderId: id, productId: p.id, name: p.name, qty, unitPrice: p.price!, lineTotal: pr.lineTotals[i] })),
@@ -853,13 +865,28 @@ export async function placeBulkOrder(db: Db, cust: Customer, input: BulkInput) {
   });
 }
 
+/** Counter sends a ready bulk order out to its room (delivery stage 1 of 2). */
+export async function dispatchForDelivery(db: Db, orderId: string) {
+  const now = await demoNow(db);
+  await db.transaction(async (tx) => {
+    const order = await loadOrder(tx, orderId);
+    if (order.channel !== "bulk") throw new RuleError("Only bulk orders are delivered.", "Individual orders are collected at the counter");
+    if (order.kitchenState === "out_for_delivery") throw new RuleError("Already out for delivery.", "An order is sent out once");
+    if (order.state !== "confirmed" || order.kitchenState !== "ready") throw new RuleError("This order is not ready yet.", "Bulk orders go out once the kitchen marks them Ready");
+    await tx.update(t.foodOrder).set({ kitchenState: "out_for_delivery", dispatchedAt: new Date(now.ms) }).where(eq(t.foodOrder.id, orderId));
+    const cust = (await tx.select().from(t.customer).where(eq(t.customer.id, order.customerId)))[0];
+    await notify(tx, cust.phone, `STS: Bulk order ${order.tracking} is on its way to ${order.deliverTo}.`, orderId);
+    await audit(tx, "counter", "dispatch", orderId, order.outletId);
+  });
+}
+
 export async function markDelivered(db: Db, orderId: string) {
   const now = await demoNow(db);
   await db.transaction(async (tx) => {
     const order = await loadOrder(tx, orderId);
     if (order.channel !== "bulk") throw new RuleError("Only bulk orders are delivered.", "Individual orders are collected at the counter");
     if (order.state === "collected") throw new RuleError("Already delivered.", "An order is delivered once");
-    if (order.kitchenState !== "ready") throw new RuleError("This order is not ready yet.", "Bulk orders go out once the kitchen marks them Ready");
+    if (order.kitchenState !== "out_for_delivery") throw new RuleError("Send it out for delivery first.", "Bulk orders: Ready → Out for delivery → Delivered");
     await tx.update(t.foodOrder).set({ state: "collected", kitchenState: "completed", deliveredAt: new Date(now.ms), collectedAt: new Date(now.ms), collectedBy: "delivery" }).where(eq(t.foodOrder.id, orderId));
     const cust = (await tx.select().from(t.customer).where(eq(t.customer.id, order.customerId)))[0];
     await notify(tx, cust.phone, `STS: Bulk order ${order.tracking} delivered to ${order.deliverTo}.`, orderId);

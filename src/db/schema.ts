@@ -126,6 +126,7 @@ export const foodOrder = pgTable(
     // plus cancelled, rejected
     state: text("state").notNull(),
     // not_released → to_cook → preparing → ready → completed
+    // (bulk orders: ready → out_for_delivery → completed)
     kitchenState: text("kitchen_state").notNull().default("not_released"),
     accountType: text("account_type").notNull(),
     subtotal: integer("subtotal").notNull(), // before discount, net of VAT
@@ -136,8 +137,12 @@ export const foodOrder = pgTable(
     discountRule: text("discount_rule"),
     qrToken: text("qr_token").notNull(),
     rejectReason: text("reject_reason"),
+    // stage times (demo clock), shown to the customer on the order tracker
+    paidAt: timestamp("paid_at", { withTimezone: true }),
     releasedAt: timestamp("released_at", { withTimezone: true }),
+    startedAt: timestamp("started_at", { withTimezone: true }),
     readyAt: timestamp("ready_at", { withTimezone: true }),
+    dispatchedAt: timestamp("dispatched_at", { withTimezone: true }), // bulk: sent out for delivery
     collectedAt: timestamp("collected_at", { withTimezone: true }),
     collectedBy: text("collected_by"), // qr | lookup
     // bulk (coordinator) orders: delivered to a room, billed to a cost centre

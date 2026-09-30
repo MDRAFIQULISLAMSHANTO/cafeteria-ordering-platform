@@ -47,9 +47,10 @@ export function GuideLauncher() {
   // the menu page has a fixed "View order" bar on phones; sit above it
   const lift = path === "/order" ? "bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] cart:bottom-5" : "bottom-[calc(1.25rem+env(safe-area-inset-bottom,0px))]";
 
-  // z-36: above the phone "View order" bar (z-30), under the cart drawer (z-40) and dialogs (z-50)
+  // closed: z-36, above the phone "View order" bar (z-30) but under the cart drawer (z-40) and dialogs (z-50).
+  // open: above everything, including the landing header (z-50).
   return (
-    <div className={`fixed right-4 z-[36] flex flex-col items-end gap-3 print:hidden sm:right-5 ${lift}`}>
+    <div className={`fixed right-4 flex flex-col items-end gap-2.5 print:hidden sm:right-5 ${open ? "z-[70]" : "z-[36]"} ${lift}`}>
       <AnimatePresence>
         {open && (
           <motion.div
@@ -62,36 +63,36 @@ export function GuideLauncher() {
             exit={reduce ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.97 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
             style={{ transformOrigin: "bottom right" }}
-            className="flex max-h-[min(640px,calc(100dvh-8rem))] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-sts-hairline bg-sts-white text-sts-ink shadow-sts-float"
+            className="flex max-h-[min(470px,calc(100dvh-7.5rem))] w-[min(320px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-sts-hairline bg-sts-white text-sts-ink shadow-sts-float"
           >
-            <div className="bg-sts-purple px-5 pb-4 pt-4 text-sts-white">
+            <div className="bg-sts-purple px-4 pb-3 pt-3 text-sts-white">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-2xs font-bold uppercase tracking-[.16em] text-sts-orange-soft">STS online ordering</p>
-                  <h2 className="mt-0.5 font-display text-xl font-extrabold">Demo guide</h2>
+                  <h2 className="font-display text-lg font-extrabold leading-tight">Demo guide</h2>
                 </div>
-                <button type="button" aria-label="Close demo guide" onClick={() => setOpen(false)} className="grid h-8 w-8 place-items-center rounded-full bg-sts-white/15 hover:bg-sts-white/25">
+                <button type="button" aria-label="Close demo guide" onClick={() => setOpen(false)} className="grid h-7 w-7 place-items-center rounded-full bg-sts-white/15 hover:bg-sts-white/25">
                   <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 4l8 8M12 4l-8 8" /></svg>
                 </button>
               </div>
-              <p className="mt-2 text-xs text-sts-white/80">Sign in once with <b className="text-sts-white">{DEMO_LOGIN}</b> · code <b className="text-sts-white">123456</b>, then use the <b className="text-sts-white">DEMO</b> button to switch people and staff screens.</p>
-              <div role="tablist" aria-label="Guide sections" className="mt-3 grid grid-cols-2 rounded-full bg-sts-white/12 p-1 text-sm font-semibold">
+              <p className="mt-1 text-2xs leading-snug text-sts-white/80">Login <b className="text-sts-white">{DEMO_LOGIN}</b> · code <b className="text-sts-white">123456</b>. Switch people with <b className="text-sts-white">DEMO</b>.</p>
+              <div role="tablist" aria-label="Guide sections" className="mt-2.5 grid grid-cols-2 rounded-full bg-sts-white/12 p-0.5 text-xs font-semibold">
                 {([["flow", "How it works"], ["script", "Run the demo"]] as const).map(([id, label]) => (
-                  <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`rounded-full py-1.5 ${tab === id ? "bg-sts-white text-sts-purple" : "text-sts-white/85"}`}>{label}</button>
+                  <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`rounded-full py-1 ${tab === id ? "bg-sts-white text-sts-purple" : "text-sts-white/85"}`}>{label}</button>
                 ))}
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-4">
+            {/* data-lenis-prevent: the landing's smooth scroll must not swallow wheel events here */}
+            <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
               {tab === "flow" ? (
-                <ol className="relative flex flex-col gap-3">
-                  <span aria-hidden className="absolute bottom-3 left-[13px] top-3 w-0.5 rounded bg-sts-orange-soft" />
+                <ol className="relative flex flex-col gap-2.5">
+                  <span aria-hidden className="absolute bottom-3 left-[11px] top-3 w-0.5 rounded bg-sts-orange-soft" />
                   {FLOW.map((s) => (
-                    <li key={s.n} className="relative grid grid-cols-[auto_1fr] gap-3">
-                      <span className="relative z-10 grid h-7 w-7 place-items-center rounded-full bg-sts-orange font-display text-xs font-bold text-sts-ink">{s.n}</span>
+                    <li key={s.n} className="relative grid grid-cols-[auto_1fr] gap-2.5">
+                      <span className="relative z-10 grid h-6 w-6 place-items-center rounded-full bg-sts-orange font-display text-2xs font-bold text-sts-ink">{s.n}</span>
                       <div>
                         <span className={`inline-block rounded-full px-2 py-px text-2xs font-bold ${LANE_TONE[s.lane]}`}>{LANE_LABEL[s.lane]}</span>
-                        <p className="mt-0.5 text-sm leading-snug">{s.text}</p>
+                        <p className="mt-0.5 text-xs leading-snug">{s.text}</p>
                       </div>
                     </li>
                   ))}
@@ -134,11 +135,11 @@ export function GuideLauncher() {
               )}
             </div>
 
-            <div className="flex gap-2 border-t border-sts-hairline bg-sts-cream-2 px-4 py-3">
-              <Link href="/guide" prefetch={false} target="_blank" className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-sts-purple px-3 py-2.5 text-sm font-bold text-sts-white hover:no-underline">
+            <div className="flex gap-2 border-t border-sts-hairline bg-sts-cream-2 px-3 py-2.5">
+              <Link href="/guide" prefetch={false} target="_blank" className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-sts-purple px-3 py-2 text-xs font-bold text-sts-white hover:no-underline">
                 Full guide & swimlane <span aria-hidden>↗</span>
               </Link>
-              <Link href="/demo" prefetch={false} target="_blank" className="flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-bold text-sts-purple shadow-[0_0_0_1.5px_var(--sts-hairline)] hover:no-underline">
+              <Link href="/demo" prefetch={false} target="_blank" className="flex items-center justify-center rounded-lg px-3 py-2 text-xs font-bold text-sts-purple shadow-[0_0_0_1.5px_var(--sts-hairline)] hover:no-underline">
                 Demo hub
               </Link>
             </div>
@@ -155,10 +156,10 @@ export function GuideLauncher() {
         onClick={() => setOpen((o) => !o)}
         whileHover={reduce ? undefined : { y: -2 }}
         whileTap={reduce ? undefined : { scale: 0.94 }}
-        className="group relative flex h-14 items-center gap-2 rounded-full bg-sts-purple pl-2 pr-2 text-sts-white shadow-sts-float sm:pr-5"
+        className="group relative flex h-12 items-center gap-2 rounded-full bg-sts-purple pl-1.5 pr-1.5 text-sts-white shadow-sts-float sm:pr-4"
       >
         {!open && !reduce && <span aria-hidden className="absolute inset-0 -z-10 animate-ping rounded-full bg-sts-orange/40 [animation-duration:2.4s] [animation-iteration-count:3]" />}
-        <span className="grid h-10 w-10 place-items-center rounded-full bg-sts-orange text-sts-ink">
+        <span className="grid h-9 w-9 place-items-center rounded-full bg-sts-orange text-sts-ink">
           {open ? (
             <svg aria-hidden viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 5l10 10M15 5L5 15" /></svg>
           ) : (

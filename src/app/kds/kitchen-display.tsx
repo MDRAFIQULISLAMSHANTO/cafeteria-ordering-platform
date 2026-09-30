@@ -33,6 +33,7 @@ const STATE_LABEL: Record<string, [string, string]> = {
   to_cook: ["To cook", "o-kds-state-tocook"],
   preparing: ["Preparing", "o-kds-state-preparing"],
   ready: ["Ready", "o-kds-state-done"],
+  out_for_delivery: ["Out for delivery", "o-kds-state-done"],
   completed: ["Collected", "o-kds-state-done"],
 };
 
@@ -47,7 +48,9 @@ export function KitchenDisplay({ outletId, outlets, personaId }: { outletId: str
   const [pending, start] = useTransition();
 
   const tickets = data?.tickets ?? [];
-  const shown = tickets.filter((t) => (tab === "all" ? t.order.kitchenState !== "completed" : t.order.kitchenState === tab));
+  // the kitchen's job ends at Ready; dispatched bulk orders show under Completed
+  const done = (s: string) => s === "completed" || s === "out_for_delivery";
+  const shown = tickets.filter((t) => (tab === "all" ? !done(t.order.kitchenState) : tab === "completed" ? done(t.order.kitchenState) : t.order.kitchenState === tab));
   const count = (s: string) => tickets.filter((t) => t.order.kitchenState === s).length;
 
   const act = (fn: () => Promise<{ ok: boolean; error?: string; rule?: string }>) =>

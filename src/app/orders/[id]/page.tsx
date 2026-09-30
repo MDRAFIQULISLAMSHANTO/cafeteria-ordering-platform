@@ -3,21 +3,15 @@ import { notFound, redirect } from "next/navigation";
 import QRCode from "qrcode";
 import { getDb } from "@/db/client";
 import { CustomerShell } from "@/components/customer-shell";
+import { OrderStages } from "@/components/order-stages";
 import { StateBadge } from "@/components/ui";
 import { cutoffMs, demoNow, editBlock, orderDetail } from "@/lib/orders";
 import { paymentLabel, taxAndDiscountRows } from "@/lib/receipt";
+import { orderStages } from "@/lib/order-stages";
 import { money, unitBeforeDiscount } from "@/lib/rules";
 import { formatDay, time12 } from "@/lib/time";
 import { currentCustomer } from "@/lib/session";
 import { CancelButton, LiveRefresh, SubstitutionPrompt } from "./live-bits";
-
-function progress(state: string, kitchen: string) {
-  if (state === "collected") return 5;
-  if (kitchen === "ready") return 4;
-  if (kitchen === "to_cook" || kitchen === "preparing") return 3;
-  if (state === "confirmed") return 2;
-  return 1;
-}
 
 const btn = "o-so-btn inline-grid h-11.5 place-items-center border border-line text-base no-underline";
 
@@ -36,8 +30,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/or
   const edited = (await searchParams).edited === "1";
 
   const bulk = order.channel === "bulk";
-  const steps = bulk ? ["Booked", "Scheduled", "In the kitchen", "Ready", "Delivered"] : ["Placed", "Paid", "In the kitchen", "Ready", "Collected"];
-  const step = progress(order.state, order.kitchenState);
+  const stages = orderStages(order, now.date, outlet.name);
   const rows = taxAndDiscountRows(order, outlet, d.customer);
   const closed = ["cancelled", "rejected"].includes(order.state);
   const pendingSubs = substitutions.filter((s) => s.status === "pending");
@@ -59,7 +52,9 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/or
   else if (order.state === "awaiting_payment") { heading = "Waiting for payment"; icon = "…"; iconBg = "bg-warning"; sub = "Your order is saved but not yet paid. It goes to the kitchen once payment succeeds."; }
   else if (order.state === "awaiting_acceptance") { heading = "Waiting for the counter to accept"; icon = "…"; iconBg = "bg-warning"; sub = "Pay-at-counter orders reach the kitchen after staff accept them."; }
   else if (order.state === "confirmed" && order.kitchenState === "not_released") { heading = bulk ? `Booked for ${formatDay(order.pickupDate, now.date)}` : `Scheduled for ${formatDay(order.pickupDate, now.date)}`; sub = bulk ? `${order.eventName} · delivery to ${order.deliverTo}. Billed to cost centre ${order.costCentre} monthly.` : "Pre-order confirmed. It joins the kitchen queue on the pickup day."; }
-  else if (order.kitchenState === "ready") { heading = bulk ? "Ready — on its way" : "Ready for pickup!"; sub = bulk ? `Being delivered to ${order.deliverTo}.` : `Show this QR code at the ${outlet.name} counter.`; }
+  else if (order.kitchenState === "ready") { heading = bulk ? "Ready — going out soon" : "Ready for pickup!"; sub = bulk ? `It will be sent to ${order.deliverTo} shortly.` : `Show this QR code at the ${outlet.name} counter.`; }
+  else if (order.kitchenState === "out_for_delivery") { heading = "Out for delivery"; sub = `On its way to ${order.deliverTo}.`; }
+  else if (order.kitchenState === "preparing") { heading = "Being prepared now"; }
   else if (order.state === "collected") { heading = bulk ? "Delivered" : "Collected — enjoy!"; }
   else if (order.state === "cancelled") { heading = "Order cancelled"; icon = "✕"; iconBg = "bg-danger"; sub = "Any payment has been refunded to the original method (sandbox)."; }
   else if (order.state === "rejected") { heading = "Order not accepted"; icon = "✕"; iconBg = "bg-danger"; sub = `Reason: ${order.rejectReason}. Any payment has been refunded (sandbox).`; }
@@ -91,17 +86,8 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/or
             <div className="text-5xl font-bold leading-none text-so-price md:text-[3.4rem]">{order.tracking}</div>
             <p className="text-muted">{sub}</p>
             {!closed && (
-              <div className="mt-3 grid w-full grid-cols-5 gap-1" aria-label="Order progress">
-                {steps.map((s, i) => {
-                  const done = i + 1 <= step;
-                  const now_ = i + 1 === step && order.state !== "collected";
-                  return (
-                    <div key={s} className={`text-center text-2xs ${done ? "font-semibold text-ink" : "text-faint"}`}>
-                      <div className={`mb-1.5 h-1.5 rounded-full ${done ? "bg-so-price" : "bg-surface-3"} ${now_ ? "animate-pulse" : ""}`} />
-                      {s}
-                    </div>
-                  );
-                })}
+              <div className="mt-4 w-full border-t border-line pt-4">
+                <OrderStages stages={stages} />
               </div>
             )}
             <div className="mt-2 flex flex-wrap justify-center gap-2">

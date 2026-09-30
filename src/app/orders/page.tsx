@@ -14,9 +14,11 @@ function badge(state: string, kitchen: string, bulk = false): [string, keyof typ
   if (state === "cancelled") return ["Cancelled", "bad"];
   if (state === "rejected") return ["Not accepted", "bad"];
   if (state === "collected") return [bulk ? "Delivered" : "Collected", "done"];
+  if (kitchen === "out_for_delivery") return ["Out for delivery", "ready"];
   if (kitchen === "ready") return ["Ready", "ready"];
   if (kitchen === "not_released") return ["Scheduled", "paid"];
-  return ["Preparing", "paid"];
+  if (kitchen === "preparing") return ["Preparing", "paid"];
+  return ["In the kitchen queue", "paid"];
 }
 
 export default async function MyOrders() {
