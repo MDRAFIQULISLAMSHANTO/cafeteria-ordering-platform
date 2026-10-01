@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FoodArt } from "@/components/food/food-art";
 
 const STATUS = [
@@ -20,6 +20,32 @@ export function HeroArt({ next, lite }: { next: { label: string; time: string } 
   const rx = useSpring(useTransform(my, [-0.5, 0.5], [10, -10]), { stiffness: 120, damping: 16 });
   const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-12, 12]), { stiffness: 120, damping: 16 });
   const [step, setStep] = useState(2);
+  const video = useRef<HTMLVideoElement>(null);
+
+  // Keep the hero video playing on a loop. React does not always set `muted`
+  // on the element, and browsers refuse to autoplay unmuted video, so it is
+  // forced here; play() is retried whenever the video stalls, ends, or the
+  // tab comes back into view.
+  useEffect(() => {
+    const v = video.current;
+    if (!v || lite) return;
+    v.muted = true;
+    v.defaultMuted = true;
+    v.loop = true;
+    const play = () => { if (v.paused && !document.hidden) v.play().catch(() => {}); };
+    const restart = () => { v.currentTime = 0; play(); };
+    const nudge = () => setTimeout(play, 400);
+    play();
+    const events: [string, () => void][] = [["canplay", play], ["loadeddata", play], ["pause", nudge], ["stalled", nudge], ["waiting", nudge], ["ended", restart]];
+    for (const [e, f] of events) v.addEventListener(e, f);
+    document.addEventListener("visibilitychange", play);
+    const watchdog = setInterval(play, 3000);
+    return () => {
+      for (const [e, f] of events) v.removeEventListener(e, f);
+      document.removeEventListener("visibilitychange", play);
+      clearInterval(watchdog);
+    };
+  }, [lite]);
 
   useEffect(() => {
     if (lite) return;
@@ -58,7 +84,7 @@ export function HeroArt({ next, lite }: { next: { label: string; time: string } 
       >
         <div className="h-full w-full overflow-hidden rounded-[18%] bg-sts-white">
           <video
-            key={lite ? "still" : "playing"}
+            ref={video}
             src="/videos/hero-food.mp4"
             poster="/videos/hero-food-poster.jpg"
             autoPlay={!lite}
