@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -31,7 +32,11 @@ export function MenuShowcase({ data, orderHref }: { data: LandingData; orderHref
         <div className="flex w-max animate-marquee gap-3 motion-safe-only">
           {[...data.sections, ...data.sections, ...data.sections, ...data.sections].map((s, i) => (
             <span key={`${s.name}${i}`} className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-sts-cream-2 py-1 pl-1 pr-4 font-display text-base font-bold text-sts-purple">
-              <FoodArt kind={s.look.kind} tint={s.look.tint} steam={false} className="h-9 w-9" />
+              {s.icon ? (
+                <Image src={s.icon} alt="" width={36} height={36} className="h-9 w-9 object-contain drop-shadow-[0_3px_3px_var(--sts-drop)]" />
+              ) : (
+                <FoodArt kind={s.look.kind} tint={s.look.tint} steam={false} className="h-9 w-9" />
+              )}
               {s.name}
             </span>
           ))}

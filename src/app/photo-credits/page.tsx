@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BUNDLED_PHOTOS, SCAFE_CUTOUTS } from "@/lib/food-photos";
+import { BUNDLED_PHOTOS, FOOD_3D, SCAFE_CUTOUTS } from "@/lib/food-photos";
 import credits from "@/lib/menu-photo-credits.json";
 
 // stock photos still on the menu (S Cafe's own photos replace some)
-const inUse = new Set(Object.entries(BUNDLED_PHOTOS).filter(([id]) => !SCAFE_CUTOUTS[id]).flatMap(([, files]) => files));
+const inUse = new Set(Object.entries(BUNDLED_PHOTOS).filter(([id]) => !SCAFE_CUTOUTS[id] && !FOOD_3D[id]).flatMap(([, files]) => files));
 const own = [...new Set(Object.values(SCAFE_CUTOUTS))];
+const illustrated = [...new Set(Object.values(FOOD_3D))];
 
 export const metadata = { title: "Food photo credits — S Cafe" };
 
@@ -19,6 +20,13 @@ export default function PhotoCreditsPage() {
         <p className="mt-2 max-w-2xl text-muted">Supplied by S Cafe for these dishes. Servings may vary.</p>
         <div className="mt-4 flex flex-wrap gap-3">
           {own.map((file) => (
+            <Image key={file} src={file} alt={file.split("/").pop()!.replace(".webp", "").replaceAll("-", " ")} width={96} height={96} className="h-24 w-24 rounded-lg bg-surface object-contain p-1" />
+          ))}
+        </div>
+        <h2 className="mt-10 text-xl font-bold">Illustrative 3D images</h2>
+        <p className="mt-2 max-w-2xl text-muted">Generated, photo-style images used for {illustrated.length} dishes until S Cafe photographs them. They are not photographs of S Cafe meals.</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          {illustrated.map((file) => (
             <Image key={file} src={file} alt={file.split("/").pop()!.replace(".webp", "").replaceAll("-", " ")} width={96} height={96} className="h-24 w-24 rounded-lg bg-surface object-contain p-1" />
           ))}
         </div>

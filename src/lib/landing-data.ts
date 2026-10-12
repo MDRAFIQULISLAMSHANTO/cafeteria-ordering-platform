@@ -36,7 +36,11 @@ export async function landingData(outletId?: string) {
     .filter((p) => p.available && p.price != null && p.unit === "each")
     .map((p) => ({ id: p.id, name: p.name, section: p.category, price: p.price!, description: cardLine(p), look: foodLook(p.name, p.category), special: Boolean(p.weekday), photos: p.photos }));
 
-  const sections = [...new Set(items.map((i) => i.section))].map((name) => ({ name, count: items.filter((i) => i.section === name).length, look: items.find((i) => i.section === name)!.look }));
+  const sections = [...new Set(items.map((i) => i.section))].map((name) => {
+    const inSection = items.filter((i) => i.section === name);
+    // the section's icon: its first dish with a transparent cut-out, if any
+    return { name, count: inSection.length, look: inSection[0].look, icon: inSection.flatMap((i) => i.photos ?? []).find(isCutout) ?? null };
+  });
   const next = slots.find((s) => s.open) ?? null;
   const special = items.find((i) => i.special) ?? null;
   const game = items

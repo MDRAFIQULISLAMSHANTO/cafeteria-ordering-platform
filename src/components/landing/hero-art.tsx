@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { FoodArt } from "@/components/food/food-art";
+import Image from "next/image";
 
 const STATUS = [
   { label: "Order placed", sub: "Paid with bKash", tone: "bg-sts-purple-soft text-sts-purple" },
@@ -99,8 +99,8 @@ export function HeroArt({ next, lite }: { next: { label: string; time: string } 
       </motion.div>
 
       {/* floating satellites */}
-      <FoodArt kind="hot" tint="coffee" className="absolute -right-[2%] top-[4%] w-[22%] animate-float motion-safe-only drop-shadow-[0_12px_14px_var(--sts-drop)]" />
-      <FoodArt kind="cookie" className="absolute -left-[4%] bottom-[20%] w-[19%] animate-float motion-safe-only [animation-delay:-3s] drop-shadow-[0_12px_14px_var(--sts-drop)]" />
+      <Image src="/menu/3d/coffee-cup.webp" alt="" width={240} height={160} priority className="absolute -right-[4%] top-[2%] h-auto w-[25%] animate-float motion-safe-only drop-shadow-[0_12px_14px_var(--sts-drop)]" />
+      <Image src="/menu/3d/berry-cheesecake.webp" alt="" width={240} height={160} className="absolute -left-[7%] bottom-[19%] h-auto w-[25%] animate-float motion-safe-only [animation-delay:-3s] drop-shadow-[0_12px_14px_var(--sts-drop)]" />
 
       {/* next pickup (real data) */}
       {next && (

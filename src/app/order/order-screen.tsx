@@ -5,7 +5,7 @@ import { useEffect, useEffectEvent, useMemo, useState, useTransition } from "rea
 import { FoodArt } from "@/components/food/food-art";
 import { MenuCard } from "@/components/food/menu-card";
 import { cardLine } from "@/lib/card-lines";
-import { isCutout } from "@/lib/food-photos";
+import { isCutout, isScafePhoto } from "@/lib/food-photos";
 import { foodLook } from "@/lib/food-kind";
 import { takeHandoff } from "@/lib/tray-handoff";
 import Image from "next/image";
@@ -464,7 +464,7 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
               <small className="text-2xs font-semibold uppercase tracking-wider text-sts-orange-text">{open.category}</small>
               <h2 className="mt-0.5 font-display text-2xl font-bold text-sts-purple">{open.name}</h2>
               {open.photos?.length ? (
-                <p className="mt-2 text-xs text-muted">{isCutout(open.photos[0]) ? "S Cafe photo; actual servings may vary." : "Representative food photo; actual servings may vary."} <Link href="/photo-credits" className="underline">Photo credits</Link></p>
+                <p className="mt-2 text-xs text-muted">{isScafePhoto(open.photos[0]) ? "S Cafe photo; actual servings may vary." : "Illustrative image; actual servings may vary."} <Link href="/photo-credits" className="underline">Photo credits</Link></p>
               ) : null}
             </div>
             <div className="flex flex-col gap-3 overflow-y-auto p-5">
