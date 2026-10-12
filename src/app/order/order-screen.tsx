@@ -85,7 +85,10 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
     if (skipped.length) show({ title: `Not on ${outlet.name}'s menu today: ${skipped.map((i) => i.name).join(", ")}`, rule: "Menu by outlet and day", tone: "danger" });
   });
   useEffect(() => {
-    if (!editing) applyHandoff();
+    if (editing) return;
+    // after the first paint: the hand-off is read once, and a cancelled run leaves it in place
+    const id = requestAnimationFrame(() => applyHandoff());
+    return () => cancelAnimationFrame(id);
   }, [editing]);
 
   const load = async (date: string) => {
