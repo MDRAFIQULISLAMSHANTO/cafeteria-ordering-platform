@@ -22,6 +22,8 @@ export const SCAFE_CUTOUTS: Record<string, string> = {
 const D = (k: string) => `/menu/3d/${k}.webp`;
 export const FOOD_3D: Record<string, string> = {
   // menu A — S Café
+  "menu-a-001": D("chicken-wedges-combo"),
+  "menu-a-002": D("chicken-burger-fries-combo"), // composed from the burger and fries images
   "menu-a-005": D("chicken-mushroom-bake"),
   "menu-a-006": D("spinach-quiche"),
   "menu-a-007": D("beef-patty"),
@@ -58,7 +60,7 @@ export const FOOD_3D: Record<string, string> = {
   "menu-b-081": D("coffee-cup"),
   "menu-b-087": D("mocha"),
   "menu-b-088": D("iced-latte"),
-  "menu-b-089": D("hot-chocolate"),
+  "menu-b-089": D("chocolate-cream-mug"),
   "menu-b-093": D("chocolate-frappe"),
   "menu-b-096": D("caramel-frappe"),
 };

@@ -46,6 +46,8 @@ SINGLE = {
     "Decadent Whipped Cream Hot Chocolate Mug.png": "hot-chocolate",
     "Strawberry Smoothie with Mint Garnish.png": "strawberry-smoothie",
     "Decadent Chocolate Brownie Sundae.png": "brownie-sundae",
+    "Crispy Chicken Feast with Iced Mocha (2).png": "chicken-wedges-combo",
+    "Decadent Chocolate Cream Mug-1.png": "chocolate-cream-mug",
 }
 
 # Collages: one dish per box (full-size pixels); the largest opaque region in
@@ -112,11 +114,40 @@ def largest_region(im: Image.Image) -> Image.Image:
     return out
 
 
-def main(only_collages: bool = False) -> None:
+def composite(key: str, layers: list[tuple[str, float, float, float]]) -> None:
+    """A combo built from existing cut-outs: (image key, width share, x, y) on
+    a transparent canvas, back to front, each with a soft contact shadow."""
+    from PIL import ImageFilter
+
+    W, H = 1200, 900
+    canvas = Image.new("RGBA", (W, H))
+    for name, share, x, y in layers:
+        im = Image.open(OUT / f"{name}.webp").convert("RGBA")
+        w = int(W * share)
+        im = im.resize((w, int(im.height * w / im.width)), Image.LANCZOS)
+        shadow = Image.new("RGBA", im.size, (40, 20, 10, 0))
+        shadow.putalpha(im.getchannel("A").point(lambda a: int(a * 0.35)))
+        shadow = shadow.filter(ImageFilter.GaussianBlur(14))
+        canvas.alpha_composite(shadow, (int(x * W) + 10, int(y * H) + 18))
+        canvas.alpha_composite(im, (int(x * W), int(y * H)))
+    save(canvas, key)
+
+
+COMPOSITES = {
+    "chicken-burger-fries-combo": [("fries", 0.52, 0.02, 0.18), ("chicken-burger", 0.56, 0.42, 0.14)],
+}
+
+
+def main(only_collages: bool = False, only: list[str] | None = None) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for name, key in ({} if only_collages else SINGLE).items():
+        if only and key not in only:
+            continue
         save(Image.open(SRC / name), key)
-    for name, boxes in COLLAGES.items():
+    for key, layers in COMPOSITES.items():
+        if not only or key in only:
+            composite(key, layers)
+    for name, boxes in ({} if only else COLLAGES).items():
         im = Image.open(SRC / name).convert("RGBA")
         for key, (box, _) in boxes.items():
             save(largest_region(im.crop(box)), key)
@@ -125,4 +156,5 @@ def main(only_collages: bool = False) -> None:
 if __name__ == "__main__":
     import sys
 
-    main(only_collages="--collages" in sys.argv)
+    keys = [a for a in sys.argv[1:] if not a.startswith("--")]
+    main(only_collages="--collages" in sys.argv, only=keys or None)

@@ -15,7 +15,7 @@ export type LandingItem = { id: string; name: string; section: string; price: nu
 export type TrayGroup = "main" | "side" | "drink" | "treat";
 
 // sections whose dishes have no cut-out yet borrow a fitting one for their icon
-const SECTION_ICON: Record<string, string> = { "Daily Combo": "/menu/3d/chicken-burger.webp", "Day Specials": "/menu/3d/biryani-gulab-jamun.webp", "Special of the Day": "/menu/3d/fish-and-chips.webp", "Snack Deck": "/menu/3d/focaccia-club.webp", "Tea": "/menu/3d/coffee-cup.webp" };
+const SECTION_ICON: Record<string, string> = { "Daily Combo": "/menu/3d/chicken-wedges-combo.webp", "Day Specials": "/menu/3d/biryani-gulab-jamun.webp", "Special of the Day": "/menu/3d/fish-and-chips.webp", "Snack Deck": "/menu/3d/focaccia-club.webp", "Tea": "/menu/3d/coffee-cup.webp" };
 
 const SIDE_WORDS = ["fries", "wedges", "singara", "spring roll", "cheese ball", "salad", "soup", "drums", "patty"];
 
