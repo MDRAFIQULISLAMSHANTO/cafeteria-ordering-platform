@@ -14,6 +14,9 @@ import { formatDay, time12 } from "./time";
 export type LandingItem = { id: string; name: string; section: string; price: number; description: string | null; look: FoodLook; special: boolean; photos: string[] | null };
 export type TrayGroup = "main" | "side" | "drink" | "treat";
 
+// sections whose dishes have no cut-out yet borrow a fitting one for their icon
+const SECTION_ICON: Record<string, string> = { "Daily Combo": "/menu/3d/chicken-burger.webp", "Day Specials": "/menu/3d/biryani-gulab-jamun.webp", "Special of the Day": "/menu/3d/fish-and-chips.webp", "Snack Deck": "/menu/3d/focaccia-club.webp", "Tea": "/menu/3d/coffee-cup.webp" };
+
 const SIDE_WORDS = ["fries", "wedges", "singara", "spring roll", "cheese ball", "salad", "soup", "drums", "patty"];
 
 function trayGroup(item: LandingItem): TrayGroup | null {
@@ -39,7 +42,8 @@ export async function landingData(outletId?: string) {
   const sections = [...new Set(items.map((i) => i.section))].map((name) => {
     const inSection = items.filter((i) => i.section === name);
     // the section's icon: its first dish with a transparent cut-out, if any
-    return { name, count: inSection.length, look: inSection[0].look, icon: inSection.flatMap((i) => i.photos ?? []).find(isCutout) ?? null };
+    const icon = inSection.flatMap((i) => i.photos ?? []).find(isCutout) ?? SECTION_ICON[name] ?? null;
+    return { name, count: inSection.length, look: inSection[0].look, icon };
   });
   const next = slots.find((s) => s.open) ?? null;
   const special = items.find((i) => i.special) ?? null;

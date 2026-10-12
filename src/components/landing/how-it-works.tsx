@@ -1,9 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRef, useState } from "react";
-import { FoodArt } from "@/components/food/food-art";
 import { gsap, ScrollTrigger } from "./motion";
 
 const STEPS = [
@@ -38,9 +38,11 @@ function Screen({ step }: { step: number }) {
   if (step === 0)
     return (
       <div className="grid grid-cols-2 gap-2">
-        {([["burger", "Chicken Burger", "৳150"], ["cake", "Brownie", "৳150"], ["hot", "Latte", "৳180"], ["wrap", "Kebab Wrap", "৳120"]] as const).map(([k, n, p]) => (
+        {([["/menu/3d/chicken-burger.webp", "Chicken Burger", "৳150"], ["/menu/scafe/brownie.webp", "Brownie", "৳150"], ["/menu/scafe/cafe-latte.webp", "Latte", "৳180"], ["/menu/3d/chicken-wrap.webp", "Kebab Wrap", "৳120"]] as const).map(([src, n, p]) => (
           <div key={n} className="rounded-xl bg-sts-white p-2 text-left shadow-[0_0_0_1px_var(--sts-hairline)]">
-            <FoodArt kind={k} tint="coffee" steam={false} className="mx-auto w-3/4" />
+            <span className="relative mx-auto block aspect-square w-3/4">
+              <Image src={src} alt="" fill sizes="120px" className="object-contain drop-shadow-[0_4px_4px_var(--sts-drop)]" />
+            </span>
             <b className="block truncate text-2xs text-sts-ink">{n}</b>
             <span className="flex items-center justify-between text-2xs font-bold text-sts-purple">{p}<i className="grid h-5 w-5 place-items-center rounded-full bg-sts-orange not-italic text-sts-ink">+</i></span>
           </div>

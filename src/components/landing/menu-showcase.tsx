@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { FoodArt } from "@/components/food/food-art";
 import { MenuCard } from "@/components/food/menu-card";
 import type { LandingData } from "@/lib/landing-data";
+import { isCutout } from "@/lib/food-photos";
 import { handOff } from "@/lib/tray-handoff";
 
 export function MenuShowcase({ data, orderHref }: { data: LandingData; orderHref: string }) {
@@ -14,13 +15,18 @@ export function MenuShowcase({ data, orderHref }: { data: LandingData; orderHref
   const [inCart, setInCart] = useState(0);
   const tabs = ["All", ...data.sections.map((s) => s.name)];
   const shown = useMemo(() => {
-    const pool = filter === "All" ? data.items : data.items.filter((i) => i.section === filter);
+    // dishes with a 3D / cut-out image first, so the showcase leads with them
+    const cut = (i: (typeof data.items)[number]) => (i.photos?.some(isCutout) ? 0 : 1);
+    const pool = (filter === "All" ? data.items : data.items.filter((i) => i.section === filter)).slice().sort((a, b) => cut(a) - cut(b));
     // "All" shows a spread across sections rather than the first section only
     if (filter !== "All") return pool.slice(0, 8);
+    // a spread across sections, 3D dishes first; photo-only dishes only fill any gap
     const out: typeof pool = [];
-    for (let round = 0; out.length < 8 && round < 8; round++) for (const s of data.sections) {
-      const it = pool.filter((i) => i.section === s.name)[round];
-      if (it && out.length < 8) out.push(it);
+    for (const tier of [pool.filter((i) => cut(i) === 0), pool]) {
+      for (let round = 0; out.length < 8 && round < 8; round++) for (const s of data.sections) {
+        const it = tier.filter((i) => i.section === s.name && !out.includes(i))[0];
+        if (it && out.length < 8) out.push(it);
+      }
     }
     return out;
   }, [data.items, data.sections, filter]);
