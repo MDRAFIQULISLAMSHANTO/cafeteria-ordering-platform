@@ -108,12 +108,12 @@ function QtyStepper({ name, qty, max, disabled, onQty }: { name: string; qty: nu
   const [draft, setDraft] = useState<string | null>(null);
   const commit = (v: string) => { setDraft(null); onQty(Math.max(0, Math.min(max, Number(v) || 0))); };
   return (
-    <div className="flex h-10 flex-none items-center rounded-full bg-sts-orange text-sts-ink shadow-[var(--sts-action-shadow)]" role="group" aria-label={`${name} quantity`}>
-      <button type="button" aria-label={`One less ${name}`} onClick={() => onQty(qty - 1)} className="grid h-10 w-9 place-items-center rounded-full text-lg font-bold hover:bg-sts-orange-deep">−</button>
+    <div className="flex h-9 flex-none items-center rounded-full bg-sts-white text-sts-purple shadow-[0_0_0_1px_var(--sts-hairline)]" role="group" aria-label={`${name} quantity`}>
+      <button type="button" aria-label={`One less ${name}`} onClick={() => onQty(qty - 1)} className="grid h-9 w-8 place-items-center rounded-full text-lg font-semibold hover:bg-sts-purple-soft">−</button>
       <input
         aria-label={`${name} quantity`}
         inputMode="numeric"
-        className="h-8 w-9 rounded-md bg-sts-white/90 text-center text-sm font-bold tabular-nums text-sts-ink outline-none focus:ring-2 focus:ring-sts-purple"
+        className="h-7 w-8 rounded-md bg-transparent text-center text-sm font-bold tabular-nums text-sts-ink outline-none focus:bg-sts-purple-soft"
         value={draft ?? String(qty)}
         onFocus={(e) => e.currentTarget.select()}
         onChange={(e) => {
@@ -124,7 +124,7 @@ function QtyStepper({ name, qty, max, disabled, onQty }: { name: string; qty: nu
         onBlur={(e) => commit(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
       />
-      <button type="button" aria-label={`One more ${name}`} disabled={disabled || qty >= max} onClick={() => onQty(qty + 1)} className="grid h-10 w-9 place-items-center rounded-full text-lg font-bold hover:bg-sts-orange-deep disabled:opacity-40">+</button>
+      <button type="button" aria-label={`One more ${name}`} disabled={disabled || qty >= max} onClick={() => onQty(qty + 1)} className="grid h-9 w-8 place-items-center rounded-full text-lg font-semibold hover:bg-sts-purple-soft disabled:opacity-40">+</button>
     </div>
   );
 }
