@@ -18,7 +18,13 @@ const BELL_SECONDS = 60;
 
 /** The dish's real photo: S Cafe's cut-out whole, other photos as a round plate; the drawing only if there is no photo. */
 function Dish({ it, className }: { it: GameItem; className: string }) {
-  if (it.cutout) return <Image src={it.cutout} alt="" width={240} height={240} sizes="(max-width: 640px) 30vw, 240px" className={`${className} min-h-0 object-contain object-bottom`} />;
+  if (it.cutout) {
+    return (
+      <span className={`${className} relative block`}>
+        <Image src={it.cutout} alt="" fill sizes="(max-width: 640px) 30vw, 240px" className="object-contain" />
+      </span>
+    );
+  }
   if (it.photo) {
     return (
       <span className={`${className} grid place-items-center`}>
@@ -243,7 +249,7 @@ export function BalancedTray({ data, orderHref }: { data: LandingData; orderHref
                           onClick={() => pick(g.id, it.id)}
                           className={`flex flex-col items-center gap-1 rounded-2xl bg-sts-white p-2 text-center transition-shadow disabled:opacity-60 ${on ? "shadow-[0_0_0_2.5px_var(--sts-orange)]" : "shadow-[0_0_0_1px_var(--sts-hairline)] hover:shadow-sts-card"}`}
                         >
-                          <span className="grid aspect-square w-[78%] place-items-center">
+                          <span className="grid aspect-square w-[82%] flex-none place-items-center">
                             {!on ? (
                               <motion.span layoutId={`art-${it.id}`} className="block h-full w-full">
                                 <Dish it={it} className="h-full w-full drop-shadow-[0_6px_6px_var(--sts-drop)]" />

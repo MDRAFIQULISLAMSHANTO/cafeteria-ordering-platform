@@ -14,7 +14,7 @@ import { formatDay, time12 } from "./time";
 export type LandingItem = { id: string; name: string; section: string; price: number; description: string | null; look: FoodLook; special: boolean; photos: string[] | null };
 export type TrayGroup = "main" | "side" | "drink" | "treat";
 
-const SIDE_WORDS = ["fries", "wedges", "singara", "spring roll", "cheese ball", "salad", "soup"];
+const SIDE_WORDS = ["fries", "wedges", "singara", "spring roll", "cheese ball", "salad", "soup", "drums", "patty"];
 
 function trayGroup(item: LandingItem): TrayGroup | null {
   const n = item.name.toLowerCase();
@@ -46,7 +46,9 @@ export async function landingData(outletId?: string) {
   const game = items
     .filter((i) => !(i.look.kind === "cold" && i.price > 200))
     .map((i) => ({ ...i, group: trayGroup(i), cutout: i.photos?.find(isCutout) ?? null, photo: i.photos?.[0] ?? null }))
-    .filter((i): i is LandingItem & { group: TrayGroup; cutout: string | null; photo: string | null } => i.group != null && !menu.find((m) => m.id === i.id)?.flags?.length);
+    .filter((i): i is LandingItem & { group: TrayGroup; cutout: string | null; photo: string | null } => i.group != null && !menu.find((m) => m.id === i.id)?.flags?.length)
+    // the game only deals dishes with a 3D / cut-out image; a compartment with none keeps its photos
+    .filter((i, _, all) => i.cutout || !all.some((x) => x.group === i.group && x.cutout));
 
   return {
     guest: !outletId,

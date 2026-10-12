@@ -35,7 +35,8 @@ export function foodLook(name: string, category: string): FoodLook {
     if (has(n, "burger", "fried chicken")) return { kind: "combo" };
     if (has(n, "coffee")) return { kind: "hot", tint: "coffee" };
   }
-  if (has(c, "beverage", "tea", "shake", "frapp") || has(n, "latte", "americano", "espresso", "cappuccino", "smoothie", "juice", "lemonade", "cooler", "mojito", "hot chocolate", "coffee")) {
+  // "latte" as a whole word: "platter" contains it
+  if (has(c, "beverage", "tea", "shake", "frapp") || /\blatte\b/.test(n) || has(n, "americano", "espresso", "cappuccino", "smoothie", "juice", "lemonade", "cooler", "mojito", "hot chocolate", "coffee")) {
     const cold = has(n, "cold", "smoothie", "juice", "lemonade", "cooler", "mojito", "shake", "frapp", "ml)") || has(c, "shake", "frapp");
     return { kind: cold ? "cold" : "hot", tint: drinkTint(n) };
   }
