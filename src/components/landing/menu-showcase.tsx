@@ -16,7 +16,7 @@ export function MenuShowcase({ data, orderHref }: { data: LandingData; orderHref
   const tabs = ["All", ...data.sections.map((s) => s.name)];
   const shown = useMemo(() => {
     // dishes with a 3D / cut-out image first, so the showcase leads with them
-    const cut = (i: (typeof data.items)[number]) => (i.photos?.some(isCutout) ? 0 : 1);
+    const cut = (i: { photos: string[] | null }) => (i.photos?.some(isCutout) ? 0 : 1);
     const pool = (filter === "All" ? data.items : data.items.filter((i) => i.section === filter)).slice().sort((a, b) => cut(a) - cut(b));
     // "All" shows a spread across sections rather than the first section only
     if (filter !== "All") return pool.slice(0, 8);
