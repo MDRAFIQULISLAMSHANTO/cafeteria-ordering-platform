@@ -8,6 +8,7 @@ import { FoodArt } from "@/components/food/food-art";
 import { isCutout } from "@/lib/food-photos";
 import type { LandingData } from "@/lib/landing-data";
 import { money } from "@/lib/rules";
+import { handOff } from "@/lib/tray-handoff";
 
 function Digit({ value }: { value: string }) {
   return (
@@ -63,7 +64,13 @@ export function SpecialCountdown({ data, orderHref }: { data: LandingData; order
           ) : (
             <p className="mt-4 text-sm">All of today&apos;s slots have closed — you can pre-order for another day.</p>
           )}
-          <Link href={orderHref} className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-sts-purple px-6 font-bold text-sts-white hover:no-underline">Order before the cut-off <span aria-hidden>→</span></Link>
+          <Link
+            href={orderHref}
+            onClick={() => { if (sp) handOff([{ id: sp.id, name: sp.name }], { openCart: true }); }}
+            className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-sts-purple px-6 font-bold text-sts-white hover:no-underline"
+          >
+            Order before the cut-off <span aria-hidden>→</span>
+          </Link>
         </div>
         <div className="relative mx-auto mt-8 w-[min(70vw,300px)] md:mt-0">
           <div aria-hidden className="absolute inset-[8%] rounded-full bg-sts-white/35" />

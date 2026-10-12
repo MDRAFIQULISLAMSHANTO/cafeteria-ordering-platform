@@ -5,9 +5,10 @@
 
 const KEY = "sts-tray-handoff";
 
-export type Handoff = { items: { id: string; name: string; qty: number }[]; at: number };
+// openCart: show the cart straight away (e.g. "Order before the cut-off" on the day special)
+export type Handoff = { items: { id: string; name: string; qty: number }[]; at: number; openCart?: boolean };
 
-export function handOff(items: { id: string; name: string }[]) {
+export function handOff(items: { id: string; name: string }[], opts: { openCart?: boolean } = {}) {
   let cur: Handoff = { items: [], at: Date.now() };
   try { cur = JSON.parse(sessionStorage.getItem(KEY) ?? "") as Handoff; } catch {}
   const merged = [...(cur.items ?? [])];
@@ -16,7 +17,7 @@ export function handOff(items: { id: string; name: string }[]) {
     if (hit) hit.qty += 1;
     else merged.push({ id: it.id, name: it.name, qty: 1 });
   }
-  try { sessionStorage.setItem(KEY, JSON.stringify({ items: merged, at: Date.now() })); } catch {}
+  try { sessionStorage.setItem(KEY, JSON.stringify({ items: merged, at: Date.now(), openCart: opts.openCart || cur.openCart })); } catch {}
   return merged.reduce((a, m) => a + m.qty, 0);
 }
 

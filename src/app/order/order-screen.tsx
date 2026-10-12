@@ -78,7 +78,10 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
       for (const i of ok) next[i.id] = Math.min(50, (next[i.id] ?? 0) + i.qty);
       return next;
     });
-    if (ok.length) show({ title: `${ok.reduce((a, i) => a + i.qty, 0)} item${ok.length === 1 && ok[0].qty === 1 ? "" : "s"} from your tray added`, tone: "info" });
+    if (ok.length && h.openCart) {
+      show({ title: `${ok.map((i) => i.name).join(", ")} added to your order`, tone: "info" });
+      setDrawer(true); // phones: open the cart sheet (it is always visible on wide screens)
+    } else if (ok.length) show({ title: `${ok.reduce((a, i) => a + i.qty, 0)} item${ok.length === 1 && ok[0].qty === 1 ? "" : "s"} from your tray added`, tone: "info" });
     if (skipped.length) show({ title: `Not on ${outlet.name}'s menu today: ${skipped.map((i) => i.name).join(", ")}`, rule: "Menu by outlet and day", tone: "danger" });
   });
   useEffect(() => {
