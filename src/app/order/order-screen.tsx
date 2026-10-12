@@ -418,6 +418,8 @@ export function OrderScreen({ initial, customer, outlet, welcome, editing }: Pro
                     item={{ id: p.id, name: p.name, price: p.price, description: cardLine(p), look: foodLook(p.name, p.category), unit: p.unit, photos: p.photos }}
                     disabled={!p.available}
                     onAdd={() => add(p)}
+                    qty={cart[p.id] ?? 0}
+                    onQty={(n) => setQty(p.id, n)}
                     onOpen={() => { setOpen(p); setPanelQty(1); }}
                     badges={
                       <>

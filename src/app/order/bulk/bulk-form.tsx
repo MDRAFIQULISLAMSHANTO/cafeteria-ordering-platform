@@ -3,7 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { placeBulkOrderAction } from "@/app/actions";
+import { MenuCard } from "@/components/food/menu-card";
 import { useResult, useToast } from "@/components/toast";
+import { cardLine } from "@/lib/card-lines";
+import { foodLook } from "@/lib/food-kind";
 import { money, price } from "@/lib/rules";
 import { at, formatDay, time12 } from "@/lib/time";
 import type { MenuPayload } from "../order-screen";
@@ -41,9 +44,15 @@ export function BulkForm({ initial, coordinator, outlet, noticeHours, maxQty }: 
 
   const noticeOk = (startsAt: string) => at(data.date, startsAt) - data.now.ms >= noticeHours * 3_600_000;
   const menu = useMemo(
-    () => data.menu.filter((p) => p.available && (!query || p.name.toLowerCase().includes(query.toLowerCase()))),
+    () => data.menu.filter((p) => p.available && p.price != null && (!query || p.name.toLowerCase().includes(query.toLowerCase()))),
     [data.menu, query],
   );
+  // the menu in its sections, as on the order page
+  const sections = useMemo(() => {
+    const by = new Map<string, typeof menu>();
+    for (const p of menu) (by.get(p.category) ?? by.set(p.category, []).get(p.category)!).push(p);
+    return [...by];
+  }, [menu]);
   const lines = data.menu.filter((p) => (qty[p.id] ?? 0) > 0 && p.available && p.price != null);
   const totals = price({
     accountType: "employee",
@@ -139,27 +148,27 @@ export function BulkForm({ initial, coordinator, outlet, noticeHours, maxQty }: 
             <h2 className="text-lg font-bold">Items <small className="text-xs font-normal text-muted">up to {maxQty} each</small></h2>
             <input type="search" aria-label="Search items" placeholder="Search items" className={`${input} h-10 md:w-64`} value={query} onChange={(e) => setQuery(e.target.value)} />
           </div>
-          <ul className="divide-y divide-line">
-            {menu.map((p) => (
-              <li key={p.id} className="flex items-center gap-3 py-2.5">
-                <div className="min-w-0 flex-1">
-                  <b className="block truncate text-sm">{p.name}</b>
-                  <small className="text-muted">{p.category} · {money(p.price!)}</small>
-                </div>
-                <div className="so-step">
-                  <button aria-label={`Less ${p.name}`} onClick={() => set(p.id, (qty[p.id] ?? 0) - 1)}>−</button>
-                  <input
-                    aria-label={`${p.name} quantity`}
-                    inputMode="numeric"
-                    className="w-12 bg-transparent text-center font-semibold tabular-nums"
-                    value={qty[p.id] ?? 0}
-                    onChange={(e) => set(p.id, Number(e.target.value.replace(/\D/g, "")))}
+          {menu.length === 0 && <p className="o-hint">Nothing matches “{query}”.</p>}
+          {sections.map(([name, items]) => (
+            <div key={name} className="mt-4 first:mt-0">
+              <h3 className="mb-2 flex items-baseline gap-2 font-display text-base font-bold text-sts-accent">
+                {name} <small className="font-sans text-xs font-medium text-muted">{items.length}</small>
+              </h3>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {items.map((p) => (
+                  <MenuCard
+                    key={p.id}
+                    compact
+                    item={{ id: p.id, name: p.name, price: p.price, description: cardLine(p), look: foodLook(p.name, p.category), unit: p.unit, photos: p.photos }}
+                    onAdd={() => set(p.id, (qty[p.id] ?? 0) + 1)}
+                    qty={qty[p.id] ?? 0}
+                    onQty={(n) => set(p.id, n)}
+                    max={maxQty}
                   />
-                  <button aria-label={`More ${p.name}`} onClick={() => set(p.id, (qty[p.id] ?? 0) + 1)}>+</button>
-                </div>
-              </li>
-            ))}
-          </ul>
+                ))}
+              </div>
+            </div>
+          ))}
         </section>
       </div>
 
@@ -168,7 +177,10 @@ export function BulkForm({ initial, coordinator, outlet, noticeHours, maxQty }: 
         <p className="text-sm text-muted">{count} item{count === 1 ? "" : "s"} · {coordinator.name}</p>
         <ul className="my-3 flex max-h-60 flex-col gap-1 overflow-y-auto text-sm">
           {lines.map((p) => (
-            <li key={p.id} className="flex justify-between gap-2"><span className="min-w-0 truncate">{qty[p.id]}× {p.name}</span></li>
+            <li key={p.id} className="flex items-center justify-between gap-2">
+              <span className="min-w-0 truncate">{qty[p.id]}× {p.name}</span>
+              <button type="button" aria-label={`Remove ${p.name}`} onClick={() => set(p.id, 0)} className="flex-none rounded px-1.5 text-muted hover:bg-surface-3 hover:text-danger">✕</button>
+            </li>
           ))}
           {lines.length === 0 && <li className="text-muted">No items yet.</li>}
         </ul>

@@ -15,9 +15,13 @@ export type CardItem = { id: string; name: string; price: number | null; descrip
  * price and a round add button that turns into a tick. Used on the landing
  * page and the /order menu.
  */
-export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact }: {
+export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact, qty = 0, onQty, max = 50 }: {
   item: CardItem;
   onAdd?: () => void;
+  /** in the cart: the card shows − qty + and the number can be typed */
+  qty?: number;
+  onQty?: (n: number) => void;
+  max?: number;
   onOpen?: () => void;
   disabled?: boolean;
   badges?: ReactNode;
@@ -77,7 +81,9 @@ export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact 
             {item.price != null ? money(item.price) : "—"}
             {item.unit && item.unit !== "each" && <small className="font-sans text-xs font-normal text-muted"> / {item.unit}</small>}
           </span>
-          {onAdd && (
+          {onQty && qty > 0 ? (
+            <QtyStepper name={item.name} qty={qty} max={max} disabled={disabled} onQty={onQty} />
+          ) : onAdd && (
             <motion.button
               type="button"
               aria-label={`Add ${item.name}`}
@@ -94,5 +100,31 @@ export function MenuCard({ item, onAdd, onOpen, disabled, badges, note, compact 
         </div>
       </div>
     </motion.article>
+  );
+}
+
+/** − [n] + on the card; the number is a field you can type into. Empty or 0 removes the item on blur. */
+function QtyStepper({ name, qty, max, disabled, onQty }: { name: string; qty: number; max: number; disabled?: boolean; onQty: (n: number) => void }) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const commit = (v: string) => { setDraft(null); onQty(Math.max(0, Math.min(max, Number(v) || 0))); };
+  return (
+    <div className="flex h-10 flex-none items-center rounded-full bg-sts-orange text-sts-ink shadow-[var(--sts-action-shadow)]" role="group" aria-label={`${name} quantity`}>
+      <button type="button" aria-label={`One less ${name}`} onClick={() => onQty(qty - 1)} className="grid h-10 w-9 place-items-center rounded-full text-lg font-bold hover:bg-sts-orange-deep">−</button>
+      <input
+        aria-label={`${name} quantity`}
+        inputMode="numeric"
+        className="h-8 w-9 rounded-md bg-sts-white/90 text-center text-sm font-bold tabular-nums text-sts-ink outline-none focus:ring-2 focus:ring-sts-purple"
+        value={draft ?? String(qty)}
+        onFocus={(e) => e.currentTarget.select()}
+        onChange={(e) => {
+          const v = e.target.value.replace(/\D/g, "").slice(0, 3);
+          setDraft(v);
+          if (v && Number(v) > 0) onQty(Math.min(max, Number(v)));
+        }}
+        onBlur={(e) => commit(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
+      />
+      <button type="button" aria-label={`One more ${name}`} disabled={disabled || qty >= max} onClick={() => onQty(qty + 1)} className="grid h-10 w-9 place-items-center rounded-full text-lg font-bold hover:bg-sts-orange-deep disabled:opacity-40">+</button>
+    </div>
   );
 }

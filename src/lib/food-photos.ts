@@ -26,8 +26,8 @@ export const FOOD_3D: Record<string, string> = {
   "menu-a-002": D("chicken-burger-fries-combo"), // composed from the burger and fries images
   "menu-a-005": D("chicken-mushroom-bake"),
   "menu-a-006": D("spinach-quiche"),
-  "menu-a-007": D("beef-patty"),
-  "menu-a-008": D("veg-quiche"),
+  "menu-a-007": D("beef-patty-pastry"),
+  "menu-a-008": D("veg-quiche-slice"),
   "menu-a-009": D("chicken-drums"),
   "menu-a-010": D("focaccia-club"),
   "menu-a-011": D("chicken-sandwich"),
@@ -49,7 +49,7 @@ export const FOOD_3D: Record<string, string> = {
   "menu-a-043": D("biryani-gulab-jamun"),
   // menu B — Parent Lounge / Head Office
   "menu-b-048": D("chicken-spinach-quiche"),
-  "menu-b-053": D("veg-quiche"),
+  "menu-b-053": D("veg-quiche-slice"),
   "menu-b-055": D("caesar-salad"),
   "menu-b-058": D("pasta"),
   "menu-b-061": D("fish-and-chips"),
