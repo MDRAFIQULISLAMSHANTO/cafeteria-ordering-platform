@@ -35,35 +35,70 @@ export function seedFrom(text: string) {
   return h >>> 0;
 }
 
-/** Three distinct items per compartment (fewer if the menu has fewer): S Cafe's own photos first, then other real photos. */
-export function deal(pool: GameItem[], seed: number): Hand {
+export const BUDGET = 50000; // ৳500 in poisha: fixed, so there is always a target to beat
+
+/** The cheapest full tray this pool allows (one per compartment that has items). */
+function cheapestTray(pool: GameItem[]) {
+  return GROUPS.reduce((a, g) => {
+    const prices = pool.filter((p) => p.group === g.id).map((p) => p.price);
+    return a + (prices.length ? Math.min(...prices) : 0);
+  }, 0);
+}
+
+/**
+ * ৳500 when that leaves real choice; otherwise ৳50 above the cheapest full
+ * tray, rounded up to ৳100, so there is more than one winning tray.
+ */
+export function budgetFor(pool: GameItem[]) {
+  const floor = cheapestTray(pool);
+  return floor + 5000 <= BUDGET ? BUDGET : Math.ceil((floor + 5000) / 10000) * 10000;
+}
+
+/**
+ * Three distinct items per compartment (fewer if the menu has fewer), with
+ * dishes that have S Cafe / 3D images first. One winning tray is always in
+ * the hand: a random tray within the budget is picked first, then the rest
+ * of each compartment is filled at random.
+ */
+export function deal(pool: GameItem[], seed: number, budget: number): Hand {
   const r = rng(seed);
-  const hand = {} as Hand;
-  for (const g of GROUPS) {
-    const items = pool.filter((p) => p.group === g.id);
+  const rank = (x: GameItem) => (x.cutout ? 2 : x.photo ? 1 : 0);
+  const shuffled = (g: Group) => {
+    const items = pool.filter((p) => p.group === g);
     for (let i = items.length - 1; i > 0; i--) {
       const j = Math.floor(r() * (i + 1));
       [items[i], items[j]] = [items[j], items[i]];
     }
-    const rank = (x: GameItem) => (x.cutout ? 2 : x.photo ? 1 : 0);
-    items.sort((a, b) => rank(b) - rank(a)); // stable: the shuffle order is kept within each rank
-    hand[g.id] = items.slice(0, 3);
+    return items.sort((a, b) => rank(b) - rank(a)); // stable: shuffle kept within each rank
+  };
+  const lists = Object.fromEntries(GROUPS.map((g) => [g.id, shuffled(g.id)])) as Record<Group, GameItem[]>;
+  const cheapest = (g: Group) => (lists[g].length ? Math.min(...lists[g].map((p) => p.price)) : 0);
+
+  // the winning tray: per compartment, a random item that still leaves room for the cheapest of the rest
+  const win: Partial<Record<Group, GameItem>> = {};
+  let left = budget;
+  GROUPS.forEach((g, i) => {
+    if (!lists[g.id].length) return;
+    const reserve = GROUPS.slice(i + 1).reduce((a, x) => a + cheapest(x.id), 0);
+    const fits = lists[g.id].filter((p) => p.price <= left - reserve);
+    const pick = fits[0] ?? lists[g.id].reduce((a, b) => (b.price < a.price ? b : a));
+    win[g.id] = pick;
+    left -= pick.price;
+  });
+
+  const hand = {} as Hand;
+  for (const g of GROUPS) {
+    const w = win[g.id];
+    const rest = lists[g.id].filter((p) => p !== w).slice(0, w ? 2 : 3);
+    const three = w ? [w, ...rest] : rest;
+    // the winning item takes a random place, so it is not always the first card
+    for (let i = three.length - 1; i > 0; i--) {
+      const j = Math.floor(r() * (i + 1));
+      [three[i], three[j]] = [three[j], three[i]];
+    }
+    hand[g.id] = three;
   }
   return hand;
-}
-
-/** A budget between the cheapest possible tray and a typical one, in whole taka ×10. */
-export function budgetFor(hand: Hand) {
-  let cheapest = 0;
-  let typical = 0;
-  for (const g of GROUPS) {
-    const prices = hand[g.id].map((i) => i.price).sort((a, b) => a - b);
-    if (!prices.length) continue;
-    cheapest += prices[0];
-    typical += prices[Math.floor(prices.length / 2)];
-  }
-  const target = cheapest + (typical - cheapest) * 0.6;
-  return Math.max(cheapest + 2000, Math.ceil(target / 1000) * 1000); // poisha; at least ৳20 of room
 }
 
 export const total = (tray: Tray) => GROUPS.reduce((a, g) => a + (tray[g.id]?.price ?? 0), 0);

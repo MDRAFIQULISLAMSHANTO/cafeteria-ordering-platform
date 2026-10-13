@@ -94,11 +94,8 @@ export function BalancedTray({ data, orderHref }: { data: LandingData; orderHref
   const [show3d, setShow3d] = useState(false);
   const [declined, setDeclined] = useState(false);
   const [seed, setSeed] = useState(() => seedFrom(`${data.outlet.id}:${data.now.date}`));
-  const hand: Hand = useMemo(() => deal(data.game, seed), [data.game, seed]);
-  const suggested = useMemo(() => budgetFor(hand), [hand]);
-  const [ownBudget, setOwnBudget] = useState<number | null>(null); // poisha; null = the suggested budget
-  const [editBudget, setEditBudget] = useState(false);
-  const budget = ownBudget ?? suggested;
+  const budget = useMemo(() => budgetFor(data.game), [data.game]);
+  const hand: Hand = useMemo(() => deal(data.game, seed, budget), [data.game, seed, budget]);
   const [tray, setTray] = useState<Tray>({});
   const [challenge, setChallenge] = useState(false);
   const [left, setLeft] = useState(BELL_SECONDS);
@@ -177,7 +174,7 @@ export function BalancedTray({ data, orderHref }: { data: LandingData; orderHref
           <div className="max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-[.16em] text-sts-orange-text">Play · two minutes</p>
             <h2 id="play-title" className="mt-2 font-display text-[clamp(2rem,3vw+.8rem,3.4rem)] font-extrabold leading-none tracking-[-.03em] text-sts-purple">Build a balanced tray</h2>
-            <p className="mt-3 text-sts-ink/75">One main, one side, one drink and one treat from today&apos;s real menu — and keep it within budget. Like it? Send the tray to your order.</p>
+            <p className="mt-3 text-sts-ink/75">One main, one side, one drink and one treat from today&apos;s real menu — and keep it within {money(budget)}. There is always a tray that fits. Like it? Send the tray to your order.</p>
           </div>
           <div role="radiogroup" aria-label="Game mode" className="flex rounded-full bg-sts-white p-1 shadow-[0_0_0_1px_var(--sts-hairline)]">
             {[["Relaxed", false], ["Bell challenge · 60 s", true]].map(([label, value]) => (
@@ -202,35 +199,8 @@ export function BalancedTray({ data, orderHref }: { data: LandingData; orderHref
                 <div className="min-w-0 flex-1">
                   <div className="flex justify-between text-xs font-semibold text-sts-purple">
                     <span>Spent {money(spent)}</span>
-                    <span className="flex items-center gap-1.5">
-                      Budget {money(budget)}
-                      <button type="button" onClick={() => setEditBudget((v) => !v)} aria-expanded={editBudget} className="rounded-full px-1.5 underline decoration-dotted underline-offset-2 hover:bg-sts-white">{editBudget ? "Done" : "Edit"}</button>
-                    </span>
+                    <span>Budget {money(budget)}</span>
                   </div>
-                  {editBudget && (
-                    <div className="mt-2 flex flex-wrap items-center gap-2 rounded-2xl bg-sts-white p-2 text-sm shadow-[0_0_0_1px_var(--sts-hairline)]">
-                      <button type="button" aria-label="Lower budget by 50 taka" onClick={() => setOwnBudget(Math.max(5000, budget - 5000))} className="grid h-8 w-8 place-items-center rounded-full bg-sts-purple-soft font-bold text-sts-purple">−</button>
-                      <label className="flex items-center gap-1 font-semibold text-sts-purple">
-                        ৳
-                        <input
-                          type="number"
-                          inputMode="numeric"
-                          min={50}
-                          max={5000}
-                          step={10}
-                          aria-label="Budget in taka"
-                          value={Math.round(budget / 100)}
-                          onChange={(e) => { const t = Number(e.target.value); if (t > 0) setOwnBudget(Math.min(500000, Math.round(t) * 100)); }}
-                          className="w-20 rounded-lg border border-sts-hairline px-2 py-1 text-center tabular-nums"
-                        />
-                      </label>
-                      <button type="button" aria-label="Raise budget by 50 taka" onClick={() => setOwnBudget(Math.min(500000, budget + 5000))} className="grid h-8 w-8 place-items-center rounded-full bg-sts-purple-soft font-bold text-sts-purple">+</button>
-                      {[300, 500, 800].map((t) => (
-                        <button key={t} type="button" onClick={() => setOwnBudget(t * 100)} aria-pressed={budget === t * 100} className={`rounded-full px-3 py-1 text-xs font-bold ${budget === t * 100 ? "bg-sts-purple text-sts-white" : "text-sts-purple shadow-[0_0_0_1px_var(--sts-hairline)]"}`}>৳{t}</button>
-                      ))}
-                      {ownBudget != null && <button type="button" onClick={() => setOwnBudget(null)} className="text-xs text-muted underline">Suggested ({money(suggested)})</button>}
-                    </div>
-                  )}
                   <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-sts-white" role="meter" aria-label="Budget used" aria-valuemin={0} aria-valuemax={budget} aria-valuenow={spent}>
                     <motion.div className={`h-full rounded-full ${over ? "bg-danger" : "bg-sts-orange"}`} animate={{ width: `${Math.min(100, (spent / budget) * 100)}%` }} transition={{ type: "spring", stiffness: 160, damping: 24 }} />
                   </div>
