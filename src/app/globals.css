@@ -201,13 +201,23 @@
   .motion-safe-only { animation: none !important; }
 }
 
+/* Kitchen bar: centred tabs must never be clipped at the start when they
+   overflow, and on tablets / small laptops they get a row of their own
+   instead of being squeezed between the outlet picker and the clock. */
+.o-kds-tabs { min-width: 0; justify-content: safe center; }
+@media (max-width: 1199px) {
+  .o-kds-bar { grid-template-columns: minmax(0, 1fr) auto; row-gap: 8px; }
+  .o-kds-tabs { grid-column: 1 / -1; order: 3; justify-content: flex-start; }
+}
+
 /* Staff screens are built for tablets and counter PCs; on a phone the bar
    wraps and tickets stack (overrides the Odoo kit, which stays untouched). */
 @media (max-width: 640px) {
-  .o-kds-bar { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 8px 10px; }
-  .o-kds-bar-left { min-width: 0; gap: 6px; }
-  .o-kds-bar-left select { min-width: 0; max-width: 46vw; height: 42px; }
-  .o-kds-tabs { min-width: 0; gap: 4px; }
+  .o-kds-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px; }
+  .o-kds-bar-left { flex: 1 1 220px; min-width: 0; gap: 6px; }
+  .o-kds-bar-left select { flex: 1; min-width: 120px; max-width: none; height: 42px; }
+  .o-kds-tabs { order: 3; flex-basis: 100%; }
+  .o-kds-tabs { min-width: 0; gap: 4px; flex-wrap: wrap; }
   .o-kds-bar-right { min-width: 0; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
   .o-kds-iconbtn, .o-kds-close { height: 42px; min-width: 42px; padding: 0 10px; font-size: 1rem; }
   .o-kds-tab { height: 42px; padding: 0 12px; font-size: 1rem; }
